@@ -1,0 +1,77 @@
+/* ============================
+   ANDALY WHATIS — MAP MANAGER
+   ============================ */
+
+body {
+  margin: 0;
+  background-color: #0b132b;
+  color: #fff;
+  font-family: "Inter", sans-serif;
+  overflow: hidden;
+}
+
+/* Layout principale */
+.main-container {
+  display: flex;
+  height: calc(100vh - 56px);
+}
+
+.sidebar {
+  width: 260px;
+  background-color: #0b132b;
+  padding: 15px;
+  border-right: 1px solid #1c2541;
+  overflow-y: auto;
+}
+
+.sidebar h4 {
+  color: #66d9ff;
+  margin-top: 15px;
+  font-size: 1rem;
+  border-bottom: 1px solid #1c2541;
+  padding-bottom: 4px;
+}
+
+/* Pulsanti */
+.sidebar button {
+  display: block;
+  width: 100%;
+  background-color: #1c2541;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  text-align: left;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.sidebar button:hover {
+  background-color: #3a506b;
+  transform: scale(1.02);
+}
+
+.sidebar button.active {
+  background-color: #5bc0be;
+  color: #0b132b;
+  font-weight: 600;
+}
+
+/* Box di stato */
+.status-box {
+  background: #1c2541;
+  border-radius: 6px;
+  padding: 10px;
+  margin-top: 8px;
+  font-size: 0.9rem;
+  color: #b5c6e0;
+}
+
+/* Mappa */
+#map {
+  flex: 1;
+  height: 100%;
+  width: 100%;
+  z-index: 1;
+}

@@ -1,0 +1,64 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+
+<div class="container mt-4">
+  <div class="card bg-secondary-subtle">
+    <div class="card-body">
+      <h3 class="mb-4">
+        <span class="me-2">➕</span>
+        <%= zone ? "Modifica Zona" : "Nuova Zona" %>
+      </h3>
+
+      <form action="<%= zone ? ('/admin/zones/' + zone._id) : '/admin/zones' %>" method="POST">
+        <!-- Nome -->
+        <div class="mb-3">
+          <label for="name" class="form-label">Nome zona</label>
+          <input
+            id="name"
+            name="name"
+            type="text"
+            class="form-control"
+            value="<%= zone ? zone.name : '' %>"
+            required
+          />
+        </div>
+
+        <!-- Descrizione -->
+        <div class="mb-3">
+          <label for="description" class="form-label">Descrizione</label>
+          <textarea
+            id="description"
+            name="description"
+            class="form-control"
+            rows="3"
+          ><%= zone ? (zone.description || '') : '' %></textarea>
+        </div>
+
+       <!-- Coordinate (formato JSON) -->
+<div class="mb-3">
+  <label for="coordinates" class="form-label">Coordinate (formato JSON)</label>
+  <textarea
+    id="coordinates"
+    name="coordinates"
+    class="form-control"
+    rows="4"
+    placeholder='[{"lat":44.3,"lng":9.2},{"lat":44.4,"lng":9.3}]'
+  ><%= zone && zone.coordinates ? JSON.stringify(zone.coordinates) : "" %></textarea>
+  <small class="text-muted">
+    Inserisci manualmente o lascia vuoto per ora — presto potrai disegnarla direttamente sulla mappa 🗺️
+  </small>
+</div>
+
+        <!-- Azioni -->
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-primary">
+            💾 Salva Zona
+          </button>
+          <a href="/admin/zones" class="btn btn-secondary">
+            ⏮️ Indietro
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

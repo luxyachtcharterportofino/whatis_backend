@@ -1,0 +1,42 @@
+<%- include('partials/head') %>
+<body class="bg-dark text-light">
+  <div class="container mt-4 mb-5">
+    <h4 class="text-info mb-3">📍 Elenco POI</h4>
+
+    <table class="table table-dark table-striped align-middle table-hover">
+      <thead>
+        <tr class="table-secondary text-dark">
+          <th>Nome</th>
+          <th>Zona</th>
+          <th>Latitudine</th>
+          <th>Longitudine</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (pois.length === 0) { %>
+          <tr>
+            <td colspan="4" class="text-center text-muted">
+              Nessun POI trovato per questa zona.
+            </td>
+          </tr>
+        <% } else { %>
+          <% pois.forEach(p => { %>
+            <tr>
+              <td><%= p.name %></td>
+              <td><%= p.zone ? p.zone.name : '-' %></td>
+              <td><%= p.lat %></td>
+              <td><%= p.lng %></td>
+            </tr>
+          <% }) %>
+        <% } %>
+      </tbody>
+    </table>
+
+    <div class="mt-4 text-center">
+      <a href="/admin/map" class="btn btn-info">
+        🌍 Torna alla Mappa
+      </a>
+    </div>
+  </div>
+</body>
+</html>

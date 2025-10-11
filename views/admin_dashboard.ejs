@@ -1,0 +1,32 @@
+<%- include('partials/head') %>
+
+<body class="bg-dark text-light">
+  <nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom">
+    <div class="container">
+      <a class="navbar-brand fw-bold text-light fs-4" href="/admin">🌊 Andaly <span class="text-info">Whatis</span></a>
+      <div class="navbar-nav ms-auto">
+        <a class="nav-link" href="/admin/zones">Zone</a>
+        <a class="nav-link" href="/admin/pois">POI</a>
+        <a class="nav-link" href="/admin/map">Cartina</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container text-center mt-5">
+    <h1 class="mb-4">Pannello di Controllo</h1>
+    <div class="row justify-content-center">
+      <div class="col-md-4">
+        <a href="/admin/zones" class="btn btn-success w-100 mb-3 py-3 fs-5">📍 Zone Geografiche</a>
+      </div>
+      <div class="col-md-4">
+        <a href="/admin/pois" class="btn btn-warning w-100 mb-3 py-3 fs-5">⭐ Punti di Interesse</a>
+      </div>
+      <div class="col-md-4">
+        <a href="/admin/map" class="btn btn-primary w-100 mb-3 py-3 fs-5">🗺️ Cartina Interattiva</a>
+      </div>
+    </div>
+  </main>
+
+  <%- include('partials/footer') %>
+</body>
+</html>

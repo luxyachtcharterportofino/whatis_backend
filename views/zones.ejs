@@ -1,0 +1,176 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+
+<div class="container-fluid mt-4">
+  <div class="row">
+    <!-- 📍 Sidebar -->
+    <div class="col-md-3">
+      <div class="card bg-dark text-light shadow">
+        <div class="card-body">
+          <h5 class="card-title">🗺️ Cartina interna</h5>
+
+          <div class="mb-3">
+            <label for="zoneFilter" class="form-label">Filtra per Zona</label>
+            <select id="zoneFilter" class="form-select">
+              <option value="">— Tutte le zone —</option>
+              <% zones.forEach(zone => { %>
+                <option value="<%= zone._id %>"><%= zone.name %></option>
+              <% }) %>
+            </select>
+          </div>
+
+          <div class="d-grid gap-2">
+            <a href="/zones" class="btn btn-outline-light btn-sm">Tutte le zone</a>
+            <a href="/zones/new" class="btn btn-outline-primary btn-sm">Gestisci Zone</a>
+            <a href="/pois" class="btn btn-outline-warning btn-sm">Gestisci POI</a>
+          </div>
+
+          <hr>
+
+          <h6>POI nella zona</h6>
+          <ul id="poiList" class="list-group small"></ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 🗺️ Mappa principale -->
+    <div class="col-md-9">
+      <div id="map" style="height: 80vh; border-radius: 10px;"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const zones = <%- JSON.stringify(zones) %>;
+  const pois = <%- JSON.stringify(pois) %>;
+  let selectedZoneId = null;
+  let zoneLayers = [];
+  let poiMarkers = [];
+
+  // 🌍 Inizializza la mappa
+  const map = L.map('map').setView([44.35, 9.2], 8);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 18,
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  // 🟦 Disegna le zone
+  zones.forEach(zone => {
+    if (!zone.coordinates || zone.coordinates.length === 0) return;
+
+    const polygon = L.polygon(zone.coordinates, {
+      color: '#007bff',
+      weight: 2,
+      fillOpacity: 0.2
+    }).addTo(map);
+
+    polygon.bindPopup(`<b>${zone.name}</b><br>${zone.description || ''}`);
+    polygon.zoneId = zone._id;
+
+    polygon.on('click', () => {
+      highlightZone(polygon.zoneId);
+    });
+
+    zoneLayers.push(polygon);
+  });
+
+  // 📍 Disegna i POI
+  function drawPois(filteredPois) {
+    poiMarkers.forEach(m => map.removeLayer(m));
+    poiMarkers = [];
+
+    filteredPois.forEach(poi => {
+      if (!poi.lat || !poi.lng) return;
+
+      const marker = L.marker([poi.lat, poi.lng]).addTo(map);
+      marker.bindPopup(`<b>${poi.name}</b><br>${poi.description || ''}`);
+      poiMarkers.push(marker);
+    });
+  }
+
+  // Lista laterale POI
+  function updatePoiList(filteredPois) {
+    const list = document.getElementById('poiList');
+    list.innerHTML = '';
+
+    if (filteredPois.length === 0) {
+      list.innerHTML = '<li class="list-group-item bg-dark text-secondary">Nessun POI disponibile</li>';
+      return;
+    }
+
+    filteredPois.forEach(poi => {
+      const li = document.createElement('li');
+      li.classList.add('list-group-item', 'bg-dark', 'text-light');
+      li.textContent = poi.name;
+      li.onclick = () => {
+        const marker = poiMarkers.find(m => m.getPopup().getContent().includes(poi.name));
+        if (marker) {
+          marker.openPopup();
+          map.setView(marker.getLatLng(), 13);
+        }
+      };
+      list.appendChild(li);
+    });
+  }
+
+  // 🎯 Evidenzia zona selezionata
+  function highlightZone(zoneId) {
+    selectedZoneId = zoneId;
+
+    zoneLayers.forEach(polygon => {
+      polygon.setStyle({
+        color: polygon.zoneId === zoneId ? 'orange' : '#007bff',
+        fillOpacity: polygon.zoneId === zoneId ? 0.4 : 0.2
+      });
+    });
+
+    const filteredPois = pois.filter(p => p.zoneId && p.zoneId._id === zoneId);
+    drawPois(filteredPois);
+    updatePoiList(filteredPois);
+
+    const selectedPolygon = zoneLayers.find(z => z.zoneId === zoneId);
+    if (selectedPolygon) {
+      map.fitBounds(selectedPolygon.getBounds());
+    }
+  }
+
+  // 🎛️ Filtro per zona nel menu a tendina
+  document.getElementById('zoneFilter').addEventListener('change', (e) => {
+    const zoneId = e.target.value;
+    if (zoneId) {
+      highlightZone(zoneId);
+    } else {
+      // Mostra tutto
+      drawPois(pois);
+      updatePoiList(pois);
+      zoneLayers.forEach(p => p.setStyle({ color: '#007bff', fillOpacity: 0.2 }));
+      map.setView([44.35, 9.2], 8);
+    }
+  });
+
+  // ✅ Disegna tutto al caricamento
+  drawPois(pois);
+  updatePoiList(pois);
+    // ➕ Modalità creazione nuova zona (disattivata per ora, si può attivare da admin)
+  let newZoneMode = false;
+  const newZoneCoords = [];
+
+  const mapClickHandler = (e) => {
+    if (!newZoneMode) return;
+    newZoneCoords.push([e.latlng.lat, e.latlng.lng]);
+    L.marker(e.latlng).addTo(map);
+  };
+
+  map.on('click', mapClickHandler);
+
+  // ✨ Tasto per entrare in modalità “nuova zona” (solo se attivata in futuro)
+  const newZoneBtn = document.getElementById('newZoneBtn');
+  if (newZoneBtn) {
+    newZoneBtn.addEventListener('click', () => {
+      newZoneMode = !newZoneMode;
+      alert(newZoneMode ? "🟢 Modalità nuova zona attiva" : "🔴 Modalità disattivata");
+    });
+  }
+</script>
+
+<%- include('partials/footer') %>

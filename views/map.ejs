@@ -1,0 +1,49 @@
+<%- include('partials/head') %>
+
+<body class="bg-dark text-light">
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-black shadow-sm px-3">
+    <a class="navbar-brand fw-bold" href="#">⚓ Andaly Whatis</a>
+    <div class="ms-auto">
+      <a href="/admin/zones" class="nav-link d-inline text-light">Zone</a>
+      <a href="/admin/pois" class="nav-link d-inline text-light">Cartina</a>
+    </div>
+  </nav>
+
+  <!-- CONTENITORE PRINCIPALE -->
+  <div class="main-container">
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <h4>🧭 Gestione Zone</h4>
+      <button id="btnDisegnaZona">+ Disegna nuova Zona</button>
+      <button id="btnSalvaZona">💾 Chiudi & Salva Zona</button>
+      <button id="btnGestisciZone">🗂️ Gestisci Zone</button>
+
+      <h4>📍 Gestione POI</h4>
+      <button id="btnInserisciPOI">+ Inserisci POI</button>
+      <button id="btnModificaTesto">✏️ Modifica testo</button>
+      <button id="btnSpostaPOI">📍 Sposta POI</button>
+      <button id="btnEliminaPOI">🗑️ Elimina POI</button>
+      <button id="btnRiceviPOI">🔄 Ricevi POI automatici</button>
+      <button id="btnSalvaEsci">💾 Salva ed Esci</button>
+      <button id="btnVisualizzaTabella">📊 Visualizza tabella POI</button>
+
+      <h4>📡 Stato</h4>
+      <div id="zoneStatus" class="status-box">Nessuna zona selezionata</div>
+    </div>
+
+    <!-- MAPPA -->
+    <div id="map"></div>
+  </div>
+
+  <!-- LIBRERIA LEAFLET -->
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+  ></script>
+
+  <!-- SCRIPT GESTIONE MAPPA -->
+  <script src="/js/map_poi_manager.js" defer></script>
+</body>
+</html>

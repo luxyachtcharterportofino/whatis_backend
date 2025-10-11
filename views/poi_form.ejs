@@ -1,0 +1,45 @@
+<%- include('partials/head') %>
+
+<div class="container mt-4">
+  <h3><%= poi ? "✏️ Modifica POI" : "📍 Nuovo POI" %></h3>
+
+  <form action="<%= poi ? '/admin/pois/' + poi._id : '/admin/pois' %>" method="POST">
+    <div class="mb-3">
+      <label class="form-label">Nome</label>
+      <input type="text" class="form-control" name="name" required value="<%= poi ? poi.name : '' %>">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Descrizione</label>
+      <textarea class="form-control" name="description" rows="3"><%= poi ? poi.description : '' %></textarea>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Zona</label>
+      <select name="zone" class="form-select" required>
+        <option value="">Seleziona una zona</option>
+        <% zones.forEach(z => { %>
+          <option value="<%= z._id %>" <%= poi && poi.zone == z._id ? 'selected' : '' %>><%= z.name %></option>
+        <% }) %>
+      </select>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <label class="form-label">Latitudine</label>
+        <input type="number" step="any" class="form-control" name="lat" value="<%= poi ? poi.lat : '' %>" required>
+      </div>
+      <div class="col">
+        <label class="form-label">Longitudine</label>
+        <input type="number" step="any" class="form-control" name="lng" value="<%= poi ? poi.lng : '' %>" required>
+      </div>
+    </div>
+
+    <div class="mt-3">
+      <button type="submit" class="btn btn-primary">💾 Salva</button>
+      <a href="/admin/pois" class="btn btn-secondary">⏮️ Indietro</a>
+    </div>
+  </form>
+</div>
+
+<%- include('partials/footer') %>

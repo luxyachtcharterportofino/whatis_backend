@@ -1,0 +1,26 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+
+<div class="container text-center mt-5">
+  <h1>🌊 Benvenuto in <strong>Andaly WhatIs</strong></h1>
+  <p class="lead mt-3">Pannello informativo per Zone e Punti d’Interesse del Tigullio</p>
+
+  <div class="row mt-5 justify-content-center">
+    <div class="col-md-4 mb-3">
+      <div class="home-card">
+        <h4>⚙️ Area Admin</h4>
+        <p>Gestisci Zone e POI.</p>
+        <a href="/admin" class="btn btn-primary">Apri Dashboard</a>
+      </div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <div class="home-card">
+        <h4>🗺️ Cartina interna</h4>
+        <p>Visualizza Zone e POI su mappa.</p>
+        <a href="/admin/map" class="btn btn-info">Apri Cartina</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

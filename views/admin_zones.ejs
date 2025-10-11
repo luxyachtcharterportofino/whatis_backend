@@ -1,0 +1,32 @@
+<%- include('partials/head') %>
+<body class="bg-dark text-light">
+  <div class="container mt-4">
+    <h4 class="text-info mb-3">📍 Elenco Zone</h4>
+    <table class="table table-dark table-striped align-middle">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Descrizione</th>
+          <th>Coordinate</th>
+          <th>Azioni</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% zones.forEach(z => { %>
+          <tr>
+            <td><%= z.name %></td>
+            <td><%= z.description || "-" %></td>
+            <td><%= (z.coordinates || []).length %> punti</td>
+            <td>
+              <form action="/zones/<%= z._id %>?_method=DELETE" method="POST" onsubmit="return confirm('Eliminare la zona “<%= z.name %>”?')">
+                <button type="submit" class="btn btn-danger btn-sm">🗑️ Elimina</button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+    <a href="/admin/map" class="btn btn-info mt-3">🌍 Torna alla Mappa</a>
+  </div>
+</body>
+</html>

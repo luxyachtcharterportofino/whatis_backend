@@ -1,0 +1,21 @@
+{
+  "name": "whatis_backend",
+  "version": "1.0.0",
+  "description": "Backend Andaly Whatis - gestione Zone & POI",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "Andrea Stagnaro",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.12.2",
+    "body-parser": "^1.20.3",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
+    "express": "^4.19.2",
+    "method-override": "^3.0.0",
+    "mongoose": "^7.7.0"
+  }
+}

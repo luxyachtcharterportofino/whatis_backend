@@ -1,0 +1,212 @@
+/* =========================================================
+   🌊 ANDALY WHATIS — STILE GENERALE
+   Versione stabile e coerente (ottobre 2025)
+   ========================================================= */
+
+/* --- Struttura di base --- */
+body {
+  background-color: #0b0f16; /* Blu profondo */
+  color: #f0f0f0;
+  font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* --- Navbar elegante --- */
+.navbar {
+  background-color: #001f33 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.navbar-brand {
+  font-size: 2rem !important;
+  font-weight: 700;
+  color: #ffffff !important;
+  letter-spacing: 0.5px;
+}
+
+.navbar-brand span {
+  color: #00bfff !important;
+}
+
+.navbar a.nav-link {
+  color: #cfd8dc !important;
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.navbar a.nav-link:hover {
+  color: #00bfff !important;
+  transform: translateY(-2px);
+}
+
+.navbar a.nav-link.active {
+  color: #00bfff !important;
+  font-weight: 600;
+}
+
+/* --- Titolo principale (logo e nome) --- */
+h1 {
+  font-size: 2.4rem;
+  letter-spacing: 0.5px;
+  text-shadow: 1px 1px 3px #000;
+}
+
+/* --- Sidebar sinistra --- */
+.bg-secondary-subtle {
+  background-color: #d9e4ec !important;
+}
+
+.sidebar {
+  border-radius: 10px;
+  background-color: #d9e4ec;
+  color: #1a1a1a;
+  padding: 1.5rem;
+  box-shadow: 0 0 10px rgba(0,0,0,0.25);
+}
+
+.sidebar h5 {
+  color: #002b4d;
+  font-weight: 600;
+}
+
+.sidebar button {
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.sidebar button:hover {
+  transform: scale(1.03);
+  box-shadow: 0 0 5px rgba(0,0,0,0.3);
+}
+
+/* --- Pulsanti principali --- */
+.btn {
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+}
+
+.btn-success {
+  background-color: #2e8b57 !important;
+  border-color: #2e8b57 !important;
+}
+
+.btn-success:hover {
+  background-color: #37a164 !important;
+}
+
+.btn-primary {
+  background-color: #0077cc !important;
+  border-color: #0077cc !important;
+}
+
+.btn-dark {
+  background-color: #333 !important;
+  border-color: #333 !important;
+}
+
+.btn-danger {
+  background-color: #b22222 !important;
+  border-color: #b22222 !important;
+}
+
+/* --- Lista istruzioni nella sidebar --- */
+ul {
+  padding-left: 1rem;
+}
+
+ul li {
+  margin-bottom: 0.3rem;
+}
+
+/* --- Mappa Leaflet --- */
+#map {
+  height: 80vh;
+  width: 100%;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.4);
+  overflow: hidden;
+}
+
+/* --- Popup mappa (Leaflet) --- */
+.leaflet-popup-content-wrapper {
+  background: #002b4d;
+  color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+
+.leaflet-popup-content {
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+/* --- Stato operativo --- */
+#status {
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+#status.text-success {
+  color: #007e33 !important;
+}
+
+#status.text-warning {
+  color: #ff8800 !important;
+}
+
+#status.text-danger {
+  color: #cc0000 !important;
+}
+
+/* --- Footer opzionale --- */
+footer {
+  text-align: center;
+  font-size: 0.8rem;
+  color: #aaa;
+  padding: 10px 0;
+  margin-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* --- Responsive per portatili e tablet --- */
+@media (max-width: 992px) {
+  .navbar-brand {
+    font-size: 1.6rem !important;
+  }
+  h1 {
+    font-size: 2rem;
+  }
+  #map {
+    height: 70vh;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    margin-bottom: 1rem;
+  }
+  #map {
+    height: 60vh;
+  }
+  .navbar-nav {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+/* Effetto luminoso pulsante attivo */
+.btn-glow {
+  animation: glow 1.2s infinite alternate;
+  box-shadow: 0 0 8px #00aaff;
+  border-color: #00aaff !important;
+  color: #fff !important;
+  background-color: #007bff !important;
+}
+
+@keyframes glow {
+  from { box-shadow: 0 0 5px #00aaff; }
+  to   { box-shadow: 0 0 20px #33ccff; }
+}
