@@ -5,36 +5,78 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Andaly Whatis - Gestione Zone e POI</title>
 
-  <!-- Leaflet CSS -->
+  <!-- ============================= -->
+  <!-- 🌍 LEAFLET BASE -->
+  <!-- ============================= -->
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
     crossorigin=""
   />
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+  ></script>
 
-  <!-- Stile personalizzato Gestione Mappa -->
+  <!-- ============================= -->
+  <!-- ✏️ LEAFLET DRAW (disegno zone) -->
+  <!-- ============================= -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css"
+  />
+  <script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
+
+  <!-- ============================= -->
+  <!-- 🎨 STILI PERSONALIZZATI -->
+  <!-- ============================= -->
+  <link rel="stylesheet" href="/css/styles.css" />
   <link rel="stylesheet" href="/css/map_manager.css" />
 
-  <!-- Bootstrap (solo per layout base e pulsanti) -->
+  <!-- ============================= -->
+  <!-- 🧱 BOOTSTRAP BASE -->
+  <!-- ============================= -->
   <link
     href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
     rel="stylesheet"
   />
 
+  <!-- ============================= -->
+  <!-- 💅 COLORI BASE -->
+  <!-- ============================= -->
   <style>
     body {
-      background-color: #0b132b;
-      color: white;
+      background-color: #001f33;
+      color: #f8f9fa;
       margin: 0;
       padding: 0;
     }
+
     a {
-      color: #00bfff;
+      color: #66b2ff;
       text-decoration: none;
     }
+
     a:hover {
-      color: #66d9ff;
+      color: #99ccff;
+    }
+
+    .navbar-brand {
+      font-weight: bold;
+      color: #00bfff !important;
+    }
+
+    .btn {
+      border-radius: 8px;
+      font-weight: 500;
+      margin-bottom: 6px;
     }
   </style>
+
+  <!-- ============================= -->
+  <!-- ⚙️ SCRIPT CUSTOM ANDALY -->
+  <!-- ============================= -->
+  <!-- Map scripts are loaded only on map pages -->
 </head>

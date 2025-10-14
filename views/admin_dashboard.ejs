@@ -7,6 +7,7 @@
       <div class="navbar-nav ms-auto">
         <a class="nav-link" href="/admin/zones">Zone</a>
         <a class="nav-link" href="/admin/pois">POI</a>
+        <a class="nav-link" href="/admin/translations">Traduzioni</a>
         <a class="nav-link" href="/admin/map">Cartina</a>
       </div>
     </div>
@@ -14,14 +15,56 @@
 
   <main class="container text-center mt-5">
     <h1 class="mb-4">Pannello di Controllo</h1>
+    
+    <!-- Statistiche Dashboard -->
+    <div class="row mb-4">
+      <div class="col-md-3">
+        <div class="card bg-success text-white">
+          <div class="card-body">
+            <h5 class="card-title">📍 Zone</h5>
+            <h3 class="mb-0"><%= zoneCount %></h3>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card bg-warning text-dark">
+          <div class="card-body">
+            <h5 class="card-title">⭐ POI</h5>
+            <h3 class="mb-0"><%= poiCount %></h3>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card bg-info text-white">
+          <div class="card-body">
+            <h5 class="card-title">🌍 Lingue</h5>
+            <h3 class="mb-0">6</h3>
+            <small>IT, EN, FR, ES, DE, RU</small>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card bg-primary text-white">
+          <div class="card-body">
+            <h5 class="card-title">🤖 AI</h5>
+            <h3 class="mb-0">Attiva</h3>
+            <small>Traduzioni automatiche</small>
+          </div>
+        </div>
+      </div>
+    </div>
+    
     <div class="row justify-content-center">
-      <div class="col-md-4">
+      <div class="col-md-3">
         <a href="/admin/zones" class="btn btn-success w-100 mb-3 py-3 fs-5">📍 Zone Geografiche</a>
       </div>
-      <div class="col-md-4">
+      <div class="col-md-3">
         <a href="/admin/pois" class="btn btn-warning w-100 mb-3 py-3 fs-5">⭐ Punti di Interesse</a>
       </div>
-      <div class="col-md-4">
+      <div class="col-md-3">
+        <a href="/admin/translations" class="btn btn-info w-100 mb-3 py-3 fs-5">🌍 Traduzioni Multilingua</a>
+      </div>
+      <div class="col-md-3">
         <a href="/admin/map" class="btn btn-primary w-100 mb-3 py-3 fs-5">🗺️ Cartina Interattiva</a>
       </div>
     </div>

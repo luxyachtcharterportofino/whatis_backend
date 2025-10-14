@@ -1,0 +1,25 @@
+{
+  // 🚀 Avvio automatico backend Andaly — whatis_backend
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Avvia Backend",
+      "type": "process",
+      "command": "node",
+      "args": ["server.js"],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    }
+  ]
+}

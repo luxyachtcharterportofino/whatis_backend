@@ -1,77 +1,170 @@
-/* ============================
-   ANDALY WHATIS — MAP MANAGER
-   ============================ */
+/* =======================================================
+   🌊 Andaly Whatis — Map Manager Styles
+   ======================================================= */
 
-body {
-  margin: 0;
-  background-color: #0b132b;
-  color: #fff;
-  font-family: "Inter", sans-serif;
-  overflow: hidden;
-}
-
-/* Layout principale */
-.main-container {
-  display: flex;
-  height: calc(100vh - 56px);
-}
-
-.sidebar {
-  width: 260px;
-  background-color: #0b132b;
-  padding: 15px;
-  border-right: 1px solid #1c2541;
-  overflow-y: auto;
-}
-
-.sidebar h4 {
-  color: #66d9ff;
-  margin-top: 15px;
-  font-size: 1rem;
-  border-bottom: 1px solid #1c2541;
-  padding-bottom: 4px;
-}
-
-/* Pulsanti */
-.sidebar button {
-  display: block;
-  width: 100%;
-  background-color: #1c2541;
-  color: #ffffff;
-  border: none;
+.status-box {
+  background: #111;
+  padding: 8px;
+  margin-top: 10px;
   border-radius: 6px;
-  padding: 8px 10px;
-  margin-bottom: 8px;
-  text-align: left;
   font-size: 0.9rem;
+  color: #bbb;
+  transition: background 0.3s, color 0.3s;
+}
+
+.status-box.ok {
+  background: #00bfff;
+  color: #000;
+  font-weight: bold;
+}
+
+.status-box.error {
+  background: #dc3545;
+  color: #fff;
+  font-weight: bold;
+}
+
+.status-box.info {
+  background: #17a2b8;
+  color: #fff;
+}
+
+/* POI Popup Styles */
+.leaflet-popup-content {
+  margin: 8px 12px;
+  line-height: 1.4;
+}
+
+.leaflet-popup-content h5 {
+  margin: 0 0 8px 0;
+  color: #333;
+  font-size: 1.1rem;
+}
+
+.leaflet-popup-content p {
+  margin: 0 0 12px 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.leaflet-popup-content .btn {
+  font-size: 0.8rem;
+  padding: 4px 8px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.leaflet-popup-content .btn-primary {
+  background-color: #007bff;
+  color: white;
+}
+
+.leaflet-popup-content .btn-primary:hover {
+  background-color: #0056b3;
+}
+
+.leaflet-popup-content .btn-danger {
+  background-color: #dc3545;
+  color: white;
+}
+
+.leaflet-popup-content .btn-danger:hover {
+  background-color: #c82333;
+}
+
+/* Zone Selection Styles */
+.zone-selected {
+  stroke: #ffd700 !important;
+  stroke-width: 3px !important;
+}
+
+.zone-normal {
+  stroke: #007bff !important;
+  stroke-width: 2px !important;
+}
+
+/* Button States */
+.btn-primary {
+  background-color: #007bff !important;
+  color: white !important;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3 !important;
+}
+
+/* POI Marker Styles */
+.poi-marker {
+  background: transparent !important;
+  border: none !important;
+}
+
+.poi-marker div {
   transition: all 0.2s ease;
 }
 
-.sidebar button:hover {
-  background-color: #3a506b;
-  transform: scale(1.02);
+.poi-marker:hover div {
+  transform: scale(1.2);
+  background: #0056b3 !important;
 }
 
-.sidebar button.active {
-  background-color: #5bc0be;
-  color: #0b132b;
-  font-weight: 600;
+/* Zone popup styles */
+.zone-popup {
+  min-width: 200px;
 }
 
-/* Box di stato */
-.status-box {
-  background: #1c2541;
-  border-radius: 6px;
-  padding: 10px;
-  margin-top: 8px;
-  font-size: 0.9rem;
-  color: #b5c6e0;
+.zone-popup h4 {
+  margin: 0 0 8px 0;
+  color: #333;
+  font-size: 16px;
 }
 
-/* Mappa */
-#map {
-  flex: 1;
-  height: 100%;
-  width: 100%;
-  z-index: 1;
+.zone-popup p {
+  margin: 0 0 12px 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.popup-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.popup-buttons .btn {
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.popup-buttons .btn-warning {
+  background: #ffc107;
+  color: #000;
+}
+
+.popup-buttons .btn-warning:hover {
+  background: #e0a800;
+}
+
+.popup-buttons .btn-danger {
+  background: #dc3545;
+  color: white;
+}
+
+.popup-buttons .btn-danger:hover {
+  background: #c82333;
+}
+
+.popup-buttons .btn-info {
+  background: #17a2b8;
+  color: white;
+}
+
+.popup-buttons .btn-info:hover {
+  background: #138496;
 }

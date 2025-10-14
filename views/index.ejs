@@ -3,21 +3,68 @@
 
 <div class="container text-center mt-5">
   <h1>🌊 Benvenuto in <strong>Andaly WhatIs</strong></h1>
-  <p class="lead mt-3">Pannello informativo per Zone e Punti d’Interesse del Tigullio</p>
+  <p class="lead mt-3">Sistema completo per Zone e Punti d'Interesse del Tigullio con supporto multilingua</p>
 
+  <!-- Pulsante principale per il pannello di controllo -->
   <div class="row mt-5 justify-content-center">
-    <div class="col-md-4 mb-3">
-      <div class="home-card">
-        <h4>⚙️ Area Admin</h4>
-        <p>Gestisci Zone e POI.</p>
-        <a href="/admin" class="btn btn-primary">Apri Dashboard</a>
+    <div class="col-md-8">
+      <div class="card bg-primary text-white mb-4">
+        <div class="card-body py-5">
+          <h2 class="card-title mb-3">
+            <i class="bi bi-gear-fill me-2"></i>Pannello di Controllo Admin
+          </h2>
+          <p class="card-text fs-5 mb-4">
+            Gestisci zone, POI, traduzioni multilingua e configurazioni per l'APP mobile
+          </p>
+          <a href="/admin" class="btn btn-light btn-lg px-5 py-3">
+            <i class="bi bi-speedometer2 me-2"></i>Accedi al Pannello Admin
+          </a>
+        </div>
       </div>
     </div>
-    <div class="col-md-4 mb-3">
+  </div>
+
+  <!-- Funzionalità disponibili -->
+  <div class="row mt-4 justify-content-center">
+    <div class="col-md-3 mb-3">
       <div class="home-card">
-        <h4>🗺️ Cartina interna</h4>
-        <p>Visualizza Zone e POI su mappa.</p>
-        <a href="/admin/map" class="btn btn-info">Apri Cartina</a>
+        <h4>📍 Zone Geografiche</h4>
+        <p>Gestisci le zone acquistabili</p>
+        <a href="/admin/zones" class="btn btn-success btn-sm">Zone</a>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="home-card">
+        <h4>⭐ Punti di Interesse</h4>
+        <p>Gestisci i POI con icone personalizzate</p>
+        <a href="/admin/pois" class="btn btn-warning btn-sm">POI</a>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="home-card">
+        <h4>🌍 Traduzioni</h4>
+        <p>Sistema multilingua AI (6 lingue)</p>
+        <a href="/admin/translations" class="btn btn-info btn-sm">Traduzioni</a>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="home-card">
+        <h4>🗺️ Cartina</h4>
+        <p>Mappa interattiva completa</p>
+        <a href="/admin/map" class="btn btn-primary btn-sm">Mappa</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Informazioni sistema -->
+  <div class="row mt-5">
+    <div class="col-12">
+      <div class="alert alert-info">
+        <h5><i class="bi bi-info-circle me-2"></i>Sistema Pronto per APP Mobile</h5>
+        <p class="mb-0">
+          <strong>Funzionalità:</strong> Zone acquistabili • POI con icone • Traduzioni AI • API multilingua • 
+          Sistema pronto per App Store con supporto 6 lingue (IT, EN, FR, ES, DE, RU)
+        </p>
       </div>
     </div>
   </div>

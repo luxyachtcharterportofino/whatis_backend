@@ -1,0 +1,392 @@
+🟢 Server avviato su http://localhost:3000
+✅ Connessione a MongoDB riuscita
+📥 GET /zones richiesto
+✅ Zone trovate: 7
+📍 Loading POIs for zone: 68e8fe252eed712ef75b779b
+✅ Found 5 POIs
+📍 Loading POIs for zone: 68ebce793b8ce4990abec050
+✅ Found 6 POIs
+📍 Loading POIs for zone: 68ebce793b8ce4990abec050
+✅ Found 6 POIs
+📍 Loading POIs for zone: 68ebce793b8ce4990abec050
+✅ Found 6 POIs
+📍 Loading POIs for zone: 68ebce793b8ce4990abec050
+✅ Found 6 POIs
+📍 Loading POIs for zone: 68ebce793b8ce4990abec050
+✅ Found 6 POIs
+📍 Loading POIs for zone: 68ebce793b8ce4990abec050
+✅ Found 6 POIs
+📍 Loading POIs for zone: 68ebce793b8ce4990abec050
+✅ Found 6 POIs
+📍 Loading POIs for zone: 68ebce793b8ce4990abec050
+✅ Found 6 POIs
+📍 Loading POIs for zone: 68ebce793b8ce4990abec050
+✅ Found 6 POIs
+📍 Loading POIs for zone: 68ebce793b8ce4990abec050
+✅ Found 5 POIs
+📍 Loading POIs for zone: 68ebce793b8ce4990abec050
+✅ Found 4 POIs
+📍 Loading POIs for zone: 68ebce793b8ce4990abec050
+✅ Found 3 POIs
+📍 Loading POIs for zone: 68ebce793b8ce4990abec050
+✅ Found 2 POIs
+📍 Loading POIs for zone: 68ebce793b8ce4990abec050
+✅ Found 1 POIs
+📍 Loading POIs for zone: 68ebce793b8ce4990abec050
+✅ Found 0 POIs
+📍 Loading POIs for zone: 68ebce793b8ce4990abec050
+✅ Found 0 POIs
+📍 Loading POIs for zone: 68ebce793b8ce4990abec050
+✅ Found 0 POIs
+📥 GET /zones richiesto
+✅ Zone trovate: 7
+📥 GET /zones richiesto
+✅ Zone trovate: 7
+📍 Loading POIs for zone: 68e8fe252eed712ef75b779b
+✅ Found 5 POIs
+📍 Loading POIs for zone: 68ea5b23d3f6c4601e20aded
+✅ Found 1 POIs
+📥 PUT /zones/:id richiesto per zona: 68ea5b23d3f6c4601e20aded con dati: {
+  coordinates: [
+    [ 44.38423794556608, 9.025268554687502 ],
+    [ 44.337109717061864, 9.008789062500002 ],
+    [ 44.28257044667387, 8.996429443359377 ],
+    [ 44.31844432059693, 9.08775329589844 ],
+    [ 44.36902359940364, 9.128265380859377 ],
+    [ 44.383747221908365, 9.023895263671877 ],
+    [ 44.383747221908365, 9.026641845703127 ]
+  ]
+}
+✅ Zona aggiornata: new ObjectId("68ea5b23d3f6c4601e20aded")
+📍 Loading POIs for zone: 68ea5b23d3f6c4601e20aded
+✅ Found 1 POIs
+📍 Loading POIs for zone: 68ea5b23d3f6c4601e20aded
+✅ Found 1 POIs
+📍 Loading POIs for zone: 68ebd00d3b8ce4990abec075
+✅ Found 6 POIs
+📍 Loading POIs for zone: 68ebd00d3b8ce4990abec075
+✅ Found 5 POIs
+📍 Loading POIs for zone: 68ebd00d3b8ce4990abec075
+✅ Found 5 POIs
+📍 Loading POIs for zone: 68ebd00d3b8ce4990abec075
+✅ Found 5 POIs
+📍 Loading POIs for zone: 68ebce793b8ce4990abec050
+✅ Found 0 POIs
+📍 Loading POIs for zone: 68e8fe252eed712ef75b779b
+✅ Found 5 POIs
+📍 Loading POIs for zone: 68e8fe252eed712ef75b779b
+✅ Found 5 POIs
+📍 Loading POIs for zone: 68e8fe252eed712ef75b779b
+✅ Found 5 POIs
+📥 GET /zones richiesto
+✅ Zone trovate: 7
+📍 Loading POIs for zone: 68ebce793b8ce4990abec050
+✅ Found 0 POIs
+📥 GET /zones richiesto
+✅ Zone trovate: 6
+📍 Loading POIs for zone: 68ebd00d3b8ce4990abec075
+✅ Found 5 POIs
+📥 PUT /zones/:id richiesto per zona: 68ebd00d3b8ce4990abec075 con dati: {
+  coordinates: [
+    [ 44.29338405866148, 8.756103515625002 ],
+    [ 44.16939985273815, 8.751983642578127 ],
+    [ 44.15068115978094, 8.952484130859377 ],
+    [ 44.203866109361435, 9.080200195312502 ],
+    [ 44.27470475118816, 8.970336914062502 ]
+  ]
+}
+✅ Zona aggiornata: new ObjectId("68ebd00d3b8ce4990abec075")
+📍 Loading POIs for zone: 68ebba54aeb30df67612164c
+✅ Found 0 POIs
+📍 Loading POIs for zone: 68ebd00d3b8ce4990abec075
+✅ Found 5 POIs
+📍 Loading POIs for zone: 68ebba54aeb30df67612164c
+✅ Found 0 POIs
+📥 GET /zones richiesto
+✅ Zone trovate: 5
+📥 GET /zones richiesto
+✅ Zone trovate: 5
+📥 GET /zones richiesto
+✅ Zone trovate: 5
+📥 GET /zones richiesto
+✅ Zone trovate: 5
+📥 GET /zones richiesto
+✅ Zone trovate: 5
+📥 GET /zones richiesto
+✅ Zone trovate: 5
+📍 Loading POIs for zone: 68ebd00d3b8ce4990abec075
+✅ Found 5 POIs
+📥 GET /zones richiesto
+✅ Zone trovate: 4
+📍 Loading POIs for zone: 68eb78f439d49933ea176085
+✅ Found 0 POIs
+📥 GET /zones richiesto
+✅ Zone trovate: 3
+📍 Loading POIs for zone: 68ea5b23d3f6c4601e20aded
+✅ Found 1 POIs
+📥 GET /zones richiesto
+✅ Zone trovate: 2
+📥 GET /zones richiesto
+✅ Zone trovate: 2
+📥 GET /zones richiesto
+✅ Zone trovate: 2
+📥 GET /zones richiesto
+✅ Zone trovate: 2
+📥 GET /zones richiesto
+✅ Zone trovate: 2
+📥 GET /zones richiesto
+✅ Zone trovate: 2
+📥 GET /zones richiesto
+✅ Zone trovate: 2
+📍 Loading all POIs
+📥 GET /zones richiesto
+✅ Zone trovate: 2
+✅ Found 5 POIs
+📥 GET /zones richiesto
+📍 Loading all POIs
+✅ Zone trovate: 2
+✅ Found 5 POIs
+📍 Loading POIs for zone: 68e8fe252eed712ef75b779b
+✅ Found 5 POIs
+📍 Loading POIs for zone: 68e8fe252eed712ef75b779b
+✅ Found 5 POIs
+📍 Loading POIs for zone: 68eb781b39d49933ea176080
+✅ Found 0 POIs
+📍 Loading POIs for zone: 68e8fe252eed712ef75b779b
+✅ Found 5 POIs
+📍 Loading POIs for zone: 68e8fe252eed712ef75b779b
+✅ Found 5 POIs
+📍 Loading POIs for zone: 68e8fe252eed712ef75b779b
+✅ Found 5 POIs
+📍 Loading POIs for zone: 68e8fe252eed712ef75b779b
+📍 Creating POI with data: {
+  name: 'Nuovo POI',
+  lat: 44.31304007097853,
+  lng: 9.302673339843752,
+  zone: '68e8fe252eed712ef75b779b',
+  description: ''
+}
+✅ POI created successfully: new ObjectId("68ec509f61936b68b5ae9df3")
+✅ Found 5 POIs
+📍 Loading POIs for zone: 68e8fe252eed712ef75b779b
+✅ Found 6 POIs
+📍 Loading all POIs
+✅ Found 6 POIs
+📍 Loading POIs for zone: 68eb781b39d49933ea176080
+📍 Creating POI with data: {
+  name: 'Nuovo POI',
+  lat: 44.11322595798781,
+  lng: 9.680328369140627,
+  zone: '68eb781b39d49933ea176080',
+  description: ''
+}
+✅ Found 0 POIs
+✅ POI created successfully: new ObjectId("68ec50a961936b68b5ae9dfb")
+📍 Loading POIs for zone: 68eb781b39d49933ea176080
+✅ Found 1 POIs
+📍 Loading all POIs
+✅ Found 7 POIs
+📍 Loading POIs for zone: 68eb781b39d49933ea176080
+📍 Creating POI with data: {
+  name: 'Nuovo POI',
+  lat: 44.08561218844469,
+  lng: 9.716033935546877,
+  zone: '68eb781b39d49933ea176080',
+  description: ''
+}
+✅ POI created successfully: new ObjectId("68ec50ad61936b68b5ae9e02")
+✅ Found 1 POIs
+📍 Loading POIs for zone: 68eb781b39d49933ea176080
+✅ Found 2 POIs
+📍 Loading all POIs
+✅ Found 8 POIs
+📍 Loading POIs for zone: 68e8fe252eed712ef75b779b
+📍 Creating POI with data: {
+  name: 'Nuovo POI',
+  lat: 44.3120574266662,
+  lng: 9.294433593750002,
+  zone: '68e8fe252eed712ef75b779b',
+  description: ''
+}
+✅ POI created successfully: new ObjectId("68ec50df61936b68b5ae9e0a")
+✅ Found 6 POIs
+📍 Loading POIs for zone: 68e8fe252eed712ef75b779b
+✅ Found 7 POIs
+📍 Loading all POIs
+✅ Found 9 POIs
+📍 Loading POIs for zone: 68e8fe252eed712ef75b779b
+✅ Found 7 POIs
+📍 Loading POIs for zone: 68eb781b39d49933ea176080
+📍 Creating POI with data: {
+  name: 'Nuovo POI',
+  lat: 44.09547572946637,
+  lng: 9.73114013671875,
+  zone: '68eb781b39d49933ea176080',
+  description: ''
+}
+✅ POI created successfully: new ObjectId("68ec520661936b68b5ae9e14")
+✅ Found 2 POIs
+📍 Loading POIs for zone: 68eb781b39d49933ea176080
+✅ Found 3 POIs
+📍 Loading all POIs
+✅ Found 10 POIs
+📍 Loading POIs for zone: 68e8fe252eed712ef75b779b
+📍 Creating POI with data: {
+  name: 'Nuovo POI',
+  lat: 44.30714395830852,
+  lng: 9.279327392578127,
+  zone: '68e8fe252eed712ef75b779b',
+  description: ''
+}
+✅ POI created successfully: new ObjectId("68ec520a61936b68b5ae9e1c")
+✅ Found 7 POIs
+📍 Loading POIs for zone: 68e8fe252eed712ef75b779b
+✅ Found 8 POIs
+📍 Loading all POIs
+✅ Found 11 POIs
+📥 GET /zones richiesto
+📍 Loading all POIs
+✅ Zone trovate: 2
+✅ Found 11 POIs
+📍 Creating POI with data: {
+  name: 'Nuovo POI',
+  lat: 44.31402269883775,
+  lng: 9.261474609375002,
+  zone: '68e8fe252eed712ef75b779b',
+  description: ''
+}
+📍 Loading POIs for zone: 68e8fe252eed712ef75b779b
+✅ POI created successfully: new ObjectId("68ec525561936b68b5ae9e27")
+✅ Found 9 POIs
+📍 Loading POIs for zone: 68e8fe252eed712ef75b779b
+✅ Found 9 POIs
+📍 Loading all POIs
+✅ Found 12 POIs
+📍 Creating POI with data: {
+  name: 'Nuovo POI',
+  lat: 44.29043508918884,
+  lng: 9.332885742187502,
+  zone: '68e8fe252eed712ef75b779b',
+  description: ''
+}
+📍 Loading POIs for zone: 68e8fe252eed712ef75b779b
+✅ POI created successfully: new ObjectId("68ec525e61936b68b5ae9e2f")
+✅ Found 10 POIs
+📍 Loading POIs for zone: 68e8fe252eed712ef75b779b
+✅ Found 10 POIs
+📍 Loading all POIs
+✅ Found 13 POIs
+📍 Loading POIs for zone: 68eb781b39d49933ea176080
+✅ Found 3 POIs
+📍 Creating POI with data: {
+  name: 'Nuovo POI',
+  lat: 44.133927821670355,
+  lng: 9.643249511718752,
+  zone: '68eb781b39d49933ea176080',
+  description: ''
+}
+📍 Loading POIs for zone: 68eb781b39d49933ea176080
+✅ POI created successfully: new ObjectId("68ec526a61936b68b5ae9e39")
+✅ Found 4 POIs
+📍 Loading POIs for zone: 68eb781b39d49933ea176080
+✅ Found 4 POIs
+📍 Loading all POIs
+✅ Found 14 POIs
+📍 Loading POIs for zone: 68eb781b39d49933ea176080
+✅ Found 4 POIs
+📍 Loading all POIs
+✅ Found 14 POIs
+📍 Creating POI with data: {
+  name: 'Nuovo POI',
+  lat: 44.28465959504285,
+  lng: 9.313316345214846,
+  zone: '68e8fe252eed712ef75b779b',
+  description: ''
+}
+📍 Loading POIs for zone: 68e8fe252eed712ef75b779b
+✅ POI created successfully: new ObjectId("68ec529861936b68b5ae9e46")
+✅ Found 11 POIs
+📍 Loading POIs for zone: 68e8fe252eed712ef75b779b
+✅ Found 11 POIs
+📍 Loading all POIs
+✅ Found 15 POIs
+📍 Loading POIs for zone: 68e8fe252eed712ef75b779b
+✅ Found 11 POIs
+📍 Loading POIs for zone: 68e8fe252eed712ef75b779b
+✅ Found 11 POIs
+📍 Loading all POIs
+✅ Found 15 POIs
+📍 Loading POIs for zone: 68e8fe252eed712ef75b779b
+✅ Found 11 POIs
+📍 Loading all POIs
+✅ Found 15 POIs
+📍 Loading POIs for zone: 68e8fe252eed712ef75b779b
+✅ Found 11 POIs
+📍 Loading POIs for zone: 68e8fe252eed712ef75b779b
+✅ Found 11 POIs
+📍 Loading all POIs
+✅ Found 15 POIs
+📍 Loading POIs for zone: 68e8fe252eed712ef75b779b
+✅ Found 11 POIs
+📍 Loading POIs for zone: 68e8fe252eed712ef75b779b
+✅ Found 11 POIs
+📥 GET /zones richiesto
+📍 Loading all POIs
+✅ Zone trovate: 2
+✅ Found 15 POIs
+📍 Loading POIs for zone: 68eb781b39d49933ea176080
+✅ Found 4 POIs
+📥 GET /zones richiesto
+📍 Loading all POIs
+✅ Zone trovate: 2
+✅ Found 15 POIs
+📍 Loading POIs for zone: 68eb781b39d49933ea176080
+✅ Found 4 POIs
+📍 Loading POIs for zone: 68eb781b39d49933ea176080
+✅ Found 3 POIs
+📍 Loading all POIs
+✅ Found 14 POIs
+📍 Loading POIs for zone: 68eb781b39d49933ea176080
+✅ Found 2 POIs
+📍 Loading all POIs
+✅ Found 13 POIs
+📍 Loading POIs for zone: 68eb781b39d49933ea176080
+✅ Found 1 POIs
+📍 Loading all POIs
+✅ Found 12 POIs
+📍 Loading POIs for zone: 68eb781b39d49933ea176080
+✅ Found 1 POIs
+📍 Loading all POIs
+✅ Found 12 POIs
+📥 GET /zones richiesto
+📍 Loading all POIs
+✅ Zone trovate: 2
+✅ Found 12 POIs
+📍 Loading POIs for zone: 68eb781b39d49933ea176080
+✅ Found 1 POIs
+📍 Creating POI with data: {
+  name: 'POI Automatico 1',
+  lat: 44.090518025802055,
+  lng: 9.726128702709577,
+  zone: '68eb781b39d49933ea176080',
+  description: 'Generato automaticamente'
+}
+✅ POI created successfully: new ObjectId("68ec580561936b68b5ae9e89")
+📍 Loading POIs for zone: 68eb781b39d49933ea176080
+✅ Found 2 POIs
+📍 Creating POI with data: {
+  name: 'POI Automatico 2',
+  lat: 44.14175910848077,
+  lng: 9.668091413941507,
+  zone: '68eb781b39d49933ea176080',
+  description: 'Generato automaticamente'
+}
+📍 Loading all POIs
+✅ POI created successfully: new ObjectId("68ec580561936b68b5ae9e8d")
+📍 Loading POIs for zone: 68eb781b39d49933ea176080
+✅ Found 13 POIs
+✅ Found 3 POIs
+📍 Loading all POIs
+✅ Found 14 POIs
+📍 Loading all POIs
+✅ Found 14 POIs

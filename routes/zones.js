@@ -1,48 +1,77 @@
+// ===============================
+// 🌊 Andaly Whatis — Zone Routes
+// ===============================
+
 const express = require("express");
 const router = express.Router();
 const Zone = require("../models/Zone");
 const Poi = require("../models/Poi");
 
 // ===============================
-// 🗺️ VISUALIZZA TUTTE LE ZONE
+// GET /zones — restituisce sempre JSON
 // ===============================
 router.get("/", async (req, res) => {
   try {
-    const zones = await Zone.find();
-    if (req.query.format === "json") return res.json(zones);
-    res.render("admin_zones", { zones });
+    console.log("📥 GET /zones richiesto");
+    const zones = await Zone.find().lean();
+    console.log("✅ Zone trovate:", zones.length);
+    res.json(zones);
   } catch (err) {
-    console.error("Errore caricamento zone:", err);
-    res.status(500).send("Errore server");
+    console.error("❌ Errore GET /zones:", err);
+    res.status(500).json({ error: "Errore nel caricamento delle zone" });
   }
 });
 
 // ===============================
-// ➕ CREA ZONA
+// POST /zones — crea una nuova zona
 // ===============================
-router.post("/add", async (req, res) => {
+router.post("/", async (req, res) => {
   try {
-    const zone = new Zone(req.body);
-    await zone.save();
-    res.json({ success: true });
+    console.log("📥 POST /zones richiesto con dati:", req.body);
+    const { name, description, coordinates } = req.body;
+    const zone = new Zone({ name, description, coordinates });
+    const saved = await zone.save();
+    console.log("✅ Zona salvata:", saved._id);
+    res.status(201).json(saved);
   } catch (err) {
-    console.error("Errore salvataggio zona:", err);
-    res.status(500).json({ success: false });
+    console.error("❌ Errore POST /zones:", err);
+    res.status(500).json({ error: "Errore creazione zona" });
   }
 });
 
 // ===============================
-// ❌ ELIMINA ZONA + POI ASSOCIATI
+// PUT /zones/:id — aggiorna una zona
+// ===============================
+router.put("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    console.log("📥 PUT /zones/:id richiesto per zona:", id, "con dati:", req.body);
+    const updated = await Zone.findByIdAndUpdate(id, req.body, { new: true });
+    if (!updated) return res.status(404).json({ error: "Zona non trovata" });
+    console.log("✅ Zona aggiornata:", updated._id);
+    res.json(updated);
+  } catch (err) {
+    console.error("❌ Errore PUT /zones/:id:", err);
+    res.status(500).json({ error: "Errore aggiornamento zona" });
+  }
+});
+
+// ===============================
+// DELETE /zones/:id — elimina una zona
 // ===============================
 router.delete("/:id", async (req, res) => {
   try {
-    const id = req.params.id;
+    const { id } = req.params;
+    const deleted = await Zone.findByIdAndDelete(id);
+    if (!deleted) return res.status(404).json({ error: "Zona non trovata" });
+
+    // Elimina i POI associati alla zona
     await Poi.deleteMany({ zone: id });
-    await Zone.findByIdAndDelete(id);
-    res.json({ success: true });
+
+    res.json({ message: "Zona e POI associati eliminati" });
   } catch (err) {
-    console.error("Errore eliminazione zona:", err);
-    res.status(500).json({ success: false });
+    console.error("❌ Errore DELETE /zones/:id:", err);
+    res.status(500).json({ error: "Errore eliminazione zona" });
   }
 });
 

@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌍 Gestione Traduzioni - Andaly Whatis</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body { background-color: #1a1a1a; color: #e2e8f0; }
+    .card { background-color: #2d3748; border: 1px solid #4a5568; }
+    .table-dark { background-color: #2d3748; }
+    .table-dark th, .table-dark td { border-color: #4a5568; }
+    .navbar-dark { background-color: #000 !important; }
+    .language-badge { font-size: 1.2em; margin: 2px; }
+    .progress { background-color: #4a5568; }
+    .btn-translate { margin: 2px; }
+    .status-indicator { width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-right: 5px; }
+    .status-complete { background-color: #28a745; }
+    .status-partial { background-color: #ffc107; }
+    .status-none { background-color: #dc3545; }
+    .translation-preview { max-height: 100px; overflow-y: auto; font-size: 0.9em; }
+    .batch-controls { background-color: #1a202c; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-black shadow-sm">
+    <div class="container-fluid">
+      <a class="navbar-brand fw-bold" href="/admin/dashboard">
+        <i class="bi bi-translate"></i> Andaly Whatis - Traduzioni
+      </a>
+      <div class="navbar-nav ms-auto">
+        <a class="nav-link" href="/admin/dashboard">Dashboard</a>
+        <a class="nav-link" href="/admin/map">Mappa</a>
+        <a class="nav-link" href="/admin/pois">POI</a>
+        <a class="nav-link active" href="/admin/translations">Traduzioni</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid mt-4">
+    <!-- Header -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <h1 class="text-light mb-3">
+          <i class="bi bi-globe-americas text-info"></i> Gestione Traduzioni POI
+        </h1>
+        <p class="text-muted">Gestisci le traduzioni multilingua per l'APP internazionale</p>
+      </div>
+    </div>
+
+    <!-- Batch Translation Controls -->
+    <div class="batch-controls">
+      <div class="row align-items-center">
+        <div class="col-md-8">
+          <h5 class="text-light mb-3">
+            <i class="bi bi-arrow-repeat text-warning"></i> Traduzione Batch
+          </h5>
+          <div class="row">
+            <div class="col-md-6">
+              <label class="form-label text-light">Seleziona Lingua Target:</label>
+              <select class="form-select bg-dark text-light border-secondary" id="batchLanguage">
+                <option value="en">🇺🇸 English</option>
+                <option value="fr">🇫🇷 Français</option>
+                <option value="es">🇪🇸 Español</option>
+                <option value="de">🇩🇪 Deutsch</option>
+                <option value="ru">🇷🇺 Русский</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label text-light">Zona:</label>
+              <select class="form-select bg-dark text-light border-secondary" id="batchZone">
+                <option value="">Tutte le zone</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 text-end">
+          <button class="btn btn-warning btn-lg" onclick="startBatchTranslation()">
+            <i class="bi bi-translate"></i> Traduci Tutto
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Translation Statistics -->
+    <div class="row mb-4">
+      <div class="col-md-3">
+        <div class="card">
+          <div class="card-body text-center">
+            <h3 class="text-info" id="totalPOIs">-</h3>
+            <p class="text-muted mb-0">POI Totali</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card">
+          <div class="card-body text-center">
+            <h3 class="text-success" id="completeTranslations">-</h3>
+            <p class="text-muted mb-0">Traduzioni Complete</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card">
+          <div class="card-body text-center">
+            <h3 class="text-warning" id="partialTranslations">-</h3>
+            <p class="text-muted mb-0">Traduzioni Parziali</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card">
+          <div class="card-body text-center">
+            <h3 class="text-danger" id="missingTranslations">-</h3>
+            <p class="text-muted mb-0">Traduzioni Mancanti</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Translation Table -->
+    <div class="card">
+      <div class="card-header bg-dark">
+        <h5 class="mb-0 text-light">
+          <i class="bi bi-table text-info"></i> Stato Traduzioni POI
+        </h5>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-dark table-hover mb-0">
+            <thead>
+              <tr>
+                <th>POI</th>
+                <th>Zona</th>
+                <th>Categoria</th>
+                <th>🇺🇸 EN</th>
+                <th>🇫🇷 FR</th>
+                <th>🇪🇸 ES</th>
+                <th>🇩🇪 DE</th>
+                <th>🇷🇺 RU</th>
+                <th>Azioni</th>
+              </tr>
+            </thead>
+            <tbody id="translationsTableBody">
+              <tr>
+                <td colspan="9" class="text-center text-muted">
+                  <div class="spinner-border text-info" role="status">
+                    <span class="visually-hidden">Caricamento...</span>
+                  </div>
+                  Caricamento traduzioni...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Translation Editor Modal -->
+    <div class="modal fade" id="translationModal" tabindex="-1">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content bg-dark text-light border-light">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              <i class="bi bi-translate text-info"></i> Editor Traduzioni
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div id="translationModalContent">
+              <!-- Content will be loaded dynamically -->
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+            <button type="button" class="btn btn-success" onclick="saveTranslation()">
+              <i class="bi bi-save"></i> Salva Traduzione
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Translation Management Script -->
+  <script>
+    let currentPOI = null;
+    let currentLanguage = null;
+    let translationsData = [];
+
+    // Load page data
+    document.addEventListener('DOMContentLoaded', function() {
+      loadTranslationsData();
+      loadZones();
+    });
+
+    // Load translations data
+    async function loadTranslationsData() {
+      try {
+        const response = await fetch('/pois?format=json');
+        const pois = await response.json();
+        
+        translationsData = pois;
+        renderTranslationsTable();
+        updateStatistics();
+        
+      } catch (error) {
+        console.error('Error loading translations data:', error);
+        showAlert('Errore nel caricamento dei dati', 'error');
+      }
+    }
+
+    // Load zones for batch translation
+    async function loadZones() {
+      try {
+        const response = await fetch('/zones?format=json');
+        const zones = await response.json();
+        
+        const select = document.getElementById('batchZone');
+        zones.forEach(zone => {
+          const option = document.createElement('option');
+          option.value = zone._id;
+          option.textContent = zone.name;
+          select.appendChild(option);
+        });
+        
+      } catch (error) {
+        console.error('Error loading zones:', error);
+      }
+    }
+
+    // Render translations table
+    function renderTranslationsTable() {
+      const tbody = document.getElementById('translationsTableBody');
+      tbody.innerHTML = '';
+
+      translationsData.forEach(poi => {
+        const row = document.createElement('tr');
+        
+        const translationStatus = getTranslationStatus(poi);
+        
+        row.innerHTML = `
+          <td>
+            <div class="d-flex align-items-center">
+              <span class="fs-4 me-2">${poi.customIcon || poi.arIcon || '📍'}</span>
+              <div>
+                <strong>${poi.name}</strong>
+                <br><small class="text-muted">${poi.description?.substring(0, 50)}...</small>
+              </div>
+            </div>
+          </td>
+          <td>${poi.zone?.name || 'N/A'}</td>
+          <td><span class="badge bg-secondary">${poi.category}</span></td>
+          ${renderLanguageStatus(translationStatus, 'en')}
+          ${renderLanguageStatus(translationStatus, 'fr')}
+          ${renderLanguageStatus(translationStatus, 'es')}
+          ${renderLanguageStatus(translationStatus, 'de')}
+          ${renderLanguageStatus(translationStatus, 'ru')}
+          <td>
+            <button class="btn btn-sm btn-info" onclick="openTranslationEditor('${poi._id}')" title="Modifica traduzioni">
+              <i class="bi bi-pencil"></i>
+            </button>
+            <button class="btn btn-sm btn-warning" onclick="translatePOI('${poi._id}')" title="Traduci automaticamente">
+              <i class="bi bi-translate"></i>
+            </button>
+          </td>
+        `;
+        
+        tbody.appendChild(row);
+      });
+    }
+
+    // Get translation status for a POI
+    function getTranslationStatus(poi) {
+      const status = {};
+      const languages = ['en', 'fr', 'es', 'de', 'ru'];
+      
+      languages.forEach(lang => {
+        const langContent = poi.multilingual?.[lang];
+        if (langContent) {
+          const hasName = langContent.name && langContent.name.trim();
+          const hasDesc = langContent.description && langContent.description.trim();
+          const hasSummary = langContent.aiSummary && langContent.aiSummary.trim();
+          
+          if (hasName && hasDesc && hasSummary) {
+            status[lang] = 'complete';
+          } else if (hasName || hasDesc || hasSummary) {
+            status[lang] = 'partial';
+          } else {
+            status[lang] = 'none';
+          }
+        } else {
+          status[lang] = 'none';
+        }
+      });
+      
+      return status;
+    }
+
+    // Render language status cell
+    function renderLanguageStatus(status, lang) {
+      const statusClass = status[lang] === 'complete' ? 'status-complete' : 
+                         status[lang] === 'partial' ? 'status-partial' : 'status-none';
+      const statusText = status[lang] === 'complete' ? 'Completa' :
+                        status[lang] === 'partial' ? 'Parziale' : 'Mancante';
+      
+      return `
+        <td class="text-center">
+          <span class="${statusClass}"></span>
+          <small class="text-muted">${statusText}</small>
+        </td>
+      `;
+    }
+
+    // Update statistics
+    function updateStatistics() {
+      const totalPOIs = translationsData.length;
+      let completeTranslations = 0;
+      let partialTranslations = 0;
+      let missingTranslations = 0;
+
+      translationsData.forEach(poi => {
+        const status = getTranslationStatus(poi);
+        const languages = ['en', 'fr', 'es', 'de', 'ru'];
+        
+        languages.forEach(lang => {
+          if (status[lang] === 'complete') completeTranslations++;
+          else if (status[lang] === 'partial') partialTranslations++;
+          else missingTranslations++;
+        });
+      });
+
+      document.getElementById('totalPOIs').textContent = totalPOIs;
+      document.getElementById('completeTranslations').textContent = completeTranslations;
+      document.getElementById('partialTranslations').textContent = partialTranslations;
+      document.getElementById('missingTranslations').textContent = missingTranslations;
+    }
+
+    // Open translation editor
+    async function openTranslationEditor(poiId) {
+      try {
+        const poi = translationsData.find(p => p._id === poiId);
+        if (!poi) return;
+
+        currentPOI = poi;
+        
+        const content = `
+          <div class="row">
+            <div class="col-12 mb-3">
+              <h6 class="text-info">POI: ${poi.name}</h6>
+              <p class="text-muted">Modifica le traduzioni per questo POI</p>
+            </div>
+          </div>
+          
+          <div class="row">
+            ${renderLanguageTabs(poi)}
+          </div>
+        `;
+        
+        document.getElementById('translationModalContent').innerHTML = content;
+        const modal = new bootstrap.Modal(document.getElementById('translationModal'));
+        modal.show();
+        
+      } catch (error) {
+        console.error('Error opening translation editor:', error);
+        showAlert('Errore nell\'apertura dell\'editor', 'error');
+      }
+    }
+
+    // Render language tabs
+    function renderLanguageTabs(poi) {
+      const languages = {
+        'en': { name: 'English', flag: '🇺🇸' },
+        'fr': { name: 'Français', flag: '🇫🇷' },
+        'es': { name: 'Español', flag: '🇪🇸' },
+        'de': { name: 'Deutsch', flag: '🇩🇪' },
+        'ru': { name: 'Русский', flag: '🇷🇺' }
+      };
+
+      let tabsHTML = `
+        <div class="col-12">
+          <ul class="nav nav-tabs" id="languageTabs" role="tablist">
+      `;
+
+      Object.entries(languages).forEach(([code, info], index) => {
+        tabsHTML += `
+          <li class="nav-item" role="presentation">
+            <button class="nav-link ${index === 0 ? 'active' : ''}" 
+                    id="${code}-tab" data-bs-toggle="tab" 
+                    data-bs-target="#${code}" type="button" role="tab">
+              ${info.flag} ${info.name}
+            </button>
+          </li>
+        `;
+      });
+
+      tabsHTML += `
+          </ul>
+          <div class="tab-content" id="languageTabContent">
+      `;
+
+      Object.entries(languages).forEach(([code, info], index) => {
+        const langContent = poi.multilingual?.[code] || {};
+        tabsHTML += `
+          <div class="tab-pane fade ${index === 0 ? 'show active' : ''}" id="${code}" role="tabpanel">
+            <div class="row mt-3">
+              <div class="col-md-6">
+                <label class="form-label">Nome ${info.name}</label>
+                <input type="text" class="form-control bg-dark text-light border-secondary" 
+                       id="${code}-name" value="${langContent.name || ''}" 
+                       placeholder="Nome in ${info.name}">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Descrizione ${info.name}</label>
+                <textarea class="form-control bg-dark text-light border-secondary" 
+                          id="${code}-description" rows="3" 
+                          placeholder="Descrizione in ${info.name}">${langContent.description || ''}</textarea>
+              </div>
+            </div>
+            <div class="row mt-3">
+              <div class="col-12">
+                <label class="form-label">AI Summary ${info.name}</label>
+                <textarea class="form-control bg-dark text-light border-secondary" 
+                          id="${code}-aiSummary" rows="4" 
+                          placeholder="Riassunto AI in ${info.name}">${langContent.aiSummary || ''}</textarea>
+              </div>
+            </div>
+            <div class="row mt-3">
+              <div class="col-md-6">
+                <label class="form-label">Curiosità ${info.name}</label>
+                <textarea class="form-control bg-dark text-light border-secondary" 
+                          id="${code}-curiosities" rows="3" 
+                          placeholder="Curiosità in ${info.name}">${langContent.curiosities || ''}</textarea>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Fatti Storici ${info.name}</label>
+                <textarea class="form-control bg-dark text-light border-secondary" 
+                          id="${code}-historicalFacts" rows="3" 
+                          placeholder="Storia in ${info.name}">${langContent.historicalFacts || ''}</textarea>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      tabsHTML += `
+          </div>
+        </div>
+      `;
+
+      return tabsHTML;
+    }
+
+    // Save translation
+    async function saveTranslation() {
+      if (!currentPOI) return;
+
+      try {
+        const languages = ['en', 'fr', 'es', 'de', 'ru'];
+        const updates = {};
+
+        languages.forEach(lang => {
+          const name = document.getElementById(`${lang}-name`)?.value || '';
+          const description = document.getElementById(`${lang}-description`)?.value || '';
+          const aiSummary = document.getElementById(`${lang}-aiSummary`)?.value || '';
+          const curiosities = document.getElementById(`${lang}-curiosities`)?.value || '';
+          const historicalFacts = document.getElementById(`${lang}-historicalFacts`)?.value || '';
+
+          if (name || description || aiSummary || curiosities || historicalFacts) {
+            updates[lang] = { name, description, aiSummary, curiosities, historicalFacts };
+          }
+        });
+
+        const response = await fetch(`/translations/${currentPOI._id}/batch`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updates)
+        });
+
+        if (response.ok) {
+          showAlert('Traduzioni salvate con successo!', 'success');
+          bootstrap.Modal.getInstance(document.getElementById('translationModal')).hide();
+          loadTranslationsData(); // Reload data
+        } else {
+          throw new Error('Errore nel salvataggio');
+        }
+
+      } catch (error) {
+        console.error('Error saving translation:', error);
+        showAlert('Errore nel salvataggio delle traduzioni', 'error');
+      }
+    }
+
+    // Translate POI automatically
+    async function translatePOI(poiId) {
+      try {
+        const languages = ['en', 'fr', 'es', 'de', 'ru'];
+        
+        for (const lang of languages) {
+          const response = await fetch(`/translations/translate/${poiId}/${lang}`, {
+            method: 'POST'
+          });
+          
+          if (!response.ok) {
+            console.error(`Error translating to ${lang}`);
+          }
+        }
+
+        showAlert('Traduzione automatica completata!', 'success');
+        loadTranslationsData(); // Reload data
+
+      } catch (error) {
+        console.error('Error translating POI:', error);
+        showAlert('Errore nella traduzione automatica', 'error');
+      }
+    }
+
+    // Start batch translation
+    async function startBatchTranslation() {
+      const language = document.getElementById('batchLanguage').value;
+      const zoneId = document.getElementById('batchZone').value;
+      
+      if (!language) {
+        showAlert('Seleziona una lingua target', 'warning');
+        return;
+      }
+
+      try {
+        let poiIds = translationsData.map(poi => poi._id);
+        
+        if (zoneId) {
+          poiIds = poiIds.filter(poiId => {
+            const poi = translationsData.find(p => p._id === poiId);
+            return poi.zone._id === zoneId;
+          });
+        }
+
+        if (poiIds.length === 0) {
+          showAlert('Nessun POI trovato per la traduzione', 'warning');
+          return;
+        }
+
+        const response = await fetch('/translations/batch-translate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ poiIds, language })
+        });
+
+        const result = await response.json();
+        
+        if (response.ok) {
+          showAlert(`Traduzione batch completata: ${result.summary.success} successi, ${result.summary.errors} errori`, 'success');
+          loadTranslationsData(); // Reload data
+        } else {
+          throw new Error(result.error);
+        }
+
+      } catch (error) {
+        console.error('Error batch translating:', error);
+        showAlert('Errore nella traduzione batch', 'error');
+      }
+    }
+
+    // Show alert
+    function showAlert(message, type) {
+      const alertClass = type === 'error' ? 'alert-danger' : 
+                        type === 'warning' ? 'alert-warning' : 'alert-success';
+      
+      const alertHTML = `
+        <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+          ${message}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      `;
+      
+      // Insert at top of container
+      const container = document.querySelector('.container-fluid');
+      container.insertAdjacentHTML('afterbegin', alertHTML);
+      
+      // Auto-dismiss after 5 seconds
+      setTimeout(() => {
+        const alert = container.querySelector('.alert');
+        if (alert) {
+          bootstrap.Alert.getOrCreateInstance(alert).close();
+        }
+      }, 5000);
+    }
+  </script>
+</body>
+</html>

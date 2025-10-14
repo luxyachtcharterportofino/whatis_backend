@@ -1,0 +1,59 @@
+🟢 Server avviato su http://localhost:3000
+✅ Connessione a MongoDB riuscita
+🔍 Attempting to edit POI with ID: 68e919a94ff54610d568e6f1
+✅ POI found: faro di Portofino (Zone: Zona del Tigullio)
+💾 Attempting to update POI with ID: 68e919a94ff54610d568e6f1
+📝 Update data: {
+  name: 'faro di Portofino',
+  category: 'other',
+  source: 'manual',
+  lat: '44.301247',
+  lng: '9.214096'
+}
+✅ POI updated successfully: faro di Portofino
+📥 GET /zones richiesto
+📍 Loading all POIs
+✅ Zone trovate: 2
+✅ Found 14 POIs
+📍 Loading POIs for zone: 68e8fe252eed712ef75b779b
+✅ Found 9 POIs
+📥 GET /zones richiesto
+📍 Loading all POIs
+✅ Zone trovate: 2
+✅ Found 14 POIs
+📍 Loading POIs for zone: 68e8fe252eed712ef75b779b
+✅ Found 9 POIs
+📥 GET /zones richiesto
+📍 Loading all POIs
+✅ Zone trovate: 2
+✅ Found 14 POIs
+📍 Loading POIs for zone: 68e8fe252eed712ef75b779b
+✅ Found 9 POIs
+📥 GET /zones richiesto
+📍 Loading all POIs
+✅ Zone trovate: 2
+✅ Found 14 POIs
+📍 Loading POIs for zone: 68e8fe252eed712ef75b779b
+✅ Found 9 POIs
+📥 GET /zones richiesto
+📍 Loading all POIs
+✅ Zone trovate: 2
+✅ Found 14 POIs
+📥 GET /zones richiesto
+📍 Loading all POIs
+✅ Zone trovate: 2
+✅ Found 14 POIs
+📍 Loading POIs for zone: 68e8fe252eed712ef75b779b
+✅ Found 9 POIs
+📥 GET /zones richiesto
+📍 Loading all POIs
+✅ Zone trovate: 2
+✅ Found 14 POIs
+📍 Loading POIs for zone: 68e8fe252eed712ef75b779b
+✅ Found 9 POIs
+📥 GET /zones richiesto
+📍 Loading all POIs
+✅ Zone trovate: 2
+✅ Found 14 POIs
+🔍 Attempting to edit POI with ID: 68e919a94ff54610d568e6f1
+✅ POI found: faro di Portofino (Zone: Zona del Tigullio)

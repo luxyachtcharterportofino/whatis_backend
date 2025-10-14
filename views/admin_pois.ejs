@@ -1,36 +1,237 @@
 <%- include('partials/head') %>
+<script src="/js/poi-display-utils.js"></script>
+
+<%
+// Helper functions for EJS template
+function getCategoryColor(category) {
+  const colors = {
+    'church': 'primary',
+    'museum': 'info', 
+    'monument': 'warning',
+    'beach': 'success',
+    'restaurant': 'danger',
+    'hotel': 'secondary',
+    'other': 'dark'
+  };
+  return colors[category] || 'dark';
+}
+
+function getCategoryIcon(category) {
+  const icons = {
+    'church': '⛪',
+    'museum': '🏛️',
+    'monument': '🏛️',
+    'beach': '🏖️',
+    'restaurant': '🍽️',
+    'hotel': '🏨',
+    'other': '📍'
+  };
+  return icons[category] || '📍';
+}
+
+function getCategoryText(category) {
+  const texts = {
+    'church': 'Chiesa',
+    'museum': 'Museo',
+    'monument': 'Monumento',
+    'beach': 'Spiaggia',
+    'restaurant': 'Ristorante',
+    'hotel': 'Hotel',
+    'other': 'Altro'
+  };
+  return texts[category] || 'Altro';
+}
+
+function getSourceColor(source) {
+  const colors = {
+    'manual': 'secondary',
+    'ai': 'success',
+    'osm': 'info',
+    'wikipedia': 'warning',
+    'internet': 'primary'
+  };
+  return colors[source] || 'secondary';
+}
+
+function getSourceIcon(source) {
+  const icons = {
+    'manual': '✋',
+    'ai': '🧠',
+    'osm': '🗺️',
+    'wikipedia': '📚',
+    'internet': '🌐'
+  };
+  return icons[source] || '✋';
+}
+
+function getSourceText(source) {
+  const texts = {
+    'manual': 'Manuale',
+    'ai': 'AI',
+    'osm': 'OSM',
+    'wikipedia': 'Wikipedia',
+    'internet': 'Internet'
+  };
+  return texts[source] || 'Manuale';
+}
+
+function getBestDescriptionText(poi) {
+  if (poi.extraInfo && poi.extraInfo.aiSummary) {
+    return poi.extraInfo.aiSummary;
+  }
+  return poi.description || 'Nessuna descrizione disponibile';
+}
+
+function truncateText(text, maxLength) {
+  if (!text) return '';
+  if (text.length <= maxLength) return text;
+  return text.substring(0, maxLength) + '...';
+}
+%>
+<style>
+  .poi-table {
+    font-size: 14px;
+  }
+  .poi-table th {
+    font-weight: 600;
+    border-bottom: 2px solid #6c757d;
+  }
+  .poi-table td {
+    vertical-align: middle;
+    padding: 12px 8px;
+  }
+  .poi-table .badge {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+  .poi-description {
+    max-width: 200px;
+    word-wrap: break-word;
+  }
+  .poi-coordinates {
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+  }
+  .ai-badge {
+    animation: pulse 2s infinite;
+  }
+  .badge.bg-purple {
+    background-color: #6f42c1 !important;
+  }
+  .poi-details p {
+    margin-bottom: 1rem;
+    line-height: 1.5;
+  }
+  .poi-details b {
+    color: #17a2b8;
+    font-weight: 600;
+  }
+  .poi-details code {
+    background-color: #2d3748;
+    color: #e2e8f0;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.9em;
+  }
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+  }
+</style>
 <body class="bg-dark text-light">
   <div class="container mt-4 mb-5">
-    <h4 class="text-info mb-3">📍 Elenco POI</h4>
-
-    <table class="table table-dark table-striped align-middle table-hover">
-      <thead>
-        <tr class="table-secondary text-dark">
-          <th>Nome</th>
-          <th>Zona</th>
-          <th>Latitudine</th>
-          <th>Longitudine</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% if (pois.length === 0) { %>
-          <tr>
-            <td colspan="4" class="text-center text-muted">
-              Nessun POI trovato per questa zona.
-            </td>
-          </tr>
-        <% } else { %>
-          <% pois.forEach(p => { %>
-            <tr>
-              <td><%= p.name %></td>
-              <td><%= p.zone ? p.zone.name : '-' %></td>
-              <td><%= p.lat %></td>
-              <td><%= p.lng %></td>
-            </tr>
-          <% }) %>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h4 class="text-info mb-0">📍 Elenco POI</h4>
+      <div class="text-muted small">
+        <% if (pois.length > 0) { %>
+          <%= pois.length %> POI trovati
         <% } %>
-      </tbody>
-    </table>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-dark table-striped align-middle table-hover poi-table">
+        <thead>
+          <tr class="table-secondary text-dark">
+            <th>Icona</th>
+            <th>Nome</th>
+            <th>Categoria</th>
+            <th>Descrizione</th>
+            <th>Fonte</th>
+            <th>Zona</th>
+            <th>Coordinate</th>
+            <th>Azioni</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (pois.length === 0) { %>
+            <tr>
+              <td colspan="8" class="text-center text-muted py-4">
+                <div class="text-muted">
+                  <i class="fas fa-map-marker-alt fa-2x mb-2"></i>
+                  <br>Nessun POI trovato per questa zona.
+                </div>
+              </td>
+            </tr>
+          <% } else { %>
+            <% pois.forEach(p => { %>
+              <tr>
+                <td class="text-center">
+                  <span class="fs-3" title="<%= p.customIcon ? 'Icona personalizzata' : 'Icona predefinita' %>">
+                    <%= p.customIcon || p.arIcon || getCategoryIcon(p.category || 'other') %>
+                  </span>
+                </td>
+                <td>
+                  <div class="d-flex align-items-center">
+                    <strong><%= p.name %></strong>
+                  </div>
+                </td>
+                <td>
+                  <span class="badge bg-<%= getCategoryColor(p.category || 'other') %> text-white" data-category="<%= p.category || 'other' %>">
+                    <%= getCategoryIcon(p.category || 'other') %> <%= getCategoryText(p.category || 'other') %>
+                  </span>
+                </td>
+                <td class="poi-description">
+                  <span class="text-light" title="<%= getBestDescriptionText(p) %>">
+                    <%= truncateText(getBestDescriptionText(p), 100) %>
+                  </span>
+                </td>
+                <td>
+                  <div class="d-flex flex-wrap gap-1">
+                    <span class="badge bg-<%= getSourceColor(p.source || 'manual') %> text-white">
+                      <%= getSourceIcon(p.source || 'manual') %> <%= getSourceText(p.source || 'manual') %>
+                    </span>
+                    <% if (p.extraInfo && p.extraInfo.aiGenerated) { %>
+                      <span class="badge bg-success ai-badge" title="Generato con AI">🧠</span>
+                    <% } %>
+                  </div>
+                </td>
+                <td><%= p.zone ? p.zone.name : '-' %></td>
+                <td class="poi-coordinates">
+                  <small class="text-muted">
+                    <%= p.lat.toFixed(6) %>, <%= p.lng.toFixed(6) %>
+                  </small>
+                </td>
+        <td>
+          <div class="d-flex gap-2">
+            <button class="btn btn-info btn-sm" onclick='showPOIDetails(<%- JSON.stringify(p) %>)' title="Mostra dettagli completi">
+              🔍 Mostra Dettagli
+            </button>
+            <a href="/admin/poi/edit/<%= p._id %>" class="btn btn-warning btn-sm" title="Modifica POI">
+              ✏️ Modifica
+            </a>
+            <button class="btn btn-danger btn-sm" onclick='deletePOI("<%= p._id %>", "<%= p.name %>")' title="Elimina POI">
+              🗑️ Elimina
+            </button>
+          </div>
+        </td>
+              </tr>
+            <% }) %>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
 
     <div class="mt-4 text-center">
       <a href="/admin/map" class="btn btn-info">
@@ -38,5 +239,306 @@
       </a>
     </div>
   </div>
+
+  <!-- ✅ POI Details Modal -->
+  <div class="modal fade" id="poiDetailsModal" tabindex="-1" aria-labelledby="poiDetailsLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+      <div class="modal-content bg-dark text-light border-light">
+        <div class="modal-header">
+          <h5 class="modal-title" id="poiDetailsLabel">🔍 Dettagli POI</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="poiDetailsContent">
+          <p class="text-muted">Seleziona un POI per vedere i dettagli...</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================= -->
+  <!-- 🧱 BOOTSTRAP JS -->
+  <!-- ============================= -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    function showPOIDetails(poi) {
+      console.log('🔍 POI Details:', poi);
+      
+      if (!poi) {
+        console.error('POI object not provided');
+        return;
+      }
+      
+      // Get translated labels for better display
+      const categoryLabel = getCategoryLabel(poi.category || 'other');
+      const sourceLabel = getSourceLabel(poi.source || 'manual');
+      const bestDescription = getBestDescription(poi);
+      
+      console.log('🔍 Modal Data Debug:', {
+        categoryLabel,
+        sourceLabel,
+        bestDescription,
+        poiExtraInfo: poi.extraInfo
+      });
+      
+      // Build tabbed modal content with AI-enriched information
+      const content = `
+        <div class="poi-details">
+          <!-- Header with POI name and category -->
+          <div class="d-flex align-items-center mb-3">
+            <span class="fs-1 me-3">${poi.customIcon || poi.arIcon || categoryLabel.icon}</span>
+            <div class="flex-grow-1">
+              <h4 class="mb-0">${poi.name}</h4>
+              <span class="badge bg-${categoryLabel.color} text-white">
+                ${categoryLabel.icon} ${categoryLabel.text}
+              </span>
+              ${poi.customIcon ? `<span class="badge bg-info ms-1" title="Icona personalizzata">🎨 Custom</span>` : ''}
+            </div>
+          </div>
+          
+          <!-- Bootstrap Tabs -->
+          <ul class="nav nav-tabs nav-fill mb-3" id="poiTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="desc-tab" data-bs-toggle="tab" data-bs-target="#desc" type="button" role="tab" aria-controls="desc" aria-selected="true">
+                📖 Descrizione
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="curiosities-tab" data-bs-toggle="tab" data-bs-target="#curiosities" type="button" role="tab" aria-controls="curiosities" aria-selected="false">
+                💡 Curiosità
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab" aria-controls="history" aria-selected="false">
+                📚 Storia
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="technical-tab" data-bs-toggle="tab" data-bs-target="#technical" type="button" role="tab" aria-controls="technical" aria-selected="false">
+                🗂 Dati tecnici
+              </button>
+            </li>
+          </ul>
+          
+          <!-- Tab Content -->
+          <div class="tab-content" id="poiTabContent">
+            <!-- Tab 1: Descrizione -->
+            <div class="tab-pane fade show active" id="desc" role="tabpanel" aria-labelledby="desc-tab">
+              <div class="row">
+                ${poi.imageUrl ? `
+                  <div class="col-md-4 mb-3">
+                    <img src="${poi.imageUrl}" class="img-fluid rounded" alt="${poi.name}" style="max-height: 200px; object-fit: cover;">
+                  </div>
+                  <div class="col-md-8">
+                ` : '<div class="col-12">'}
+                  <h6 class="text-info mb-2">🧠 AI Summary</h6>
+                  <p class="mb-3">${poi.extraInfo && poi.extraInfo.aiSummary ? poi.extraInfo.aiSummary : 'Nessun riassunto AI disponibile'}</p>
+                  
+                  <h6 class="text-info mb-2">📖 Descrizione Base</h6>
+                  <p class="mb-3">${bestDescription || 'Nessuna descrizione disponibile'}</p>
+                  
+                  ${poi.extraInfo && poi.extraInfo.rating ? `
+                    <div class="mb-3">
+                      <h6 class="text-warning mb-2">⭐ Valutazione</h6>
+                      <div class="d-flex align-items-center">
+                        <span class="badge bg-warning text-dark me-2">${poi.extraInfo.rating}/5</span>
+                        <small class="text-muted">${poi.extraInfo.accessibility || 'Pubblico'}</small>
+                      </div>
+                    </div>
+                  ` : ''}
+                  
+                  <div class="d-flex flex-wrap gap-2">
+                    <span class="badge bg-${sourceLabel.color} text-white">
+                      ${sourceLabel.icon} ${sourceLabel.text}
+                    </span>
+                    ${poi.extraInfo && poi.extraInfo.aiGenerated ? `
+                      <span class="badge bg-success" title="Generato con AI">🧠 AI</span>
+                    ` : ''}
+                    ${poi.extraInfo && poi.extraInfo.rating ? `
+                      <span class="badge bg-warning text-dark">
+                        ⭐ ${poi.extraInfo.rating}/5
+                      </span>
+                    ` : ''}
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Tab 2: Curiosità -->
+            <div class="tab-pane fade" id="curiosities" role="tabpanel" aria-labelledby="curiosities-tab">
+              ${poi.extraInfo && poi.extraInfo.curiosities ? `
+                <div class="alert alert-info border-info">
+                  <h6 class="alert-heading">🔍 Curiosità e Dettagli Interessanti</h6>
+                  <p class="mb-0">${poi.extraInfo.curiosities}</p>
+                </div>
+              ` : `
+                <div class="alert alert-secondary">
+                  <p class="mb-0 text-muted">Nessuna curiosità disponibile per questo POI.</p>
+                </div>
+              `}
+              
+              ${poi.extraInfo && poi.extraInfo.tags && poi.extraInfo.tags.length > 0 ? `
+                <div class="mt-3">
+                  <h6 class="text-info mb-2">🏷️ Tag</h6>
+                  <div class="d-flex flex-wrap gap-1">
+                    ${poi.extraInfo.tags.map(tag => `<span class="badge bg-secondary">${tag}</span>`).join('')}
+                  </div>
+                </div>
+              ` : ''}
+            </div>
+            
+            <!-- Tab 3: Storia -->
+            <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
+              ${poi.extraInfo && poi.extraInfo.historicalFacts ? `
+                <div class="alert alert-warning border-warning">
+                  <h6 class="alert-heading">📚 Fatti Storici e Contesto</h6>
+                  <p class="mb-0">${poi.extraInfo.historicalFacts}</p>
+                </div>
+              ` : `
+                <div class="alert alert-secondary">
+                  <p class="mb-0 text-muted">Nessuna informazione storica disponibile per questo POI.</p>
+                </div>
+              `}
+            </div>
+            
+            <!-- Tab 4: Dati tecnici -->
+            <div class="tab-pane fade" id="technical" role="tabpanel" aria-labelledby="technical-tab">
+              <div class="row">
+                <div class="col-md-6">
+                  <h6 class="text-info mb-2">📍 Informazioni Geografiche</h6>
+                  <p><strong>Coordinate:</strong> <code>${poi.lat.toFixed(6)}, ${poi.lng.toFixed(6)}</code></p>
+                  <p><strong>Zona:</strong> ${poi.zone ? poi.zone.name : 'N/A'}</p>
+                  <p><strong>Categoria:</strong> ${categoryLabel.icon} ${categoryLabel.text}</p>
+                </div>
+                <div class="col-md-6">
+                  <h6 class="text-info mb-2">🔗 Informazioni Tecniche</h6>
+                  <p><strong>Fonte:</strong> ${sourceLabel.icon} ${sourceLabel.text}</p>
+                  <p><strong>Accessibilità:</strong> ${poi.extraInfo && poi.extraInfo.accessibility ? poi.extraInfo.accessibility : 'Pubblico'}</p>
+                  ${poi.extraInfo && poi.extraInfo.osmId ? `<p><strong>OSM ID:</strong> <code>${poi.extraInfo.osmId}</code></p>` : ''}
+                </div>
+              </div>
+              
+              ${poi.extraInfo && (poi.extraInfo.website || poi.extraInfo.wikipedia) ? `
+                <hr class="my-3">
+                <h6 class="text-info mb-2">🔗 Link Esterni</h6>
+                <div class="d-flex flex-wrap gap-2">
+                  ${poi.extraInfo.website ? `
+                    <a href="${poi.extraInfo.website}" target="_blank" class="btn btn-outline-info btn-sm">
+                      🌐 Sito Web
+                    </a>
+                  ` : ''}
+                  ${poi.extraInfo.wikipedia ? `
+                    <a href="${poi.extraInfo.wikipedia}" target="_blank" class="btn btn-outline-warning btn-sm">
+                      📚 Wikipedia
+                    </a>
+                  ` : ''}
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        </div>
+      `;
+      
+      // Inject content and show modal
+      document.getElementById('poiDetailsContent').innerHTML = content;
+      const modal = new bootstrap.Modal(document.getElementById('poiDetailsModal'));
+      modal.show();
+      
+      // Initialize Bootstrap tabs after modal is shown
+      setTimeout(() => {
+        const tabElements = document.querySelectorAll('#poiTabs button[data-bs-toggle="tab"]');
+        tabElements.forEach(tabElement => {
+          new bootstrap.Tab(tabElement);
+        });
+        console.log('✅ Bootstrap tabs initialized');
+      }, 100);
+      
+      console.log('✅ Enhanced modal opened successfully');
+    }
+
+    // Delete POI function with confirmation
+    function deletePOI(poiId, poiName) {
+      if (confirm(`Sei sicuro di voler eliminare il POI "${poiName}"?\n\nQuesta azione non può essere annullata.`)) {
+        // Show loading state
+        const deleteBtn = event.target;
+        const originalText = deleteBtn.innerHTML;
+        deleteBtn.innerHTML = '⏳ Eliminazione...';
+        deleteBtn.disabled = true;
+        
+        // Make delete request
+        fetch(`/admin/poi/delete/${poiId}`, {
+          method: 'GET'
+        })
+        .then(response => {
+          if (response.ok) {
+            // Show success message
+            showStatusMessage(`✅ POI "${poiName}" eliminato con successo`, 'success');
+            // Reload page after a short delay
+            setTimeout(() => {
+              window.location.reload();
+            }, 1500);
+          } else {
+            throw new Error('Errore durante l\'eliminazione');
+          }
+        })
+        .catch(error => {
+          console.error('❌ Error deleting POI:', error);
+          showStatusMessage(`❌ Errore durante l'eliminazione del POI: ${error.message}`, 'error');
+          // Restore button state
+          deleteBtn.innerHTML = originalText;
+          deleteBtn.disabled = false;
+        });
+      }
+    }
+
+    // Status message function
+    function showStatusMessage(message, type) {
+      const statusDiv = document.createElement('div');
+      statusDiv.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed`;
+      statusDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+      statusDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      `;
+      document.body.appendChild(statusDiv);
+      
+      // Auto-remove after 5 seconds
+      setTimeout(() => {
+        if (statusDiv.parentNode) {
+          statusDiv.parentNode.removeChild(statusDiv);
+        }
+      }, 5000);
+    }
+
+    // Test function to simulate button click with AI-enriched data
+    function testModal() {
+      const testPOI = {
+        name: "Abbazia di San Fruttuoso",
+        category: "church",
+        source: "ai",
+        description: "Antica abbazia benedettina situata in una baia isolata vicino a Portofino, accessibile solo via mare o sentiero.",
+        lat: 44.3149,
+        lng: 9.1823,
+        zone: { name: "Parco Naturale di Portofino" },
+        imageUrl: "https://example.com/abbazia-san-fruttuoso.jpg",
+        extraInfo: {
+          arIcon: "⛪",
+          aiGenerated: true,
+          aiSummary: "Abbazia storica del X secolo con architettura romanica e affreschi medievali. Gioiello nascosto del Tigullio, raggiungibile solo via mare o attraverso sentieri panoramici.",
+          curiosities: "L'abbazia è famosa per la sua posizione unica: sorge direttamente sul mare e durante l'alta marea l'acqua lambisce le mura. È uno dei pochi esempi di architettura religiosa medievale in posizione marittima.",
+          historicalFacts: "Fondata nel 984 d.C. dai monaci benedettini, l'abbazia ha ospitato per secoli i monaci che vivevano in simbiosi con il mare. Durante il Medioevo era un importante centro di pellegrinaggio e commercio marittimo.",
+          rating: 5,
+          accessibility: "public",
+          osmId: "way_123456789",
+          website: "https://www.parks.it/parco.portofino/",
+          wikipedia: "https://it.wikipedia.org/wiki/Abbazia_di_San_Fruttuoso"
+        }
+      };
+      showPOIDetails(testPOI);
+    }
+  </script>
 </body>
 </html>

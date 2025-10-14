@@ -1,25 +1,27 @@
 // ===============================
-// 🌊 Andaly Whatis — Backend Server (v1.1)
+// 🌊 Andaly Whatis — Backend Server
 // ===============================
 
 const express = require("express");
 const mongoose = require("mongoose");
 const path = require("path");
+const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
 const methodOverride = require("method-override");
 
-// === Rotte ===
+// Rotte
 const adminRoutes = require("./routes/adminRoutes");
 const zonesRoutes = require("./routes/zones");
 const poisRoutes = require("./routes/pois");
+const translationsRoutes = require("./routes/translations");
 
-// === Inizializza Express ===
+// Inizializza Express
 const app = express();
 
-// === Configurazione dotenv ===
+// Configurazione dotenv
 dotenv.config();
 
-// === Connessione a MongoDB ===
+// Connessione MongoDB
 mongoose
   .connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
@@ -28,33 +30,26 @@ mongoose
   .then(() => console.log("✅ Connessione a MongoDB riuscita"))
   .catch((err) => console.error("❌ Errore connessione MongoDB:", err));
 
-// === Imposta EJS ===
+// Imposta EJS
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
-// === Middleware ===
+// Middleware
 app.use(express.static(path.join(__dirname, "public")));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 app.use(methodOverride("_method"));
 
-// === Rotte principali ===
-// Tutto il backend amministrativo è sotto /admin
-app.use("/admin", adminRoutes);
-
-// Zone e POI passano sempre da /admin per coerenza con il frontend
-app.use("/admin/zones", zonesRoutes);
-app.use("/admin/pois", poisRoutes);
-
-// === Rotta home ===
+// Rotta predefinita
 app.get("/", (req, res) => res.redirect("/admin/dashboard"));
 
-// === Gestione errori 404 ===
-app.use((req, res) => {
-  res.status(404).send("❌ Pagina non trovata (404)");
-});
+// Rotte principali
+app.use("/admin", adminRoutes);
+app.use("/zones", zonesRoutes);
+app.use("/pois", poisRoutes);
+app.use("/translations", translationsRoutes);
 
-// === Avvio server ===
+// Avvio server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🟢 Server avviato su http://localhost:${PORT}`);

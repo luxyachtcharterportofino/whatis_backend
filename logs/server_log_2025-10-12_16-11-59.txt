@@ -1,0 +1,70 @@
+🟢 Server avviato su http://localhost:3000
+✅ Connessione a MongoDB riuscita
+📥 GET /zones richiesto
+✅ Zone trovate: 4
+📥 POST /zones richiesto con dati: {
+  name: 'in mezzo al mare',
+  description: 'ddddddddd',
+  coordinates: [
+    [ 44.13885576756881, 8.555603027343752 ],
+    [ 43.923615428841146, 8.651733398437502 ],
+    [ 44.02047156335411, 9.022521972656252 ],
+    [ 44.221583765457986, 9.041748046875002 ]
+  ]
+}
+✅ Zona salvata: new ObjectId("68ebb75aaeb30df676121641")
+📥 GET /zones richiesto
+✅ Zone trovate: 5
+📥 GET /zones richiesto
+✅ Zone trovate: 4
+📥 GET /zones richiesto
+✅ Zone trovate: 4
+📥 POST /zones richiesto con dati: {
+  name: 'in mezzo al mare',
+  description: 'lllllll',
+  coordinates: [
+    [ 43.95921358836687, 8.670959472656252 ],
+    [ 43.80678314779554, 8.904418945312502 ],
+    [ 43.93350594453702, 9.212036132812502 ],
+    [ 44.09942068528654, 9.022521972656252 ]
+  ]
+}
+✅ Zona salvata: new ObjectId("68ebba54aeb30df67612164c")
+📥 GET /zones richiesto
+✅ Zone trovate: 5
+📥 GET /zones richiesto
+✅ Zone trovate: 5
+📥 GET /zones richiesto
+✅ Zone trovate: 5
+📥 GET /zones richiesto
+✅ Zone trovate: 5
+📥 GET /zones richiesto
+✅ Zone trovate: 5
+📥 GET /zones richiesto
+✅ Zone trovate: 5
+📥 GET /zones richiesto
+✅ Zone trovate: 5
+📥 GET /zones richiesto
+✅ Zone trovate: 5
+📥 GET /zones richiesto
+✅ Zone trovate: 5
+📥 GET /zones richiesto
+✅ Zone trovate: 5
+📥 GET /zones richiesto
+✅ Zone trovate: 5
+📥 GET /zones richiesto
+✅ Zone trovate: 5
+📥 GET /zones richiesto
+✅ Zone trovate: 5
+📥 GET /zones richiesto
+✅ Zone trovate: 5
+📥 GET /zones richiesto
+✅ Zone trovate: 5
+📥 GET /zones richiesto
+✅ Zone trovate: 5
+📥 GET /zones richiesto
+✅ Zone trovate: 5
+📥 GET /zones richiesto
+✅ Zone trovate: 5
+📥 GET /zones richiesto
+✅ Zone trovate: 5
