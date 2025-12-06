@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: whatis-backend
+    env: node
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: MONGO_URI
+        sync: false
+      - key: NODE_ENV
+        value: production
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: GOOGLE_API_KEY
+        sync: false
+      - key: GOOGLE_CX
+        sync: false
+      - key: DEEPL_API_KEY
+        sync: false
+      - key: PERPLEXITY_API_KEY
+        sync: false
+      - key: PERPLEXITY_ENABLED
+        sync: false
+      - key: CSE_MAX_RESULTS
+        sync: false
+      - key: CSE_TIMEOUT_MS
+        sync: false
+      - key: ENABLE_CSE_DIVE_WRECK
+        sync: false
+      - key: ENABLE_UNIVERSAL_WRECK_SEARCH
+        sync: false
+    healthCheckPath: /health
+

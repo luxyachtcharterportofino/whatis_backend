@@ -1,6 +1,6 @@
 /* =========================================================
    🌊 ANDALY WHATIS — STILE GENERALE
-   Versione stabile e coerente (ottobre 2025)
+   Versione stabile e coerente
    ========================================================= */
 
 /* --- Struttura di base --- */
@@ -21,14 +21,22 @@ body {
 }
 
 .navbar-brand {
-  font-size: 2rem !important;
-  font-weight: 700;
-  color: #ffffff !important;
-  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0;
 }
 
-.navbar-brand span {
-  color: #00bfff !important;
+.navbar-brand-logo {
+  display: block;
+  height: 80px;
+  width: auto;
+  filter: drop-shadow(0 2px 4px rgba(255, 255, 255, 0.3));
+  transition: transform 0.2s ease;
+}
+
+.navbar-brand-logo:hover {
+  transform: scale(1.05);
 }
 
 .navbar a.nav-link {
@@ -173,8 +181,8 @@ footer {
 
 /* --- Responsive per portatili e tablet --- */
 @media (max-width: 992px) {
-  .navbar-brand {
-    font-size: 1.6rem !important;
+  .navbar-brand-logo {
+    height: 44px;
   }
   h1 {
     font-size: 2rem;
@@ -185,6 +193,9 @@ footer {
 }
 
 @media (max-width: 768px) {
+  .navbar-brand-logo {
+    height: 38px;
+  }
   .sidebar {
     margin-bottom: 1rem;
   }

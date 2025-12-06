@@ -1,0 +1,137 @@
+<%- include('../partials/head') %>
+
+<body class="bg-dark text-light">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-black shadow-sm px-4">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/admin/dashboard" aria-label="Whatis dashboard">
+        <img
+          src="/images/whatis-logo-white.svg"
+          alt="Whatis Explorer"
+          style="height: 80px; width: auto; filter: drop-shadow(0 2px 6px rgba(255, 255, 255, 0.4));"
+        />
+      </a>
+      <div class="navbar-nav ms-auto">
+        <a class="nav-link text-light" href="/admin/dashboard">Dashboard</a>
+        <a class="nav-link text-light" href="/admin/zones">Zone</a>
+        <a class="nav-link text-light" href="/admin/pois">POI</a>
+        <a class="nav-link text-light" href="/admin/map">Cartina</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container mt-5">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card bg-dark border-info">
+          <div class="card-header bg-info text-dark">
+            <h4 class="mb-0">
+              <% if (searchType === 'marine') { %>
+                🌊 Ricerca POI Marini con Perplexity
+              <% } else { %>
+                🔵 Ricerca POI Terrestri con Perplexity
+              <% } %>
+            </h4>
+          </div>
+          <div class="card-body">
+            <!-- Form di ricerca -->
+            <form id="perplexitySearchForm">
+              <div class="mb-3">
+                <label for="zoneSelect" class="form-label">Seleziona Zona</label>
+                <select class="form-select bg-dark text-light" id="zoneSelect" name="zoneId" required>
+                  <option value="">-- Seleziona una zona --</option>
+                  <% zones.forEach(zone => { %>
+                    <option value="<%= zone._id %>"><%= zone.name %></option>
+                  <% }); %>
+                </select>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Tipo di Ricerca</label>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="searchType" id="terrestrialType" value="terrestrial" <%= searchType === 'terrestrial' ? 'checked' : '' %>>
+                  <label class="form-check-label" for="terrestrialType">
+                    🔵 POI Terrestri (culturali, storici, panoramici)
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="searchType" id="marineType" value="marine" <%= searchType === 'marine' ? 'checked' : '' %>>
+                  <label class="form-check-label" for="marineType">
+                    🌊 POI Marini (relitti, secche, grotte, immersioni)
+                  </label>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="autoSave" name="autoSave">
+                  <label class="form-check-label" for="autoSave">
+                    Salva automaticamente i POI non duplicati
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="showDedup" name="showDedup" checked>
+                  <label class="form-check-label" for="showDedup">
+                    Mostra dettagli deduplicazione
+                  </label>
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-lg w-100" id="searchBtn">
+                <span class="spinner-border spinner-border-sm d-none" id="loadingSpinner" role="status"></span>
+                Avvia Ricerca Perplexity
+              </button>
+            </form>
+
+            <!-- Risultati -->
+            <div id="resultsSection" class="mt-5 d-none">
+              <hr class="border-info">
+              <h5 class="mb-3">Risultati Ricerca</h5>
+              
+              <!-- Badge modalità -->
+              <div id="modeBadge" class="mb-3"></div>
+
+              <!-- Statistiche -->
+              <div id="statsSection" class="row mb-4"></div>
+
+              <!-- POI Nuovi -->
+              <div id="newPOIsSection" class="mb-4"></div>
+
+              <!-- Duplicati -->
+              <div id="duplicatesSection" class="mb-4"></div>
+
+              <!-- Suggerimenti Merge -->
+              <div id="suggestionsSection" class="mb-4"></div>
+
+              <!-- Errori -->
+              <div id="errorsSection" class="mb-4"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal per dettaglio POI -->
+  <div class="modal fade" id="poiDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content bg-dark text-light">
+        <div class="modal-header border-info">
+          <h5 class="modal-title" id="poiDetailTitle">Dettaglio POI</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="poiDetailBody">
+          <!-- Contenuto dinamico -->
+        </div>
+        <div class="modal-footer border-info">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+          <button type="button" class="btn btn-success" id="approvePOIBtn" data-poi-id="">Approva e Salva POI</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/perplexity-search.js"></script>
+</body>
+</html>
+

@@ -19,12 +19,31 @@ const poiSchema = new mongoose.Schema({
     ],
     default: "other"
   },
+  // Nuovo campo per categoria semantica intelligente
+  semanticCategory: { type: String, default: "" },
   source: { 
     type: String, 
-    enum: ["manual", "AI", "ai", "internet", "osm", "wikipedia"],
+    enum: ["manual", "AI", "internet", "osm", "wikipedia", "perplexity", "gpt"],
     default: "manual"
   },
   imageUrl: { type: String, default: "" },
+  
+  // Image license status
+  imageLicenseStatus: {
+    status: {
+      type: String,
+      enum: ["free", "needs_attribution", "needs_replacement", "unknown", "not_checked"],
+      default: "not_checked"
+    },
+    source: { type: String, default: "" }, // Source of the image (e.g., "wikipedia", "unsplash", "pexels", "manual")
+    author: { type: String, default: "" }, // Author name if attribution needed
+    authorUrl: { type: String, default: "" }, // URL to author's profile/page
+    license: { type: String, default: "" }, // License type (e.g., "CC BY-SA 4.0", "Public Domain")
+    photoUrl: { type: String, default: "" }, // Original photo page URL (for linking)
+    attribution: { type: String, default: "" }, // Attribution text (e.g., "Photo by John Doe on Unsplash")
+    checkedAt: { type: Date, default: null }, // When the license was last checked
+    notes: { type: String, default: "" } // Additional notes about the license
+  },
   
   // AI and external data enrichment
   extraInfo: {
@@ -35,58 +54,34 @@ const poiSchema = new mongoose.Schema({
     osmId: { type: String, default: "" },
     tags: [{ type: String }],
     rating: { type: Number, min: 0, max: 5, default: 0 },
-    accessibility: { type: String, enum: ["public", "private", "restricted", "guided tours", "limited", "no", "yes"], default: "public" }
+    accessibility: { type: String, enum: ["public", "private", "restricted", "guided_tours", "limited"], default: "public" }
   },
   
   // Icon management
   customIcon: { type: String, default: "" }, // Custom icon set by admin (overrides category icon)
   
-  // Multilingual system - 5 languages support
-  multilingual: {
-    en: { // English
-      name: { type: String, default: "" },
-      description: { type: String, default: "" },
-      aiSummary: { type: String, default: "" },
-      curiosities: { type: String, default: "" },
-      historicalFacts: { type: String, default: "" }
-    },
-    fr: { // French
-      name: { type: String, default: "" },
-      description: { type: String, default: "" },
-      aiSummary: { type: String, default: "" },
-      curiosities: { type: String, default: "" },
-      historicalFacts: { type: String, default: "" }
-    },
-    es: { // Spanish
-      name: { type: String, default: "" },
-      description: { type: String, default: "" },
-      aiSummary: { type: String, default: "" },
-      curiosities: { type: String, default: "" },
-      historicalFacts: { type: String, default: "" }
-    },
-    de: { // German
-      name: { type: String, default: "" },
-      description: { type: String, default: "" },
-      aiSummary: { type: String, default: "" },
-      curiosities: { type: String, default: "" },
-      historicalFacts: { type: String, default: "" }
-    },
-    ru: { // Russian
-      name: { type: String, default: "" },
-      description: { type: String, default: "" },
-      aiSummary: { type: String, default: "" },
-      curiosities: { type: String, default: "" },
-      historicalFacts: { type: String, default: "" }
-    }
-  },
+  // Multilingual system (dynamic languages)
+  multilingual: { type: mongoose.Schema.Types.Mixed, default: {} },
   
   // AR-ready fields
   arIcon: { type: String, default: "" }, // Icon reference for AR display (auto-synced with customIcon or category)
   arPriority: { type: Number, default: 1 }, // Display priority in AR
   arVisible: { type: Boolean, default: true }, // Whether to show in AR
   
+  // Coordinate status
+  coordStatus: {
+    type: String,
+    enum: ["confirmed", "unconfirmed", "missing"],
+    default: "unconfirmed"
+  },
+  
+  // Definitive status - POI definitivi sono immodificabili sulla mappa e scaricabili dai turisti
+  isDefinitive: {
+    type: Boolean,
+    default: false
+  },
+  
   // Timestamps
-  createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 }, {
   timestamps: true
@@ -147,7 +142,7 @@ poiSchema.methods.getLocalizedContent = function(lang = 'it') {
     };
   }
   
-  // Other languages from multilingual field
+  // Other languages from multilingual field - only name and description are translated
   const langContent = this.multilingual?.[lang];
   if (!langContent) {
     // Fallback to Italian if language not available
@@ -157,9 +152,10 @@ poiSchema.methods.getLocalizedContent = function(lang = 'it') {
   return {
     name: langContent.name || this.name, // Fallback to Italian name
     description: langContent.description || this.description,
-    aiSummary: langContent.aiSummary || this.extraInfo?.aiSummary || '',
-    curiosities: langContent.curiosities || this.extraInfo?.curiosities || '',
-    historicalFacts: langContent.historicalFacts || this.extraInfo?.historicalFacts || ''
+    // Extra fields always come from Italian extraInfo (not translated)
+    aiSummary: this.extraInfo?.aiSummary || '',
+    curiosities: this.extraInfo?.curiosities || '',
+    historicalFacts: this.extraInfo?.historicalFacts || ''
   };
 };
 
@@ -170,10 +166,11 @@ poiSchema.methods.isTranslationComplete = function(lang = 'en') {
   const langContent = this.multilingual?.[lang];
   if (!langContent) return false;
   
+  // Translation is complete if name AND description are present
+  // aiSummary, curiosities, and historicalFacts are optional
   return !!(
     langContent.name && langContent.name.trim() &&
-    langContent.description && langContent.description.trim() &&
-    langContent.aiSummary && langContent.aiSummary.trim()
+    langContent.description && langContent.description.trim()
   );
 };
 
@@ -190,7 +187,7 @@ poiSchema.methods.getAvailableLanguages = function() {
   return languages;
 };
 
-// Pre-save hook to sync arIcon with customIcon
+// Pre-save hook to sync arIcon with customIcon and set coordStatus
 poiSchema.pre('save', function(next) {
   // Auto-sync arIcon for AR compatibility
   if (this.customIcon && this.customIcon.trim()) {
@@ -198,6 +195,22 @@ poiSchema.pre('save', function(next) {
   } else if (!this.arIcon || !this.arIcon.trim()) {
     this.arIcon = this.getEffectiveIcon();
   }
+  
+  // Auto-set coordStatus based on coordinates
+  if (!this.lat || !this.lng) {
+    this.coordStatus = "missing";
+  } else if (this.isNew || this.isModified('lat') || this.isModified('lng')) {
+    // Se è nuovo o le coordinate sono state modificate
+    // Se coordStatus è già "confirmed" (impostato manualmente o per POI definitivo), mantienilo
+    // Altrimenti, se è "missing" o non impostato, usa "unconfirmed"
+    if (this.coordStatus === "confirmed") {
+      // Mantieni "confirmed" - non sovrascrivere se già confermato
+      // Questo è importante per i POI definitivi che vengono modificati
+    } else if (!this.coordStatus || this.coordStatus === "missing") {
+      this.coordStatus = "unconfirmed";
+    }
+  }
+  
   next();
 });
 

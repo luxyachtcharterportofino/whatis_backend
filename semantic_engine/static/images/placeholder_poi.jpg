@@ -1,0 +1,4 @@
+# Placeholder POI Image
+# This is a placeholder file for POI images when no real image is found
+# In a real implementation, this would be an actual image file
+# For now, the system will use this path as a fallback

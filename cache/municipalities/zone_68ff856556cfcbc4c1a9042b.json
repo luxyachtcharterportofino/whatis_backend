@@ -1,0 +1,157 @@
+{
+  "zoneId": "68ff856556cfcbc4c1a9042b",
+  "zoneName": "Saint Tropez",
+  "zoneCoordinates": [
+    [
+      43.23469820355813,
+      6.671447753906251
+    ],
+    [
+      43.25145455175609,
+      6.69719696044922
+    ],
+    [
+      43.27020619076866,
+      6.704063415527344
+    ],
+    [
+      43.279204926082784,
+      6.68895721435547
+    ],
+    [
+      43.28220420881544,
+      6.681404113769532
+    ],
+    [
+      43.285953104311105,
+      6.673507690429688
+    ],
+    [
+      43.285953104311105,
+      6.665954589843751
+    ],
+    [
+      43.284703498148474,
+      6.651191711425781
+    ],
+    [
+      43.280704585930835,
+      6.627159118652344
+    ],
+    [
+      43.315686155295666,
+      6.679687500000001
+    ],
+    [
+      43.31718491566705,
+      6.654281616210938
+    ],
+    [
+      43.311939092640586,
+      6.638145446777345
+    ],
+    [
+      43.30544363673959,
+      6.622352600097657
+    ],
+    [
+      43.29394997589908,
+      6.602439880371095
+    ],
+    [
+      43.28195427423493,
+      6.576690673828126
+    ],
+    [
+      43.26695632044282,
+      6.578750610351563
+    ],
+    [
+      43.258455839234294,
+      6.592140197753907
+    ],
+    [
+      43.24970410411544,
+      6.642951965332032
+    ],
+    [
+      43.21068107507135,
+      6.654968261718751
+    ],
+    [
+      43.19616614174528,
+      6.682777404785157
+    ]
+  ],
+  "municipalities": [
+    {
+      "id": "node_26695436",
+      "name": "Gassin",
+      "lat": 43.2291533,
+      "lng": 6.585476,
+      "adminLevel": "8",
+      "country": "FR",
+      "population": "2655",
+      "wikipedia": "fr:Gassin",
+      "wikidata": "Q815807",
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "village",
+      "zone": "Saint Tropez",
+      "osmType": "node",
+      "osmId": 26695436
+    },
+    {
+      "id": "node_332057910",
+      "name": "Ramatuelle",
+      "lat": 43.215142,
+      "lng": 6.6128041,
+      "adminLevel": "8",
+      "country": "Unknown",
+      "population": "1963",
+      "wikipedia": null,
+      "wikidata": null,
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "village",
+      "zone": "Saint Tropez",
+      "osmType": "node",
+      "osmId": 332057910
+    },
+    {
+      "id": "node_26698109",
+      "name": "Saint-Tropez",
+      "lat": 43.2727191,
+      "lng": 6.6405225,
+      "adminLevel": "8",
+      "country": "Unknown",
+      "population": "3578",
+      "wikipedia": null,
+      "wikidata": null,
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "village",
+      "zone": "Saint Tropez",
+      "osmType": "node",
+      "osmId": 26698109
+    },
+    {
+      "id": "node_26692263",
+      "name": "Sainte-Maxime",
+      "lat": 43.30871,
+      "lng": 6.637714,
+      "adminLevel": "8",
+      "country": "Unknown",
+      "population": "14433",
+      "wikipedia": "fr:Sainte-Maxime",
+      "wikidata": "Q693017",
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "town",
+      "zone": "Saint Tropez",
+      "osmType": "node",
+      "osmId": 26692263
+    }
+  ],
+  "timestamp": "2025-10-29T16:32:44.884Z"
+}

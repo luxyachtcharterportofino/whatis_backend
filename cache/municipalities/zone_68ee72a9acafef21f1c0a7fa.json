@@ -1,0 +1,163 @@
+{
+  "zoneId": "68ee72a9acafef21f1c0a7fa",
+  "zoneName": "Golfo dei Poeti",
+  "municipalities": [
+    {
+      "name": "Cadimare",
+      "lat": 44.0836385,
+      "lng": 9.8219303,
+      "adminLevel": "8",
+      "population": "1000",
+      "wikipedia": "it:Cadimare",
+      "wikidata": "Q2646373",
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "village"
+    },
+    {
+      "name": "Fezzano",
+      "lat": 44.0800228,
+      "lng": 9.8265139,
+      "adminLevel": "8",
+      "population": "900",
+      "wikipedia": "it:Fezzano",
+      "wikidata": "Q952395",
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "village"
+    },
+    {
+      "name": "La Serra",
+      "lat": 44.0708995,
+      "lng": 9.9230677,
+      "adminLevel": "8",
+      "population": null,
+      "wikipedia": null,
+      "wikidata": null,
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "village"
+    },
+    {
+      "name": "La Spezia",
+      "lat": 44.1033871,
+      "lng": 9.8217022,
+      "adminLevel": "8",
+      "population": "92711",
+      "wikipedia": "it:La Spezia",
+      "wikidata": "Q8611",
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "city"
+    },
+    {
+      "name": "Le Grazie",
+      "lat": 44.0640823,
+      "lng": 9.837955,
+      "adminLevel": "8",
+      "population": "1700",
+      "wikipedia": "it:Le Grazie (Porto Venere)",
+      "wikidata": "Q688008",
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "village"
+    },
+    {
+      "name": "Lerici",
+      "lat": 44.0736073,
+      "lng": 9.9099135,
+      "adminLevel": "8",
+      "population": "9942",
+      "wikipedia": null,
+      "wikidata": null,
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "town"
+    },
+    {
+      "name": "Marola",
+      "lat": 44.0885322,
+      "lng": 9.8186334,
+      "adminLevel": "8",
+      "population": "640",
+      "wikipedia": "it:Marola (La Spezia)",
+      "wikidata": "Q636132",
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "village"
+    },
+    {
+      "name": "Muggiano",
+      "lat": 44.0894579,
+      "lng": 9.8797362,
+      "adminLevel": "8",
+      "population": "600",
+      "wikipedia": "it:Muggiano (La Spezia)",
+      "wikidata": "Q16580400",
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "village"
+    },
+    {
+      "name": "Pitelli",
+      "lat": 44.0949185,
+      "lng": 9.8849512,
+      "adminLevel": "8",
+      "population": "1100",
+      "wikipedia": "it:Pitelli",
+      "wikidata": "Q2684384",
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "village"
+    },
+    {
+      "name": "Porto Venere",
+      "lat": 44.0506605,
+      "lng": 9.8344585,
+      "adminLevel": "8",
+      "population": "3630",
+      "wikipedia": "it:Porto Venere",
+      "wikidata": "Q188315",
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "village"
+    },
+    {
+      "name": "Pozzuolo",
+      "lat": 44.0886257,
+      "lng": 9.8891413,
+      "adminLevel": "8",
+      "population": null,
+      "wikipedia": null,
+      "wikidata": null,
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "village"
+    },
+    {
+      "name": "San Terenzo",
+      "lat": 44.0840206,
+      "lng": 9.8971467,
+      "adminLevel": "8",
+      "population": null,
+      "wikipedia": "it:San Terenzo",
+      "wikidata": "Q958170",
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "village"
+    },
+    {
+      "name": "Tellaro",
+      "lat": 44.0580216,
+      "lng": 9.9303698,
+      "adminLevel": "8",
+      "population": null,
+      "wikipedia": "it:Tellaro (Lerici)",
+      "wikidata": "Q519047",
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "village"
+    }
+  ],
+  "timestamp": "2025-10-26T08:57:41.159Z"
+}

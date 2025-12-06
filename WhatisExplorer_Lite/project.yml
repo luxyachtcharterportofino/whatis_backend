@@ -1,0 +1,37 @@
+name: WhatisExplorerLite
+options:
+  bundleIdPrefix: com.andaly
+  deploymentTarget:
+    iOS: "15.0"
+  developmentLanguage: it
+  xcodeVersion: "15.0"
+
+targets:
+  WhatisExplorerLite:
+    type: application
+    platform: iOS
+    deploymentTarget: "15.0"
+    sources:
+      - path: WhatisExplorerLite
+    info:
+      path: WhatisExplorerLite/Info.plist
+      properties:
+        CFBundleDisplayName: Whatis Explorer Lite
+        CFBundleShortVersionString: "1.0"
+        CFBundleVersion: "1"
+        UILaunchScreen: {}
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: true
+        NSLocationWhenInUseUsageDescription: "Whatis Explorer Lite ha bisogno della tua posizione per mostrarti i POI nelle vicinanze e calcolare le distanze."
+        NSLocationAlwaysAndWhenInUseUsageDescription: "Whatis Explorer Lite ha bisogno della tua posizione per mostrarti i POI nelle vicinanze e calcolare le distanze."
+        NSLocationAlwaysUsageDescription: "Whatis Explorer Lite ha bisogno della tua posizione per mostrarti i POI nelle vicinanze e calcolare le distanze."
+        NSAppTransportSecurity:
+          NSAllowsArbitraryLoads: true
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: com.andaly.WhatisExplorerLite
+      PRODUCT_NAME: WhatisExplorerLite
+      SWIFT_VERSION: "5.0"
+      IPHONEOS_DEPLOYMENT_TARGET: "15.0"
+    capabilities:
+      - Location Services (When In Use)
+

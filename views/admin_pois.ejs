@@ -61,7 +61,7 @@ function getSourceIcon(source) {
     'wikipedia': '📚',
     'internet': '🌐'
   };
-  return icons[source] || '✋';
+  return icons[source] || '❓';
 }
 
 function getSourceText(source) {
@@ -72,7 +72,72 @@ function getSourceText(source) {
     'wikipedia': 'Wikipedia',
     'internet': 'Internet'
   };
-  return texts[source] || 'Manuale';
+  return texts[source] || 'Sconosciuto';
+}
+
+function getLicenseStatusColor(licenseStatus) {
+  if (!licenseStatus || !licenseStatus.status) return 'secondary';
+  const status = licenseStatus.status;
+  const colors = {
+    'free': 'success',
+    'needs_attribution': 'warning',
+    'needs_replacement': 'danger',
+    'unknown': 'info',
+    'not_checked': 'secondary'
+  };
+  return colors[status] || 'secondary';
+}
+
+function getLicenseStatusIcon(licenseStatus) {
+  if (!licenseStatus || !licenseStatus.status) return '❓';
+  const status = licenseStatus.status;
+  const icons = {
+    'free': '✅',
+    'needs_attribution': '⚠️',
+    'needs_replacement': '🚫',
+    'unknown': '❓',
+    'not_checked': '⏳'
+  };
+  return icons[status] || '❓';
+}
+
+function getLicenseStatusText(licenseStatus) {
+  if (!licenseStatus || !licenseStatus.status) return 'Non verificata';
+  const status = licenseStatus.status;
+  const texts = {
+    'free': 'Libera',
+    'needs_attribution': 'Richiede attribuzione',
+    'needs_replacement': 'Da sostituire',
+    'unknown': 'Sconosciuta',
+    'not_checked': 'Non verificata'
+  };
+  return texts[status] || 'Non verificata';
+}
+
+function getLicenseStatusTooltip(licenseStatus) {
+  if (!licenseStatus || !licenseStatus.status) return 'Licenza non verificata';
+  
+  const status = licenseStatus.status;
+  let tooltip = getLicenseStatusText(licenseStatus);
+  
+  if (licenseStatus.source) {
+    tooltip += ` - Fonte: ${licenseStatus.source}`;
+  }
+  if (licenseStatus.author) {
+    tooltip += ` - Autore: ${licenseStatus.author}`;
+  }
+  if (licenseStatus.license) {
+    tooltip += ` - Licenza: ${licenseStatus.license}`;
+  }
+  if (licenseStatus.notes) {
+    tooltip += ` - ${licenseStatus.notes}`;
+  }
+  if (licenseStatus.checkedAt) {
+    const checkedDate = new Date(licenseStatus.checkedAt);
+    tooltip += ` (Verificata: ${checkedDate.toLocaleDateString('it-IT')})`;
+  }
+  
+  return tooltip;
 }
 
 function getBestDescriptionText(poi) {
@@ -88,380 +153,264 @@ function truncateText(text, maxLength) {
   return text.substring(0, maxLength) + '...';
 }
 %>
-<style>
-  .poi-table {
-    font-size: 14px;
-  }
-  .poi-table th {
-    font-weight: 600;
-    border-bottom: 2px solid #6c757d;
-  }
-  .poi-table td {
-    vertical-align: middle;
-    padding: 12px 8px;
-  }
-  .poi-table .badge {
-    font-size: 11px;
-    padding: 4px 8px;
-  }
-  .poi-description {
-    max-width: 200px;
-    word-wrap: break-word;
-  }
-  .poi-coordinates {
-    font-family: 'Courier New', monospace;
-    font-size: 12px;
-  }
-  .ai-badge {
-    animation: pulse 2s infinite;
-  }
-  .badge.bg-purple {
-    background-color: #6f42c1 !important;
-  }
-  .poi-details p {
-    margin-bottom: 1rem;
-    line-height: 1.5;
-  }
-  .poi-details b {
-    color: #17a2b8;
-    font-weight: 600;
-  }
-  .poi-details code {
-    background-color: #2d3748;
-    color: #e2e8f0;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 0.9em;
-  }
-  @keyframes pulse {
-    0% { opacity: 1; }
-    50% { opacity: 0.7; }
-    100% { opacity: 1; }
-  }
-</style>
+
+<%
+// Protezione variabili per filtri
+let safeZoneId = null;
+if (typeof selectedZoneId !== 'undefined' && selectedZoneId != null) {
+  safeZoneId = String(selectedZoneId);
+}
+
+let safeMunicipalityId = null;
+if (typeof selectedMunicipality !== 'undefined' && selectedMunicipality != null) {
+  safeMunicipalityId = String(selectedMunicipality);
+}
+%>
+
 <body class="bg-dark text-light">
-  <div class="container mt-4 mb-5">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h4 class="text-info mb-0">📍 Elenco POI</h4>
-      <div class="text-muted small">
-        <% if (pois.length > 0) { %>
-          <%= pois.length %> POI trovati
-        <% } %>
-      </div>
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-black shadow-sm px-4">
+    <a class="navbar-brand" href="/admin/dashboard" aria-label="Whatis dashboard">
+        <img
+          src="/images/whatis-logo-white.svg"
+          alt="Whatis Explorer"
+          style="height: 80px; width: auto; filter: drop-shadow(0 2px 6px rgba(255, 255, 255, 0.4));"
+        />
+    </a>
+    <div class="navbar-nav ms-auto">
+      <span class="navbar-text text-light">
+        📊 Gestione POI - <%= zoneName || 'Tutte le Zone' %>
+      </span>
     </div>
+  </nav>
 
-    <div class="table-responsive">
-      <table class="table table-dark table-striped align-middle table-hover poi-table">
-        <thead>
-          <tr class="table-secondary text-dark">
-            <th>Icona</th>
-            <th>Nome</th>
-            <th>Categoria</th>
-            <th>Descrizione</th>
-            <th>Fonte</th>
-            <th>Zona</th>
-            <th>Coordinate</th>
-            <th>Azioni</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% if (pois.length === 0) { %>
-            <tr>
-              <td colspan="8" class="text-center text-muted py-4">
-                <div class="text-muted">
-                  <i class="fas fa-map-marker-alt fa-2x mb-2"></i>
-                  <br>Nessun POI trovato per questa zona.
-                </div>
-              </td>
-            </tr>
-          <% } else { %>
-            <% pois.forEach(p => { %>
-              <tr>
-                <td class="text-center">
-                  <span class="fs-3" title="<%= p.customIcon ? 'Icona personalizzata' : 'Icona predefinita' %>">
-                    <%= p.customIcon || p.arIcon || getCategoryIcon(p.category || 'other') %>
-                  </span>
-                </td>
-                <td>
-                  <div class="d-flex align-items-center">
-                    <strong><%= p.name %></strong>
-                  </div>
-                </td>
-                <td>
-                  <span class="badge bg-<%= getCategoryColor(p.category || 'other') %> text-white" data-category="<%= p.category || 'other' %>">
-                    <%= getCategoryIcon(p.category || 'other') %> <%= getCategoryText(p.category || 'other') %>
-                  </span>
-                </td>
-                <td class="poi-description">
-                  <span class="text-light" title="<%= getBestDescriptionText(p) %>">
-                    <%= truncateText(getBestDescriptionText(p), 100) %>
-                  </span>
-                </td>
-                <td>
-                  <div class="d-flex flex-wrap gap-1">
-                    <span class="badge bg-<%= getSourceColor(p.source || 'manual') %> text-white">
-                      <%= getSourceIcon(p.source || 'manual') %> <%= getSourceText(p.source || 'manual') %>
-                    </span>
-                    <% if (p.extraInfo && p.extraInfo.aiGenerated) { %>
-                      <span class="badge bg-success ai-badge" title="Generato con AI">🧠</span>
-                    <% } %>
-                  </div>
-                </td>
-                <td><%= p.zone ? p.zone.name : '-' %></td>
-                <td class="poi-coordinates">
-                  <small class="text-muted">
-                    <%= p.lat.toFixed(6) %>, <%= p.lng.toFixed(6) %>
-                  </small>
-                </td>
-        <td>
-          <div class="d-flex gap-2">
-            <button class="btn btn-info btn-sm" onclick='showPOIDetails(<%- JSON.stringify(p) %>)' title="Mostra dettagli completi">
-              🔍 Mostra Dettagli
-            </button>
-            <a href="/admin/poi/edit/<%= p._id %>" class="btn btn-warning btn-sm" title="Modifica POI">
-              ✏️ Modifica
-            </a>
-            <button class="btn btn-danger btn-sm" onclick='deletePOI("<%= p._id %>", "<%= p.name %>")' title="Elimina POI">
-              🗑️ Elimina
-            </button>
+  <!-- MAIN CONTENT -->
+  <div class="container-fluid mt-4">
+    <div class="row">
+      <div class="col-12">
+        <div class="card bg-dark border-secondary">
+          <div class="card-header bg-secondary text-white">
+            <div class="d-flex justify-content-between align-items-center">
+              <h4 class="mb-0">
+                📍 POI - <%= zoneName || 'Tutte le Zone' %>
+                <span class="badge bg-info ms-2"><%= pois.length %> POI</span>
+              </h4>
+              <div>
+                <button class="btn btn-success btn-sm me-2" onclick="checkAllPhotoLicenses()" title="Verifica licenze di tutte le foto dei POI definitivi">
+                  📸 Verifica Licenze Foto
+                </button>
+                <a href="/admin/pois/proposed" class="btn btn-warning btn-sm me-2">
+                  📋 POI Proposti
+                </a>
+                <% if (typeof showDiscoveryButton !== 'undefined' && showDiscoveryButton) { %>
+                <button class="btn btn-primary btn-sm me-2" onclick="showDiscoveryModal()">
+                  🔍 Scopri POI Automatici
+                </button>
+                <% } %>
+                <a href="/admin/map" class="btn btn-info btn-sm">
+                  🌍 Torna alla Mappa
+                </a>
+              </div>
+            </div>
           </div>
-        </td>
-              </tr>
-            <% }) %>
-          <% } %>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="mt-4 text-center">
-      <a href="/admin/map" class="btn btn-info">
-        🌍 Torna alla Mappa
-      </a>
-    </div>
-  </div>
-
-  <!-- ✅ POI Details Modal -->
-  <div class="modal fade" id="poiDetailsModal" tabindex="-1" aria-labelledby="poiDetailsLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-centered">
-      <div class="modal-content bg-dark text-light border-light">
-        <div class="modal-header">
-          <h5 class="modal-title" id="poiDetailsLabel">🔍 Dettagli POI</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body" id="poiDetailsContent">
-          <p class="text-muted">Seleziona un POI per vedere i dettagli...</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+          
+          <div class="card-body">
+            <!-- Messaggio di successo -->
+            <% if (typeof req !== 'undefined' && req && req.query && req.query.message) { %>
+            <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
+              ✅ <%= req.query.message %>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <% } %>
+            <!-- Filtri -->
+            <div class="row mb-3">
+              <div class="col-md-4">
+                <label for="filterZone" class="form-label">🔽 Filtra per Zona:</label>
+                <select id="filterZone" class="form-select">
+                  <option value="">Tutte le zone</option>
+                  <% if (zones && zones.length > 0) { %>
+                    <% zones.forEach(zone => { %>
+                      <option value="<%= zone._id %>" <%= safeZoneId && safeZoneId === zone._id.toString() ? 'selected' : '' %>>
+                        <%= zone.name %>
+                      </option>
+                    <% }); %>
+                  <% } %>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label for="filterMunicipality" class="form-label">🔽 Filtra per Comune:</label>
+                <select id="filterMunicipality" class="form-select" disabled>
+                  <option value="">Tutti i comuni</option>
+                  <!-- Popolato dinamicamente via JS quando si seleziona una zona -->
+                </select>
+              </div>
+              <div class="col-md-4 d-flex align-items-end">
+                <button class="btn btn-secondary" onclick="clearFilters()">
+                  🔄 Reset Filtri
+                </button>
+              </div>
+            </div>
+            
+            <div class="table-responsive">
+              <table class="table table-dark table-striped table-hover">
+                <thead>
+                  <tr>
+                    <th>Nome</th>
+                    <th>Categoria</th>
+                    <th>Descrizione</th>
+                    <th>Fonte</th>
+                    <th>Zona</th>
+                    <th>Coordinate</th>
+                    <th>Stato Coordinate</th>
+                    <th>Stato</th>
+                    <th>Licenza Foto</th>
+                    <th>Azioni</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% if (pois && pois.length > 0) { %>
+                    <% pois.forEach(p => { %>
+                      <tr>
+                        <td class="poi-name">
+                          <strong><%= p.name %></strong>
+                        </td>
+                        <td>
+                          <span class="badge bg-<%= getCategoryColor(p.category || 'other') %>">
+                            <%= getCategoryIcon(p.category || 'other') %> <%= getCategoryText(p.category || 'other') %>
+                          </span>
+                        </td>
+                        <td class="poi-description">
+                          <span class="text-light" title="<%= getBestDescriptionText(p) %>">
+                            <%= truncateText(getBestDescriptionText(p), 100) %>
+                          </span>
+                        </td>
+                        <td>
+                          <div class="d-flex flex-wrap gap-1">
+                            <span class="badge bg-<%= getSourceColor(p.source || 'manual') %> text-white">
+                              <%= getSourceIcon(p.source || 'manual') %> <%= getSourceText(p.source || 'manual') %>
+                            </span>
+                            <% if (p.extraInfo && p.extraInfo.aiGenerated) { %>
+                              <span class="badge bg-success ai-badge" title="Generato con AI">🧠</span>
+                            <% } %>
+                          </div>
+                        </td>
+                        <td><%= p.zone ? p.zone.name : '-' %></td>
+                        <td class="poi-coordinates">
+                          <small class="text-muted">
+                            <%= p.lat ? p.lat.toFixed(6) : '-' %>, <%= p.lng ? p.lng.toFixed(6) : '-' %>
+                          </small>
+                        </td>
+                        <td>
+                          <% 
+                            const coordStatus = p.coordStatus || (p.lat && p.lng ? 'unconfirmed' : 'missing');
+                            let statusClass = 'bg-warning text-dark';
+                            let statusText = 'Da verificare';
+                            if (coordStatus === 'confirmed') {
+                              statusClass = 'bg-success';
+                              statusText = 'Confermate';
+                            } else if (coordStatus === 'missing') {
+                              statusClass = 'bg-danger';
+                              statusText = 'Mancanti';
+                            }
+                          %>
+                          <span class="badge <%= statusClass %>"><%= statusText %></span>
+                        </td>
+                        <td>
+                          <% 
+                            const isDefinitive = p.isDefinitive === true || p.isDefinitive === 'true';
+                          %>
+                          <% if (isDefinitive) { %>
+                            <span class="badge bg-success" title="POI definitivo - Scaricabile dai turisti">
+                              ✅ Definitivo
+                            </span>
+                          <% } else { %>
+                            <span class="badge bg-warning text-dark" title="POI da rendere definitivo">
+                              ⏳ Da rendere definitivo
+                            </span>
+                          <% } %>
+                        </td>
+                        <td>
+                          <% 
+                            const licenseStatus = p.imageLicenseStatus || {};
+                            const licenseColor = getLicenseStatusColor(licenseStatus);
+                            const licenseIcon = getLicenseStatusIcon(licenseStatus);
+                            const licenseText = getLicenseStatusText(licenseStatus);
+                            const licenseTooltip = getLicenseStatusTooltip(licenseStatus);
+                          %>
+                          <% if (p.imageUrl && p.imageUrl.trim()) { %>
+                            <span class="badge bg-<%= licenseColor %>" title="<%= licenseTooltip %>">
+                              <%= licenseIcon %> <%= licenseText %>
+                            </span>
+                            <% if (licenseStatus.status === 'not_checked' || !licenseStatus.status) { %>
+                              <button class="btn btn-sm btn-outline-info ms-1" onclick='checkSinglePhotoLicense("<%= p._id %>", "<%= p.name %>")' title="Verifica licenza foto">
+                                🔍
+                              </button>
+                            <% } %>
+                          <% } else { %>
+                            <span class="badge bg-secondary" title="Nessuna foto">
+                              📷 Nessuna foto
+                            </span>
+                          <% } %>
+                        </td>
+                        <td>
+                          <div class="d-flex gap-2">
+                            <button class="btn btn-info btn-sm" onclick='showPOIDetails("<%= p._id %>")' title="Mostra dettagli completi">
+                              🔍 Mostra Dettagli
+                            </button>
+                            <a href="/admin/poi/edit/<%= p._id %>" class="btn btn-warning btn-sm" title="Modifica POI">
+                              ✏️ Modifica
+                            </a>
+                            <button class="btn btn-danger btn-sm" onclick='deletePOI(event, "<%= p._id %>", "<%= p.name %>")' title="Elimina POI">
+                              🗑️ Elimina
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    <% }) %>
+                  <% } else { %>
+                    <tr>
+                      <td colspan="10" class="text-center text-muted">
+                        <div class="py-4">
+                          <h5>Nessun POI trovato</h5>
+                          <p>Non ci sono POI disponibili per questa zona.</p>
+                          <a href="/admin/map" class="btn btn-primary">
+                            🌍 Torna alla Mappa
+                          </a>
+                        </div>
+                      </td>
+                    </tr>
+                  <% } %>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ============================= -->
+
+
   <!-- 🧱 BOOTSTRAP JS -->
   <!-- ============================= -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
+  <style>
+    .badge-success { background: #28a745 !important; color: white !important; }
+    .badge-warning { background: #ffc107 !important; color: #333 !important; }
+    .badge-danger { background: #dc3545 !important; color: white !important; }
+  </style>
+
   <script>
-    function showPOIDetails(poi) {
-      console.log('🔍 POI Details:', poi);
-      
-      if (!poi) {
-        console.error('POI object not provided');
-        return;
-      }
-      
-      // Get translated labels for better display
-      const categoryLabel = getCategoryLabel(poi.category || 'other');
-      const sourceLabel = getSourceLabel(poi.source || 'manual');
-      const bestDescription = getBestDescription(poi);
-      
-      console.log('🔍 Modal Data Debug:', {
-        categoryLabel,
-        sourceLabel,
-        bestDescription,
-        poiExtraInfo: poi.extraInfo
-      });
-      
-      // Build tabbed modal content with AI-enriched information
-      const content = `
-        <div class="poi-details">
-          <!-- Header with POI name and category -->
-          <div class="d-flex align-items-center mb-3">
-            <span class="fs-1 me-3">${poi.customIcon || poi.arIcon || categoryLabel.icon}</span>
-            <div class="flex-grow-1">
-              <h4 class="mb-0">${poi.name}</h4>
-              <span class="badge bg-${categoryLabel.color} text-white">
-                ${categoryLabel.icon} ${categoryLabel.text}
-              </span>
-              ${poi.customIcon ? `<span class="badge bg-info ms-1" title="Icona personalizzata">🎨 Custom</span>` : ''}
-            </div>
-          </div>
-          
-          <!-- Bootstrap Tabs -->
-          <ul class="nav nav-tabs nav-fill mb-3" id="poiTabs" role="tablist">
-            <li class="nav-item" role="presentation">
-              <button class="nav-link active" id="desc-tab" data-bs-toggle="tab" data-bs-target="#desc" type="button" role="tab" aria-controls="desc" aria-selected="true">
-                📖 Descrizione
-              </button>
-            </li>
-            <li class="nav-item" role="presentation">
-              <button class="nav-link" id="curiosities-tab" data-bs-toggle="tab" data-bs-target="#curiosities" type="button" role="tab" aria-controls="curiosities" aria-selected="false">
-                💡 Curiosità
-              </button>
-            </li>
-            <li class="nav-item" role="presentation">
-              <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab" aria-controls="history" aria-selected="false">
-                📚 Storia
-              </button>
-            </li>
-            <li class="nav-item" role="presentation">
-              <button class="nav-link" id="technical-tab" data-bs-toggle="tab" data-bs-target="#technical" type="button" role="tab" aria-controls="technical" aria-selected="false">
-                🗂 Dati tecnici
-              </button>
-            </li>
-          </ul>
-          
-          <!-- Tab Content -->
-          <div class="tab-content" id="poiTabContent">
-            <!-- Tab 1: Descrizione -->
-            <div class="tab-pane fade show active" id="desc" role="tabpanel" aria-labelledby="desc-tab">
-              <div class="row">
-                ${poi.imageUrl ? `
-                  <div class="col-md-4 mb-3">
-                    <img src="${poi.imageUrl}" class="img-fluid rounded" alt="${poi.name}" style="max-height: 200px; object-fit: cover;">
-                  </div>
-                  <div class="col-md-8">
-                ` : '<div class="col-12">'}
-                  <h6 class="text-info mb-2">🧠 AI Summary</h6>
-                  <p class="mb-3">${poi.extraInfo && poi.extraInfo.aiSummary ? poi.extraInfo.aiSummary : 'Nessun riassunto AI disponibile'}</p>
-                  
-                  <h6 class="text-info mb-2">📖 Descrizione Base</h6>
-                  <p class="mb-3">${bestDescription || 'Nessuna descrizione disponibile'}</p>
-                  
-                  ${poi.extraInfo && poi.extraInfo.rating ? `
-                    <div class="mb-3">
-                      <h6 class="text-warning mb-2">⭐ Valutazione</h6>
-                      <div class="d-flex align-items-center">
-                        <span class="badge bg-warning text-dark me-2">${poi.extraInfo.rating}/5</span>
-                        <small class="text-muted">${poi.extraInfo.accessibility || 'Pubblico'}</small>
-                      </div>
-                    </div>
-                  ` : ''}
-                  
-                  <div class="d-flex flex-wrap gap-2">
-                    <span class="badge bg-${sourceLabel.color} text-white">
-                      ${sourceLabel.icon} ${sourceLabel.text}
-                    </span>
-                    ${poi.extraInfo && poi.extraInfo.aiGenerated ? `
-                      <span class="badge bg-success" title="Generato con AI">🧠 AI</span>
-                    ` : ''}
-                    ${poi.extraInfo && poi.extraInfo.rating ? `
-                      <span class="badge bg-warning text-dark">
-                        ⭐ ${poi.extraInfo.rating}/5
-                      </span>
-                    ` : ''}
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Tab 2: Curiosità -->
-            <div class="tab-pane fade" id="curiosities" role="tabpanel" aria-labelledby="curiosities-tab">
-              ${poi.extraInfo && poi.extraInfo.curiosities ? `
-                <div class="alert alert-info border-info">
-                  <h6 class="alert-heading">🔍 Curiosità e Dettagli Interessanti</h6>
-                  <p class="mb-0">${poi.extraInfo.curiosities}</p>
-                </div>
-              ` : `
-                <div class="alert alert-secondary">
-                  <p class="mb-0 text-muted">Nessuna curiosità disponibile per questo POI.</p>
-                </div>
-              `}
-              
-              ${poi.extraInfo && poi.extraInfo.tags && poi.extraInfo.tags.length > 0 ? `
-                <div class="mt-3">
-                  <h6 class="text-info mb-2">🏷️ Tag</h6>
-                  <div class="d-flex flex-wrap gap-1">
-                    ${poi.extraInfo.tags.map(tag => `<span class="badge bg-secondary">${tag}</span>`).join('')}
-                  </div>
-                </div>
-              ` : ''}
-            </div>
-            
-            <!-- Tab 3: Storia -->
-            <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
-              ${poi.extraInfo && poi.extraInfo.historicalFacts ? `
-                <div class="alert alert-warning border-warning">
-                  <h6 class="alert-heading">📚 Fatti Storici e Contesto</h6>
-                  <p class="mb-0">${poi.extraInfo.historicalFacts}</p>
-                </div>
-              ` : `
-                <div class="alert alert-secondary">
-                  <p class="mb-0 text-muted">Nessuna informazione storica disponibile per questo POI.</p>
-                </div>
-              `}
-            </div>
-            
-            <!-- Tab 4: Dati tecnici -->
-            <div class="tab-pane fade" id="technical" role="tabpanel" aria-labelledby="technical-tab">
-              <div class="row">
-                <div class="col-md-6">
-                  <h6 class="text-info mb-2">📍 Informazioni Geografiche</h6>
-                  <p><strong>Coordinate:</strong> <code>${poi.lat.toFixed(6)}, ${poi.lng.toFixed(6)}</code></p>
-                  <p><strong>Zona:</strong> ${poi.zone ? poi.zone.name : 'N/A'}</p>
-                  <p><strong>Categoria:</strong> ${categoryLabel.icon} ${categoryLabel.text}</p>
-                </div>
-                <div class="col-md-6">
-                  <h6 class="text-info mb-2">🔗 Informazioni Tecniche</h6>
-                  <p><strong>Fonte:</strong> ${sourceLabel.icon} ${sourceLabel.text}</p>
-                  <p><strong>Accessibilità:</strong> ${poi.extraInfo && poi.extraInfo.accessibility ? poi.extraInfo.accessibility : 'Pubblico'}</p>
-                  ${poi.extraInfo && poi.extraInfo.osmId ? `<p><strong>OSM ID:</strong> <code>${poi.extraInfo.osmId}</code></p>` : ''}
-                </div>
-              </div>
-              
-              ${poi.extraInfo && (poi.extraInfo.website || poi.extraInfo.wikipedia) ? `
-                <hr class="my-3">
-                <h6 class="text-info mb-2">🔗 Link Esterni</h6>
-                <div class="d-flex flex-wrap gap-2">
-                  ${poi.extraInfo.website ? `
-                    <a href="${poi.extraInfo.website}" target="_blank" class="btn btn-outline-info btn-sm">
-                      🌐 Sito Web
-                    </a>
-                  ` : ''}
-                  ${poi.extraInfo.wikipedia ? `
-                    <a href="${poi.extraInfo.wikipedia}" target="_blank" class="btn btn-outline-warning btn-sm">
-                      📚 Wikipedia
-                    </a>
-                  ` : ''}
-                </div>
-              ` : ''}
-            </div>
-          </div>
-        </div>
-      `;
-      
-      // Inject content and show modal
-      document.getElementById('poiDetailsContent').innerHTML = content;
-      const modal = new bootstrap.Modal(document.getElementById('poiDetailsModal'));
-      modal.show();
-      
-      // Initialize Bootstrap tabs after modal is shown
-      setTimeout(() => {
-        const tabElements = document.querySelectorAll('#poiTabs button[data-bs-toggle="tab"]');
-        tabElements.forEach(tabElement => {
-          new bootstrap.Tab(tabElement);
-        });
-        console.log('✅ Bootstrap tabs initialized');
-      }, 100);
-      
-      console.log('✅ Enhanced modal opened successfully');
+    function showPOIDetails(poiId) {
+      // Redirect to POI edit page (same as edit button) to show full details
+      window.location.href = '/admin/poi/edit/' + poiId;
     }
 
     // Delete POI function with confirmation
-    function deletePOI(poiId, poiName) {
-      if (confirm(`Sei sicuro di voler eliminare il POI "${poiName}"?\n\nQuesta azione non può essere annullata.`)) {
+    function deletePOI(event, poiId, poiName) {
+      console.log('🗑️ Deleting POI:', poiId, poiName);
+      if (confirm('Sei sicuro di voler eliminare il POI "' + poiName + '"?\n\nQuesta azione non può essere annullata.')) {
         // Show loading state
         const deleteBtn = event.target;
         const originalText = deleteBtn.innerHTML;
@@ -469,13 +418,15 @@ function truncateText(text, maxLength) {
         deleteBtn.disabled = true;
         
         // Make delete request
-        fetch(`/admin/poi/delete/${poiId}`, {
+        console.log('🗑️ Sending delete request for POI ID:', poiId);
+        fetch('/admin/poi/delete/' + poiId, {
           method: 'GET'
         })
         .then(response => {
+          console.log('🗑️ Delete response status:', response.status);
           if (response.ok) {
             // Show success message
-            showStatusMessage(`✅ POI "${poiName}" eliminato con successo`, 'success');
+            showStatusMessage('✅ POI "' + poiName + '" eliminato con successo', 'success');
             // Reload page after a short delay
             setTimeout(() => {
               window.location.reload();
@@ -486,7 +437,7 @@ function truncateText(text, maxLength) {
         })
         .catch(error => {
           console.error('❌ Error deleting POI:', error);
-          showStatusMessage(`❌ Errore durante l'eliminazione del POI: ${error.message}`, 'error');
+          showStatusMessage('❌ Errore durante l\'eliminazione del POI: ' + error.message, 'error');
           // Restore button state
           deleteBtn.innerHTML = originalText;
           deleteBtn.disabled = false;
@@ -494,15 +445,12 @@ function truncateText(text, maxLength) {
       }
     }
 
-    // Status message function
+    // Show status message function
     function showStatusMessage(message, type) {
       const statusDiv = document.createElement('div');
-      statusDiv.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed`;
+      statusDiv.className = 'alert alert-' + (type === 'success' ? 'success' : 'danger') + ' alert-dismissible fade show position-fixed';
       statusDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
-      statusDiv.innerHTML = `
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-      `;
+      statusDiv.innerHTML = message + '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
       document.body.appendChild(statusDiv);
       
       // Auto-remove after 5 seconds
@@ -512,32 +460,241 @@ function truncateText(text, maxLength) {
         }
       }, 5000);
     }
+    
+    // Make POIs available globally
+    window.currentPOIs = <%- JSON.stringify(pois) %>;
+    
+    // Gestione filtri
+    document.addEventListener('DOMContentLoaded', function() {
+      const filterZone = document.getElementById('filterZone');
+      const filterMunicipality = document.getElementById('filterMunicipality');
+      
+      if (filterZone) {
+        filterZone.addEventListener('change', function() {
+          applyFilters();
+        });
+      }
+      
+      if (filterMunicipality) {
+        filterMunicipality.addEventListener('change', function() {
+          applyFilters();
+        });
+      }
+    });
+    
+    function applyFilters() {
+      const zoneId = document.getElementById('filterZone')?.value || '';
+      const municipality = document.getElementById('filterMunicipality')?.value || '';
+      
+      const params = new URLSearchParams();
+      if (zoneId) {
+        params.append('zone_id', zoneId);
+      }
+      if (municipality) {
+        params.append('municipality', municipality);
+      }
+      
+      const queryString = params.toString();
+      window.location.href = '/admin/pois' + (queryString ? '?' + queryString : '');
+    }
+    
+    function clearFilters() {
+      window.location.href = '/admin/pois';
+    }
+  </script>
+  <!-- Modale Scoperta POI -->
+  <div class="modal fade" id="discoveryModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content bg-dark text-light">
+        <div class="modal-header border-secondary">
+          <h5 class="modal-title">🔍 Scopri POI Automatici</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Zona</label>
+            <select id="discovery-zone" class="form-select bg-dark text-light border-secondary">
+              <option value="">-- Seleziona Zona --</option>
+              <% zones.forEach(z => { %>
+              <option value="<%= z._id %>" <%= (typeof selectedZoneId !== 'undefined' && selectedZoneId && selectedZoneId.toString() === z._id.toString()) ? 'selected' : '' %>><%= z.name %></option>
+              <% }); %>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Comune (opzionale)</label>
+            <input type="text" id="discovery-municipality" class="form-control bg-dark text-light border-secondary" 
+                   placeholder="Es: Santa Margherita Ligure">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Tipo POI</label>
+            <select id="discovery-type" class="form-select bg-dark text-light border-secondary">
+              <option value="both">Terrestri e Marini</option>
+              <option value="terrestrial">Solo Terrestri</option>
+              <option value="marine">Solo Marini (Relitti)</option>
+            </select>
+          </div>
+          <div class="alert alert-info">
+            <small>I POI scoperti verranno salvati nel database provvisorio e richiederanno revisione manuale prima dell'inserimento definitivo.</small>
+          </div>
+        </div>
+        <div class="modal-footer border-secondary">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+          <button type="button" class="btn btn-primary" onclick="startDiscovery()">Avvia Scoperta</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-    // Test function to simulate button click with AI-enriched data
-    function testModal() {
-      const testPOI = {
-        name: "Abbazia di San Fruttuoso",
-        category: "church",
-        source: "ai",
-        description: "Antica abbazia benedettina situata in una baia isolata vicino a Portofino, accessibile solo via mare o sentiero.",
-        lat: 44.3149,
-        lng: 9.1823,
-        zone: { name: "Parco Naturale di Portofino" },
-        imageUrl: "https://example.com/abbazia-san-fruttuoso.jpg",
-        extraInfo: {
-          arIcon: "⛪",
-          aiGenerated: true,
-          aiSummary: "Abbazia storica del X secolo con architettura romanica e affreschi medievali. Gioiello nascosto del Tigullio, raggiungibile solo via mare o attraverso sentieri panoramici.",
-          curiosities: "L'abbazia è famosa per la sua posizione unica: sorge direttamente sul mare e durante l'alta marea l'acqua lambisce le mura. È uno dei pochi esempi di architettura religiosa medievale in posizione marittima.",
-          historicalFacts: "Fondata nel 984 d.C. dai monaci benedettini, l'abbazia ha ospitato per secoli i monaci che vivevano in simbiosi con il mare. Durante il Medioevo era un importante centro di pellegrinaggio e commercio marittimo.",
-          rating: 5,
-          accessibility: "public",
-          osmId: "way_123456789",
-          website: "https://www.parks.it/parco.portofino/",
-          wikipedia: "https://it.wikipedia.org/wiki/Abbazia_di_San_Fruttuoso"
+  <script>
+    function showDiscoveryModal() {
+      const modal = new bootstrap.Modal(document.getElementById('discoveryModal'));
+      modal.show();
+    }
+
+    async function startDiscovery() {
+      const zoneId = document.getElementById('discovery-zone').value;
+      const municipality = document.getElementById('discovery-municipality').value || null;
+      const type = document.getElementById('discovery-type').value;
+
+      if (!zoneId) {
+        alert('Seleziona una zona');
+        return;
+      }
+
+      const modal = bootstrap.Modal.getInstance(document.getElementById('discoveryModal'));
+      modal.hide();
+
+      // Mostra loading
+      const loadingAlert = document.createElement('div');
+      loadingAlert.className = 'alert alert-info';
+      loadingAlert.innerHTML = '🔍 Scoperta POI in corso... Attendere...';
+      document.querySelector('.container').prepend(loadingAlert);
+
+      try {
+        const response = await fetch('/admin/pois/discover', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ zone_id: zoneId, municipality, type })
+        });
+
+        const result = await response.json();
+        loadingAlert.remove();
+
+        if (result.success) {
+          alert(`✅ Scoperta completata!\n\n` +
+                `Terrestri: ${result.results.saved.terrestrial} salvati, ${result.results.duplicates.terrestrial} duplicati\n` +
+                `Marini: ${result.results.saved.marine} salvati, ${result.results.duplicates.marine} duplicati\n\n` +
+                `Vai alla pagina "POI Proposti" per revisionarli.`);
+          window.location.href = `/admin/pois/proposed?zone_id=${zoneId}`;
+        } else {
+          alert('❌ Errore: ' + result.error);
         }
-      };
-      showPOIDetails(testPOI);
+      } catch (error) {
+        loadingAlert.remove();
+        alert('❌ Errore: ' + error.message);
+      }
+    }
+
+    // Carica conteggio POI proposti
+    async function loadProposedCount() {
+      try {
+        const response = await fetch('/admin/pois/proposed?status=pending');
+        const data = await response.json();
+        if (data.success) {
+          const countEl = document.getElementById('proposed-count');
+          if (countEl) {
+            countEl.textContent = data.count || 0;
+          }
+        }
+      } catch (error) {
+        console.error('Errore caricamento conteggio POI proposti:', error);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadProposedCount);
+
+    // Verifica licenze di tutte le foto
+    async function checkAllPhotoLicenses() {
+      if (!confirm('Vuoi verificare le licenze di tutte le foto dei POI definitivi?\n\nQuesta operazione potrebbe richiedere alcuni minuti.')) {
+        return;
+      }
+
+      const btn = event.target;
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '⏳ Verifica in corso...';
+      btn.disabled = true;
+
+      try {
+        const response = await fetch('/admin/pois/check-photo-licenses', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          const stats = result.results;
+          alert(`✅ Verifica completata!\n\n` +
+                `Totale: ${stats.total} POI\n` +
+                `Verificati: ${stats.checked}\n` +
+                `✅ Libere: ${stats.free}\n` +
+                `⚠️ Richiedono attribuzione: ${stats.needsAttribution}\n` +
+                `🚫 Da sostituire: ${stats.needsReplacement}\n` +
+                `❓ Sconosciute: ${stats.unknown}\n` +
+                `❌ Errori: ${stats.errors}\n\n` +
+                `La pagina verrà ricaricata per mostrare i risultati.`);
+          window.location.reload();
+        } else {
+          throw new Error(result.error || 'Errore durante la verifica');
+        }
+      } catch (error) {
+        console.error('❌ Errore verifica licenze:', error);
+        alert('❌ Errore durante la verifica delle licenze: ' + error.message);
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
+    }
+
+    // Verifica licenza di una singola foto
+    async function checkSinglePhotoLicense(poiId, poiName) {
+      const btn = event.target;
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '⏳';
+      btn.disabled = true;
+
+      try {
+        const response = await fetch(`/admin/pois/${poiId}/check-photo-license`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          const status = result.licenseInfo.status;
+          const statusText = {
+            'free': '✅ Libera',
+            'needs_attribution': '⚠️ Richiede attribuzione',
+            'needs_replacement': '🚫 Da sostituire',
+            'unknown': '❓ Sconosciuta',
+            'not_checked': '⏳ Non verificata'
+          }[status] || '❓ Sconosciuta';
+
+          showStatusMessage(`✅ Licenza verificata per "${poiName}": ${statusText}`, 'success');
+          
+          // Ricarica la pagina dopo un breve delay
+          setTimeout(() => {
+            window.location.reload();
+          }, 1500);
+        } else {
+          throw new Error(result.error || 'Errore durante la verifica');
+        }
+      } catch (error) {
+        console.error('❌ Errore verifica licenza:', error);
+        showStatusMessage('❌ Errore durante la verifica della licenza: ' + error.message, 'error');
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
     }
   </script>
 </body>

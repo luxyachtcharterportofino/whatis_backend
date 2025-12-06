@@ -320,12 +320,148 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // =======================================================
+  // ZONE SELECTION MODAL
+  // =======================================================
+  
+  function showZoneSelectionModal() {
+    // Load zones into the modal
+    loadZonesForModal();
+    
+    // Update modal title based on context
+    const modalTitle = document.getElementById('zoneSelectionModalLabel');
+    if (window.pendingAutoImport) {
+      modalTitle.textContent = '🗺️ Seleziona una Zona per Import Automatico';
+    } else {
+      modalTitle.textContent = '🗺️ Seleziona una Zona per Inserire POI';
+    }
+    
+    // Show the modal
+    const modal = new bootstrap.Modal(document.getElementById('zoneSelectionModal'));
+    modal.show();
+  }
+  
+  async function loadZonesForModal() {
+    try {
+      const response = await fetch('/admin/zones?format=json');
+      const zones = await response.json();
+      
+      const zoneSelect = document.getElementById('zoneSelect');
+      zoneSelect.innerHTML = '';
+      
+      if (zones.length === 0) {
+        zoneSelect.innerHTML = '<option value="">Nessuna zona disponibile</option>';
+        return;
+      }
+      
+      zones.forEach(zone => {
+        const option = document.createElement('option');
+        option.value = zone._id;
+        option.textContent = `${zone.name}${zone.description ? ' - ' + zone.description : ''}`;
+        zoneSelect.appendChild(option);
+      });
+      
+    } catch (error) {
+      console.error('Errore caricamento zone:', error);
+      const zoneSelect = document.getElementById('zoneSelect');
+      zoneSelect.innerHTML = '<option value="">Errore nel caricamento delle zone</option>';
+    }
+  }
+  
+  function confirmZoneSelection() {
+    const zoneSelect = document.getElementById('zoneSelect');
+    const selectedZoneId = zoneSelect.value;
+    
+    if (!selectedZoneId) {
+      alert('Seleziona una zona dalla lista');
+      return;
+    }
+    
+    // Find the zone in the map layers
+    const zoneLayer = findZoneLayerById(selectedZoneId);
+    if (!zoneLayer) {
+      alert('Zona non trovata nella mappa');
+      return;
+    }
+    
+    // Select the zone
+    selectZoneFromModal(zoneLayer, selectedZoneId);
+    
+    // Close modal
+    const modal = bootstrap.Modal.getInstance(document.getElementById('zoneSelectionModal'));
+    modal.hide();
+    
+    // Check if we need to trigger auto import after zone selection
+    if (window.pendingAutoImport) {
+      window.pendingAutoImport = false;
+      // Trigger the auto import function (solo se il pulsante esiste)
+      const btnAutoImportPOI = document.getElementById("btnAutoImportPOI");
+      if (btnAutoImportPOI) {
+        btnAutoImportPOI.click();
+      }
+    } else {
+      // Now enable insert mode
+      if (enableInsertMode()) {
+        document.getElementById("btnInserisciPOI").classList.add("btn-primary");
+        document.getElementById("btnInserisciPOI").textContent = "✏️ Inserisci POI (ATTIVO)";
+      }
+    }
+  }
+  
+  function findZoneLayerById(zoneId) {
+    // This function should find the zone layer by ID
+    // We need to check how zones are stored in the map
+    if (window.drawnItems) {
+      let foundLayer = null;
+      window.drawnItems.eachLayer((layer) => {
+        if (layer.zoneId === zoneId) {
+          foundLayer = layer;
+        }
+      });
+      return foundLayer;
+    }
+    return null;
+  }
+  
+  function selectZoneFromModal(zoneLayer, zoneId) {
+    // Set the selected zone globally
+    window.selectedZone = {
+      id: zoneId,
+      layer: zoneLayer
+    };
+    
+    // Update status
+    setStatus(`Zona selezionata: ${zoneLayer.zoneName || 'Zona ' + zoneId}`, "ok");
+    
+    // Highlight the zone on the map
+    if (zoneLayer.setStyle) {
+      zoneLayer.setStyle({ color: "#ff6b35", weight: 3, fillOpacity: 0.4 });
+    }
+    
+    // Also call the global selectZone function if it exists
+    if (typeof selectZone === 'function') {
+      selectZone(zoneLayer);
+    }
+  }
+  
+  // Event listeners for zone selection modal
+  document.getElementById('confirmZoneSelection').addEventListener('click', confirmZoneSelection);
+  
+  // Allow double-click on zone options to select quickly
+  document.getElementById('zoneSelect').addEventListener('dblclick', confirmZoneSelection);
+
+  // =======================================================
   // BUTTON HANDLERS
   // =======================================================
   
   // Inserisci POI button
   document.getElementById("btnInserisciPOI").addEventListener("click", () => {
     if (!insertMode) {
+      // Check if a zone is selected
+      if (!window.selectedZone) {
+        showZoneSelectionModal();
+        return;
+      }
+      
       if (enableInsertMode()) {
         document.getElementById("btnInserisciPOI").classList.add("btn-primary");
         document.getElementById("btnInserisciPOI").textContent = "✏️ Inserisci POI (ATTIVO)";
@@ -337,10 +473,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Ricevi POI automatici
-  document.getElementById("btnRiceviPOI").addEventListener("click", async () => {
+  // Ricevi POI automatici (solo se il pulsante esiste)
+  const btnAutoImportPOI = document.getElementById("btnAutoImportPOI");
+  if (btnAutoImportPOI) {
+    btnAutoImportPOI.addEventListener("click", async () => {
     if (!window.selectedZone) {
-      setStatus("Seleziona prima una zona!", "error");
+      window.pendingAutoImport = true;
+      showZoneSelectionModal();
       return;
     }
     
@@ -371,24 +510,32 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     
     setStatus("POI automatici generati con successo!", "ok");
-  });
+    });
+  }
 
   // Visualizza tabella POI
   document.getElementById("btnVisualizzaTabella").addEventListener("click", () => {
     if (window.selectedZone) {
-      window.open(`/admin/pois?zone=${window.selectedZone.id}`, '_blank');
+      // Usa l'ID corretto della zona (stesso formato di map_manager.js)
+      const zoneId = window.selectedZone.zoneId || window.selectedZone._id || window.selectedZone.id;
+      console.log(`📍 Opening POI table for zone: ${zoneId}`);
+      window.open(`/admin/pois?zone=${zoneId}`, '_blank');
     } else {
+      console.log('📍 No zone selected, opening all POIs');
       window.open('/admin/pois', '_blank');
     }
   });
 
-  // Salva ed Esci
-  document.getElementById("btnSalvaEsci").addEventListener("click", () => {
+  // Salva ed Esci (solo se il pulsante esiste)
+  const btnSalvaEsci = document.getElementById("btnSalvaEsci");
+  if (btnSalvaEsci) {
+    btnSalvaEsci.addEventListener("click", () => {
     setStatus("Salvataggio completato. Reindirizzamento...", "ok");
     setTimeout(() => {
       window.location.href = "/admin/zones";
     }, 1000);
-  });
+    });
+  }
 
   // =======================================================
   // ZONE SELECTION INTEGRATION

@@ -1,0 +1,39 @@
+{
+  "municipalityId": "Ischia",
+  "zoneId": "68ff7a7956cfcbc4c1a903c5",
+  "pois": [
+    {
+      "name": "Danakil Depression",
+      "description": "",
+      "lat": 13.9481544,
+      "lng": 40.6288119,
+      "zone": "68ff7a7956cfcbc4c1a903c5",
+      "municipality": "Ischia",
+      "category": "other",
+      "semanticCategory": "Other",
+      "source": "osm",
+      "imageUrl": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop",
+      "customIcon": "📍",
+      "extraInfo": {
+        "aiGenerated": false,
+        "wikipedia": "",
+        "website": "",
+        "curiosities": "",
+        "historicalFacts": "",
+        "tags": {
+          "alt_name:sk": "Afarská panva",
+          "name": "Danakil Depression",
+          "name:sk": "Danakilská preliačina",
+          "natural": "valley",
+          "wikidata": "Q14213070",
+          "wikipedia": "en:Danakil Depression"
+        },
+        "osmId": 1392803463,
+        "rating": 0,
+        "accessibility": "public",
+        "intelligentSearch": true
+      }
+    }
+  ],
+  "timestamp": "2025-10-27T14:07:13.306Z"
+}

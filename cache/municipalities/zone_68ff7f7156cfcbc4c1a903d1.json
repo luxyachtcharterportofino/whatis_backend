@@ -1,0 +1,78 @@
+{
+  "zoneId": "68ff7f7156cfcbc4c1a903d1",
+  "zoneName": "Formentera",
+  "municipalities": [
+    {
+      "name": "el Pilar de la Mola",
+      "lat": 38.6696306,
+      "lng": 1.555024,
+      "adminLevel": "8",
+      "population": "277",
+      "wikipedia": "ca:El Pilar de la Mola",
+      "wikidata": "Q1324476",
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "village"
+    },
+    {
+      "name": "es Pujols",
+      "lat": 38.7225336,
+      "lng": 1.4565527,
+      "adminLevel": "8",
+      "population": "852",
+      "wikipedia": null,
+      "wikidata": null,
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "village"
+    },
+    {
+      "name": "Formentera",
+      "lat": 38.7227575,
+      "lng": 1.4824392,
+      "adminLevel": "8",
+      "population": "11483",
+      "wikipedia": "ca:Formentera",
+      "wikidata": "Q52626",
+      "type": "municipality",
+      "source": "overpass"
+    },
+    {
+      "name": "la Savina",
+      "lat": 38.731698,
+      "lng": 1.416951,
+      "adminLevel": "8",
+      "population": "789",
+      "wikipedia": "es:La Sabina (Baleares)",
+      "wikidata": "Q366618",
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "village"
+    },
+    {
+      "name": "Sant Francesc de Formentera",
+      "lat": 38.705403,
+      "lng": 1.428441,
+      "adminLevel": "8",
+      "population": "1347",
+      "wikipedia": "ca:Sant Francesc de Formentera",
+      "wikidata": "Q1016611",
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "town"
+    },
+    {
+      "name": "Venda des Cap de Barbaria",
+      "lat": 38.6783366,
+      "lng": 1.4022176,
+      "adminLevel": "8",
+      "population": "1713",
+      "wikipedia": null,
+      "wikidata": null,
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "village"
+    }
+  ],
+  "timestamp": "2025-10-27T14:19:35.027Z"
+}

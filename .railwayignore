@@ -1,0 +1,47 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Environment variables
+.env
+.env.local
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build
+dist/
+build/
+
+# Temporary files
+tmp/
+temp/
+
+# iOS App (non necessario per il backend)
+WhatisExplorer_Lite/
+
+# Documentazione
+*.md
+DEPLOY_*.md
+AUTO_SETUP.md
+
+# Script di deploy (non necessari su Railway)
+deploy_*.sh
+deploy_to_cloud.sh
+
+# Altri file non necessari
+.git/
+*.pdf
+

@@ -11,10 +11,11 @@ router.get("/", async (req, res) => {
   try {
     let filter = {};
     
-    // Filtra per zona se specificata e valida
-    if (req.query.zone && req.query.zone !== "undefined" && req.query.zone !== "") {
-      filter.zone = req.query.zone;
-      console.log(`📍 Loading POIs for zone: ${req.query.zone}`);
+    // Filtra per zona se specificata e valida (supporta sia zone che zone_id)
+    const zoneId = req.query.zone_id || req.query.zone;
+    if (zoneId && zoneId !== "undefined" && zoneId !== "") {
+      filter.zone = zoneId;
+      console.log(`📍 Loading POIs for zone: ${zoneId}`);
     } else {
       console.log("📍 Loading all POIs");
     }
@@ -25,14 +26,75 @@ router.get("/", async (req, res) => {
       console.log(`📍 Filtering by category: ${req.query.category}`);
     }
     
-    const pois = await Poi.find(filter).populate("zone", "name");
+    const pois = await Poi.find(filter).populate("zone", "name").sort({ updatedAt: -1 });
     console.log(`✅ Found ${pois.length} POIs`);
     
+    // Ottieni il nome della zona se è specificata
+    let zoneName = null;
+    if (zoneId && zoneId !== "undefined" && zoneId !== "") {
+      const zone = await Zone.findById(zoneId);
+      zoneName = zone ? zone.name : null;
+    }
+    
+    // Carica tutte le zone per il filtro
+    const zones = await Zone.find().select("name _id").sort({ name: 1 }).lean();
+    
     if (req.query.format === "json") return res.json(pois);
-    res.render("admin_pois", { pois });
+    res.render("admin_pois", { pois, zoneName, zones, selectedZoneId: zoneId || null, selectedMunicipality: req.query.municipality || null });
   } catch (err) {
     console.error("❌ Errore caricamento POI:", err);
+    // Return JSON error even for non-JSON requests to be consistent
+    if (req.query.format === "json") {
+      return res.status(500).json({ 
+        success: false, 
+        error: "Errore server", 
+        message: err.message 
+      });
+    }
     res.status(500).send("Errore server");
+  }
+});
+
+// ===============================
+// 🔄 PATCH POI (per aggiornare coordStatus)
+// ===============================
+router.patch("/:id", async (req, res) => {
+  try {
+    const poiId = req.params.id;
+    const updates = req.body;
+    
+    console.log(`🔄 Patching POI: ${poiId}`, updates);
+    
+    // Se vengono modificate le coordinate, imposta coordStatus a "confirmed"
+    if (updates.lat !== undefined || updates.lng !== undefined) {
+      updates.coordStatus = "confirmed";
+    }
+    
+    const updatedPOI = await Poi.findByIdAndUpdate(
+      poiId,
+      updates,
+      { new: true, runValidators: true }
+    ).populate("zone", "name");
+    
+    if (!updatedPOI) {
+      return res.status(404).json({
+        success: false,
+        message: "POI non trovato"
+      });
+    }
+    
+    console.log(`✅ POI patched successfully: ${updatedPOI.name}`);
+    res.json({
+      success: true,
+      message: "POI aggiornato con successo",
+      poi: updatedPOI
+    });
+  } catch (err) {
+    console.error("❌ Errore patch POI:", err);
+    res.status(500).json({
+      success: false,
+      message: "Errore durante l'aggiornamento del POI"
+    });
   }
 });
 
@@ -55,6 +117,7 @@ router.post("/", async (req, res) => {
       lng: parseFloat(lng),
       zone,
       description: description || "",
+      coordStatus: req.body.coordStatus || "unconfirmed" // Se specificato, usa quello, altrimenti default
     });
 
     await poi.save();
@@ -119,7 +182,8 @@ router.put("/:id", async (req, res) => {
         zone: zone || undefined,
         description: description || "",
         category: category || "other",
-        source: source || "manual"
+        source: source || "manual",
+        coordStatus: "confirmed" // Quando modificato manualmente, le coordinate sono confermate
       },
       { new: true, runValidators: true }
     ).populate("zone", "name");
@@ -338,7 +402,7 @@ router.get("/ar", async (req, res) => {
     const pois = await Poi.find(filter)
       .select("name lat lng category customIcon arIcon arPriority extraInfo.aiSummary")
       .populate("zone", "name")
-      .sort({ arPriority: -1, createdAt: -1 })
+      .sort({ arPriority: -1, _id: -1 })
       .limit(parseInt(limit));
     
     // Format for AR consumption

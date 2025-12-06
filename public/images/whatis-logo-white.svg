@@ -1,0 +1,19 @@
+<svg width="750" height="240" viewBox="0 0 750 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+  <!-- SYMBOL -->
+  <g transform="translate(0,0)">
+    <circle cx="120" cy="120" r="110" stroke="white" stroke-width="12"></circle>
+    <path d="M120 60c-18 0-32 14-32 32 0 24 32 68 32 68s32-44 32-68c0-18-14-32-32-32zm0 48a16 16 0 1 1 0-32 16 16 0 0 1 0 32z" fill="white"></path>
+    <path d="M70 150c20 8 40 8 60 0s40-8 60 0" stroke="white" stroke-width="10" stroke-linecap="round"></path>
+    <path d="M70 170c20 8 40 8 60 0s40-8 60 0" stroke="white" stroke-width="10" stroke-linecap="round"></path>
+  </g>
+
+  <!-- TEXT -->
+  <text x="280" y="110" fill="white" font-size="70" font-family="Arial, Helvetica, sans-serif" font-weight="700">
+    Whatis
+  </text>
+  <text x="280" y="185" fill="white" font-size="70" font-family="Arial, Helvetica, sans-serif" font-weight="700">
+    Explorer
+  </text>
+
+</svg>

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120" width="200" height="60">
+  <!-- Background circle with pin and waves - outline version -->
+  <g id="logo-icon">
+    <!-- Outer circle outline -->
+    <circle cx="60" cy="60" r="50" fill="none" stroke="white" stroke-width="2.5"/>
+    
+    <!-- Location pin inside circle - outline -->
+    <circle cx="60" cy="45" r="8" fill="none" stroke="white" stroke-width="2"/>
+    <path d="M 60 53 L 60 75 L 50 85 L 60 90 L 70 85 L 60 75 Z" fill="none" stroke="white" stroke-width="2.5" stroke-linejoin="round"/>
+    
+    <!-- Waves at bottom of circle - outline -->
+    <path d="M 30 75 Q 45 80, 60 75 T 90 75" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"/>
+    <path d="M 25 82 Q 45 87, 60 82 T 95 82" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"/>
+    <path d="M 20 89 Q 45 94, 60 89 T 100 89" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  
+  <!-- Text "Whatis Explorer" - outline style -->
+  <text x="130" y="45" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="none" stroke="white" stroke-width="1.5">Whatis</text>
+  <text x="130" y="75" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="none" stroke="white" stroke-width="1.5">Explorer</text>
+</svg>
+

@@ -1,0 +1,270 @@
+{
+  "zoneId": "6904789e15f920a3714be90a",
+  "zoneName": "Golfo dei Poeti nuova",
+  "zoneCoordinates": [
+    [
+      44.02121220020764,
+      9.851646423339846
+    ],
+    [
+      44.032814302991206,
+      9.86778259277344
+    ],
+    [
+      44.055271493790386,
+      9.861946105957033
+    ],
+    [
+      44.06662024096078,
+      9.914131164550781
+    ],
+    [
+      44.08610540456335,
+      9.915161132812502
+    ],
+    [
+      44.112979463534195,
+      9.85679626464844
+    ],
+    [
+      44.109528433231056,
+      9.81834411621094
+    ],
+    [
+      44.093996303179054,
+      9.812164306640627
+    ],
+    [
+      44.05798552253712,
+      9.823493957519533
+    ],
+    [
+      44.04268664425211,
+      9.829330444335938
+    ]
+  ],
+  "municipalities": [
+    {
+      "id": "node_1214196038",
+      "name": "Baccano",
+      "lat": 44.1123529,
+      "lng": 9.8965989,
+      "adminLevel": "8",
+      "country": "Unknown",
+      "population": null,
+      "wikipedia": "it:Baccano (Arcola)",
+      "wikidata": "Q3632484",
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "village",
+      "zone": "Golfo dei Poeti nuova",
+      "osmType": "node",
+      "osmId": 1214196038
+    },
+    {
+      "id": "node_1256841643",
+      "name": "Cadimare",
+      "lat": 44.0836385,
+      "lng": 9.8219303,
+      "adminLevel": "8",
+      "country": "Unknown",
+      "population": "1000",
+      "wikipedia": "it:Cadimare",
+      "wikidata": "Q2646373",
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "village",
+      "zone": "Golfo dei Poeti nuova",
+      "osmType": "node",
+      "osmId": 1256841643
+    },
+    {
+      "id": "node_1256841446",
+      "name": "Fezzano",
+      "lat": 44.0800228,
+      "lng": 9.8265139,
+      "adminLevel": "8",
+      "country": "Unknown",
+      "population": "900",
+      "wikipedia": "it:Fezzano",
+      "wikidata": "Q952395",
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "village",
+      "zone": "Golfo dei Poeti nuova",
+      "osmType": "node",
+      "osmId": 1256841446
+    },
+    {
+      "id": "node_66586332",
+      "name": "La Spezia",
+      "lat": 44.1033871,
+      "lng": 9.8217022,
+      "adminLevel": "8",
+      "country": "Unknown",
+      "population": "92711",
+      "wikipedia": "it:La Spezia",
+      "wikidata": "Q8611",
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "city",
+      "zone": "Golfo dei Poeti nuova",
+      "osmType": "node",
+      "osmId": 66586332
+    },
+    {
+      "id": "node_1256841653",
+      "name": "Le Grazie",
+      "lat": 44.0640823,
+      "lng": 9.837955,
+      "adminLevel": "8",
+      "country": "Unknown",
+      "population": "1700",
+      "wikipedia": "it:Le Grazie (Porto Venere)",
+      "wikidata": "Q688008",
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "village",
+      "zone": "Golfo dei Poeti nuova",
+      "osmType": "node",
+      "osmId": 1256841653
+    },
+    {
+      "id": "node_66586988",
+      "name": "Lerici",
+      "lat": 44.0736073,
+      "lng": 9.9099135,
+      "adminLevel": "8",
+      "country": "Unknown",
+      "population": "9942",
+      "wikipedia": null,
+      "wikidata": null,
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "town",
+      "zone": "Golfo dei Poeti nuova",
+      "osmType": "node",
+      "osmId": 66586988
+    },
+    {
+      "id": "node_1256841820",
+      "name": "Marola",
+      "lat": 44.0885322,
+      "lng": 9.8186334,
+      "adminLevel": "8",
+      "country": "Unknown",
+      "population": "640",
+      "wikipedia": "it:Marola (La Spezia)",
+      "wikidata": "Q636132",
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "village",
+      "zone": "Golfo dei Poeti nuova",
+      "osmType": "node",
+      "osmId": 1256841820
+    },
+    {
+      "id": "node_1724200900",
+      "name": "Muggiano",
+      "lat": 44.0894579,
+      "lng": 9.8797362,
+      "adminLevel": "8",
+      "country": "Unknown",
+      "population": "600",
+      "wikipedia": "it:Muggiano (La Spezia)",
+      "wikidata": "Q16580400",
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "village",
+      "zone": "Golfo dei Poeti nuova",
+      "osmType": "node",
+      "osmId": 1724200900
+    },
+    {
+      "id": "node_1211711309",
+      "name": "Pitelli",
+      "lat": 44.0949185,
+      "lng": 9.8849512,
+      "adminLevel": "8",
+      "country": "Unknown",
+      "population": "1100",
+      "wikipedia": "it:Pitelli",
+      "wikidata": "Q2684384",
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "village",
+      "zone": "Golfo dei Poeti nuova",
+      "osmType": "node",
+      "osmId": 1211711309
+    },
+    {
+      "id": "node_66587026",
+      "name": "Porto Venere",
+      "lat": 44.0506605,
+      "lng": 9.8344585,
+      "adminLevel": "8",
+      "country": "Unknown",
+      "population": "3630",
+      "wikipedia": "it:Porto Venere",
+      "wikidata": "Q188315",
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "village",
+      "zone": "Golfo dei Poeti nuova",
+      "osmType": "node",
+      "osmId": 66587026
+    },
+    {
+      "id": "node_1724200890",
+      "name": "Pozzuolo",
+      "lat": 44.0886257,
+      "lng": 9.8891413,
+      "adminLevel": "8",
+      "country": "Unknown",
+      "population": null,
+      "wikipedia": null,
+      "wikidata": null,
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "village",
+      "zone": "Golfo dei Poeti nuova",
+      "osmType": "node",
+      "osmId": 1724200890
+    },
+    {
+      "id": "node_1211711302",
+      "name": "Pugliola",
+      "lat": 44.085264,
+      "lng": 9.9121936,
+      "adminLevel": "8",
+      "country": "Unknown",
+      "population": null,
+      "wikipedia": null,
+      "wikidata": null,
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "village",
+      "zone": "Golfo dei Poeti nuova",
+      "osmType": "node",
+      "osmId": 1211711302
+    },
+    {
+      "id": "node_628620291",
+      "name": "San Terenzo",
+      "lat": 44.0840206,
+      "lng": 9.8971467,
+      "adminLevel": "8",
+      "country": "Unknown",
+      "population": null,
+      "wikipedia": "it:San Terenzo",
+      "wikidata": "Q958170",
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "village",
+      "zone": "Golfo dei Poeti nuova",
+      "osmType": "node",
+      "osmId": 628620291
+    }
+  ],
+  "timestamp": "2025-10-31T08:59:16.528Z"
+}

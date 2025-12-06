@@ -25,16 +25,20 @@
 </head>
 <body>
   <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-black shadow-sm">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-black shadow-sm px-4">
     <div class="container-fluid">
-      <a class="navbar-brand fw-bold" href="/admin/dashboard">
-        <i class="bi bi-translate"></i> Andaly Whatis - Traduzioni
+      <a class="navbar-brand" href="/admin/dashboard" aria-label="Whatis dashboard">
+        <img
+          src="/images/whatis-logo-white.svg"
+          alt="Whatis Explorer"
+          style="height: 80px; width: auto; filter: drop-shadow(0 2px 6px rgba(255, 255, 255, 0.4));"
+        />
       </a>
       <div class="navbar-nav ms-auto">
-        <a class="nav-link" href="/admin/dashboard">Dashboard</a>
-        <a class="nav-link" href="/admin/map">Mappa</a>
-        <a class="nav-link" href="/admin/pois">POI</a>
-        <a class="nav-link active" href="/admin/translations">Traduzioni</a>
+        <a class="nav-link text-light" href="/admin/dashboard">Dashboard</a>
+        <a class="nav-link text-light" href="/admin/map">Mappa</a>
+        <a class="nav-link text-light" href="/admin/pois">POI</a>
+        <a class="nav-link text-info active" href="/admin/translations">Traduzioni</a>
       </div>
     </div>
   </nav>
@@ -43,10 +47,18 @@
     <!-- Header -->
     <div class="row mb-4">
       <div class="col-12">
-        <h1 class="text-light mb-3">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+          <div>
+            <h1 class="text-light mb-1">
           <i class="bi bi-globe-americas text-info"></i> Gestione Traduzioni POI
         </h1>
-        <p class="text-muted">Gestisci le traduzioni multilingua per l'APP internazionale</p>
+            <p class="text-muted mb-0">Gestisci le traduzioni multilingua per l'APP internazionale</p>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <span id="providerBadge" class="badge rounded-pill bg-secondary" title="Provider traduzioni attivo">Provider: …</span>
+            <span id="missingBadge" class="badge rounded-pill bg-warning text-dark" title="Traduzioni mancanti nella zona selezionata">Mancanti: …</span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -58,17 +70,7 @@
             <i class="bi bi-arrow-repeat text-warning"></i> Traduzione Batch
           </h5>
           <div class="row">
-            <div class="col-md-6">
-              <label class="form-label text-light">Seleziona Lingua Target:</label>
-              <select class="form-select bg-dark text-light border-secondary" id="batchLanguage">
-                <option value="en">🇺🇸 English</option>
-                <option value="fr">🇫🇷 Français</option>
-                <option value="es">🇪🇸 Español</option>
-                <option value="de">🇩🇪 Deutsch</option>
-                <option value="ru">🇷🇺 Русский</option>
-              </select>
-            </div>
-            <div class="col-md-6">
+            <div class="col-md-12">
               <label class="form-label text-light">Zona:</label>
               <select class="form-select bg-dark text-light border-secondary" id="batchZone">
                 <option value="">Tutte le zone</option>
@@ -80,7 +82,7 @@
           <button class="btn btn-warning btn-lg" onclick="startBatchTranslation()">
             <i class="bi bi-translate"></i> Traduci Tutto
           </button>
-        </div>
+      </div>
       </div>
     </div>
 
@@ -120,6 +122,26 @@
       </div>
     </div>
 
+    <!-- Progress Overlay -->
+    <div id="translationProgress" class="position-fixed top-0 start-0 w-100 h-100" 
+         style="display:none; background: rgba(0,0,0,0.55); z-index: 1050;">
+      <div class="position-absolute top-50 start-50 translate-middle" style="min-width: 420px;">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="mb-2 text-info"><i class="bi bi-translate"></i> Traduzione in corso…</h5>
+            <div class="progress mb-2" style="height: 22px;">
+              <div id="translationProgressBar" class="progress-bar bg-info progress-bar-striped progress-bar-animated" 
+                   role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <div class="d-flex justify-content-between small">
+              <span id="translationProgressText" class="text-muted">Avvio…</span>
+              <span id="translationProgressPct" class="text-info fw-bold">0%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Translation Table -->
     <div class="card">
       <div class="card-header bg-dark">
@@ -134,7 +156,6 @@
               <tr>
                 <th>POI</th>
                 <th>Zona</th>
-                <th>Categoria</th>
                 <th>🇺🇸 EN</th>
                 <th>🇫🇷 FR</th>
                 <th>🇪🇸 ES</th>
@@ -145,7 +166,7 @@
             </thead>
             <tbody id="translationsTableBody">
               <tr>
-                <td colspan="9" class="text-center text-muted">
+                <td colspan="8" class="text-center text-muted">
                   <div class="spinner-border text-info" role="status">
                     <span class="visually-hidden">Caricamento...</span>
                   </div>
@@ -197,6 +218,7 @@
     document.addEventListener('DOMContentLoaded', function() {
       loadTranslationsData();
       loadZones();
+    loadProviderBadge();
     });
 
     // Load translations data
@@ -215,18 +237,29 @@
       }
     }
 
-    // Load zones for batch translation
+    // Load zones for batch translation and filtering
     async function loadZones() {
       try {
         const response = await fetch('/zones?format=json');
         const zones = await response.json();
         
-        const select = document.getElementById('batchZone');
+        const batchSelect = document.getElementById('batchZone');
+        
+        // Clear existing options
+        batchSelect.innerHTML = '<option value="">Tutte le zone</option>';
+        
         zones.forEach(zone => {
-          const option = document.createElement('option');
-          option.value = zone._id;
-          option.textContent = zone.name;
-          select.appendChild(option);
+          const batchOption = document.createElement('option');
+          batchOption.value = zone._id;
+          batchOption.textContent = zone.name;
+          batchSelect.appendChild(batchOption);
+        });
+        
+        // Add event listener for batch dropdown to filter table
+        batchSelect.addEventListener('change', function() {
+          const selectedZone = this.value || null;
+          renderTranslationsTable(selectedZone);
+          updateStatistics(selectedZone);
         });
         
       } catch (error) {
@@ -235,19 +268,50 @@
     }
 
     // Render translations table
-    function renderTranslationsTable() {
+    function renderTranslationsTable(selectedZoneId = null) {
       const tbody = document.getElementById('translationsTableBody');
       tbody.innerHTML = '';
 
-      translationsData.forEach(poi => {
+      // Filter POIs by selected zone if specified
+      let poisToRender = translationsData;
+      if (selectedZoneId) {
+        poisToRender = translationsData.filter(poi => {
+          // Handle both populated and non-populated zone references
+          if (!poi.zone) return false;
+          
+          // Check if zone is a populated object
+          if (typeof poi.zone === 'object' && poi.zone._id) {
+            return poi.zone._id.toString() === selectedZoneId.toString();
+          }
+          
+          // Check if zone is just an ObjectId string
+          if (typeof poi.zone === 'string') {
+            return poi.zone === selectedZoneId;
+          }
+          
+          return false;
+        });
+        
+        console.log(`Filtered ${poisToRender.length} POIs for zone ${selectedZoneId} out of ${translationsData.length} total`);
+      }
+
+      poisToRender.forEach(poi => {
         const row = document.createElement('tr');
         
         const translationStatus = getTranslationStatus(poi);
         
+        // Get image URL or use red pin placeholder
+        const poiImageUrl = poi.imageUrl || '/icons/red-pin.png';
+        const imageUrl = poiImageUrl.startsWith('/') ? poiImageUrl : `/${poiImageUrl}`;
+        
         row.innerHTML = `
           <td>
             <div class="d-flex align-items-center">
-              <span class="fs-4 me-2">${poi.customIcon || poi.arIcon || '📍'}</span>
+              <img src="${imageUrl}" 
+                   alt="${poi.name}" 
+                   class="me-2" 
+                   style="width: 40px; height: 40px; object-fit: cover; border-radius: 6px; border: 1px solid #4a5568;"
+                   onerror="this.src='/icons/red-pin.png'">
               <div>
                 <strong>${poi.name}</strong>
                 <br><small class="text-muted">${poi.description?.substring(0, 50)}...</small>
@@ -255,7 +319,6 @@
             </div>
           </td>
           <td>${poi.zone?.name || 'N/A'}</td>
-          <td><span class="badge bg-secondary">${poi.category}</span></td>
           ${renderLanguageStatus(translationStatus, 'en')}
           ${renderLanguageStatus(translationStatus, 'fr')}
           ${renderLanguageStatus(translationStatus, 'es')}
@@ -275,28 +338,43 @@
       });
     }
 
-    // Get translation status for a POI
+    // Get translation status for a POI (overall status across all languages)
     function getTranslationStatus(poi) {
-      const status = {};
       const languages = ['en', 'fr', 'es', 'de', 'ru'];
+      let translatedLanguages = 0;
+      let totalLanguages = 0;
       
       languages.forEach(lang => {
         const langContent = poi.multilingual?.[lang];
+        totalLanguages++;
+        
         if (langContent) {
-          const hasName = langContent.name && langContent.name.trim();
-          const hasDesc = langContent.description && langContent.description.trim();
-          const hasSummary = langContent.aiSummary && langContent.aiSummary.trim();
+          const name = (langContent.name || '').trim();
+          const description = (langContent.description || '').trim();
           
-          if (hasName && hasDesc && hasSummary) {
-            status[lang] = 'complete';
-          } else if (hasName || hasDesc || hasSummary) {
-            status[lang] = 'partial';
-          } else {
-            status[lang] = 'none';
+          // Check if this language has BOTH name AND description translated
+          // A language is only considered fully translated if both fields are present
+          if (name && description) {
+            translatedLanguages++;
           }
-        } else {
-          status[lang] = 'none';
         }
+      });
+      
+      // Return overall status based on how many languages are translated
+      let overallStatus = 'none'; // Default: no translations
+      
+      if (translatedLanguages === 0) {
+        overallStatus = 'none'; // None translated
+      } else if (translatedLanguages === totalLanguages) {
+        overallStatus = 'complete'; // All translated
+      } else {
+        overallStatus = 'partial'; // Some translated
+      }
+      
+      // Return a consistent status for all languages (showing overall POI status)
+      const status = {};
+      languages.forEach(lang => {
+        status[lang] = overallStatus;
       });
       
       return status;
@@ -304,41 +382,100 @@
 
     // Render language status cell
     function renderLanguageStatus(status, lang) {
-      const statusClass = status[lang] === 'complete' ? 'status-complete' : 
-                         status[lang] === 'partial' ? 'status-partial' : 'status-none';
-      const statusText = status[lang] === 'complete' ? 'Completa' :
-                        status[lang] === 'partial' ? 'Parziale' : 'Mancante';
+      let statusClass, statusText, textColor;
+      
+      if (status[lang] === 'complete') {
+        statusClass = 'status-complete';
+        statusText = 'Completa';
+        textColor = 'text-success';
+      } else if (status[lang] === 'partial') {
+        statusClass = 'status-partial';
+        statusText = 'Parziale';
+        textColor = 'text-warning';
+      } else {
+        statusClass = 'status-none';
+        statusText = 'Mancante';
+        textColor = 'text-danger';
+      }
       
       return `
         <td class="text-center">
           <span class="${statusClass}"></span>
-          <small class="text-muted">${statusText}</small>
+          <small class="${textColor} fw-bold">${statusText}</small>
         </td>
       `;
     }
 
     // Update statistics
-    function updateStatistics() {
-      const totalPOIs = translationsData.length;
+    function updateStatistics(selectedZoneId = null) {
+      // Filter POIs if zone is selected
+      let poisToCount = translationsData;
+      if (selectedZoneId) {
+        poisToCount = translationsData.filter(poi => {
+          if (!poi.zone) return false;
+          if (typeof poi.zone === 'object' && poi.zone._id) {
+            return poi.zone._id.toString() === selectedZoneId.toString();
+          }
+          if (typeof poi.zone === 'string') {
+            return poi.zone === selectedZoneId;
+          }
+          return false;
+        });
+      }
+      
+      const totalPOIs = poisToCount.length;
       let completeTranslations = 0;
       let partialTranslations = 0;
       let missingTranslations = 0;
 
-      translationsData.forEach(poi => {
+      poisToCount.forEach(poi => {
         const status = getTranslationStatus(poi);
-        const languages = ['en', 'fr', 'es', 'de', 'ru'];
+        const overallStatus = status['en']; // Get overall status (same for all languages)
         
-        languages.forEach(lang => {
-          if (status[lang] === 'complete') completeTranslations++;
-          else if (status[lang] === 'partial') partialTranslations++;
-          else missingTranslations++;
-        });
+        if (overallStatus === 'complete') {
+          completeTranslations++;
+        } else if (overallStatus === 'partial') {
+          partialTranslations++;
+        } else {
+          missingTranslations++;
+        }
       });
 
       document.getElementById('totalPOIs').textContent = totalPOIs;
       document.getElementById('completeTranslations').textContent = completeTranslations;
       document.getElementById('partialTranslations').textContent = partialTranslations;
       document.getElementById('missingTranslations').textContent = missingTranslations;
+
+      // Update header missing badge
+      const missingBadge = document.getElementById('missingBadge');
+      if (missingBadge) missingBadge.textContent = `Mancanti: ${missingTranslations}`;
+    }
+
+    // Provider badge loader
+    async function loadProviderBadge() {
+      try {
+        const resp = await fetch('/admin/translations/provider');
+        const data = await resp.json();
+        const badge = document.getElementById('providerBadge');
+        if (!badge) return;
+        if (data && data.success) {
+          const p = (data.provider || '').toLowerCase();
+          if (p === 'deepl') {
+            badge.classList.remove('bg-secondary');
+            badge.classList.add('bg-info');
+            badge.textContent = 'Provider: DeepL';
+          } else {
+            badge.classList.remove('bg-info');
+            badge.classList.add('bg-secondary');
+            badge.textContent = 'Provider: Non configurato';
+          }
+        } else {
+          badge.textContent = 'Provider: Non configurato';
+        }
+      } catch (_) {
+        const badge = document.getElementById('providerBadge');
+        if (badge) badge.textContent = 'Provider: Non configurato';
+      }
     }
 
     // Open translation editor
@@ -409,39 +546,19 @@
         tabsHTML += `
           <div class="tab-pane fade ${index === 0 ? 'show active' : ''}" id="${code}" role="tabpanel">
             <div class="row mt-3">
-              <div class="col-md-6">
-                <label class="form-label">Nome ${info.name}</label>
+              <div class="col-12">
+                <label class="form-label text-info">Nome ${info.name}</label>
                 <input type="text" class="form-control bg-dark text-light border-secondary" 
                        id="${code}-name" value="${langContent.name || ''}" 
                        placeholder="Nome in ${info.name}">
               </div>
-              <div class="col-md-6">
-                <label class="form-label">Descrizione ${info.name}</label>
-                <textarea class="form-control bg-dark text-light border-secondary" 
-                          id="${code}-description" rows="3" 
-                          placeholder="Descrizione in ${info.name}">${langContent.description || ''}</textarea>
-              </div>
             </div>
             <div class="row mt-3">
               <div class="col-12">
-                <label class="form-label">AI Summary ${info.name}</label>
+                <label class="form-label text-info">Descrizione ${info.name}</label>
                 <textarea class="form-control bg-dark text-light border-secondary" 
-                          id="${code}-aiSummary" rows="4" 
-                          placeholder="Riassunto AI in ${info.name}">${langContent.aiSummary || ''}</textarea>
-              </div>
-            </div>
-            <div class="row mt-3">
-              <div class="col-md-6">
-                <label class="form-label">Curiosità ${info.name}</label>
-                <textarea class="form-control bg-dark text-light border-secondary" 
-                          id="${code}-curiosities" rows="3" 
-                          placeholder="Curiosità in ${info.name}">${langContent.curiosities || ''}</textarea>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label">Fatti Storici ${info.name}</label>
-                <textarea class="form-control bg-dark text-light border-secondary" 
-                          id="${code}-historicalFacts" rows="3" 
-                          placeholder="Storia in ${info.name}">${langContent.historicalFacts || ''}</textarea>
+                          id="${code}-description" rows="8" 
+                          placeholder="Descrizione completa in ${info.name}">${langContent.description || ''}</textarea>
               </div>
             </div>
           </div>
@@ -467,12 +584,9 @@
         languages.forEach(lang => {
           const name = document.getElementById(`${lang}-name`)?.value || '';
           const description = document.getElementById(`${lang}-description`)?.value || '';
-          const aiSummary = document.getElementById(`${lang}-aiSummary`)?.value || '';
-          const curiosities = document.getElementById(`${lang}-curiosities`)?.value || '';
-          const historicalFacts = document.getElementById(`${lang}-historicalFacts`)?.value || '';
 
-          if (name || description || aiSummary || curiosities || historicalFacts) {
-            updates[lang] = { name, description, aiSummary, curiosities, historicalFacts };
+          if (name || description) {
+            updates[lang] = { name, description };
           }
         });
 
@@ -485,7 +599,15 @@
         if (response.ok) {
           showAlert('Traduzioni salvate con successo!', 'success');
           bootstrap.Modal.getInstance(document.getElementById('translationModal')).hide();
-          loadTranslationsData(); // Reload data
+          
+          // Reload data and maintain zone filter
+          await loadTranslationsData();
+          // Re-apply zone filter after reload
+          const currentZone = document.getElementById('batchZone').value;
+          if (currentZone) {
+            renderTranslationsTable(currentZone);
+            updateStatistics(currentZone);
+          }
         } else {
           throw new Error('Errore nel salvataggio');
         }
@@ -500,6 +622,9 @@
     async function translatePOI(poiId) {
       try {
         const languages = ['en', 'fr', 'es', 'de', 'ru'];
+        // progress UI
+        showProgress('Traduzione POI in corso…', 0);
+        const total = languages.length; let done = 0;
         
         for (const lang of languages) {
           const response = await fetch(`/translations/translate/${poiId}/${lang}`, {
@@ -509,27 +634,32 @@
           if (!response.ok) {
             console.error(`Error translating to ${lang}`);
           }
+          done++;
+          updateProgress(Math.round((done/total)*100), `Traduzione ${done}/${total}…`);
         }
 
         showAlert('Traduzione automatica completata!', 'success');
-        loadTranslationsData(); // Reload data
+        hideProgress();
+        // Reload data and maintain zone filter
+        await loadTranslationsData();
+        // Re-apply zone filter after reload
+        const currentZone = document.getElementById('batchZone').value;
+        if (currentZone) {
+          renderTranslationsTable(currentZone);
+          updateStatistics(currentZone);
+        }
 
       } catch (error) {
         console.error('Error translating POI:', error);
         showAlert('Errore nella traduzione automatica', 'error');
+        hideProgress();
       }
     }
 
-    // Start batch translation
+    // Start batch translation - translates all POIs in selected zone to all languages
     async function startBatchTranslation() {
-      const language = document.getElementById('batchLanguage').value;
       const zoneId = document.getElementById('batchZone').value;
       
-      if (!language) {
-        showAlert('Seleziona una lingua target', 'warning');
-        return;
-      }
-
       try {
         let poiIds = translationsData.map(poi => poi._id);
         
@@ -545,24 +675,49 @@
           return;
         }
 
-        const response = await fetch('/translations/batch-translate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ poiIds, language })
-        });
+        // Translate all POIs to all languages
+        const languages = ['en', 'fr', 'es', 'de', 'ru'];
+        let totalSuccess = 0;
+        let totalErrors = 0;
+        const totalSteps = poiIds.length * languages.length;
+        let done = 0;
+        showProgress('Traduzione batch in corso…', 0);
 
-        const result = await response.json();
+        for (const poiId of poiIds) {
+          for (const lang of languages) {
+            try {
+              const response = await fetch(`/translations/translate/${poiId}/${lang}`, {
+                method: 'POST'
+              });
+              
+              if (response.ok) {
+                totalSuccess++;
+              } else {
+                totalErrors++;
+              }
+            } catch (error) {
+              console.error(`Error translating POI ${poiId} to ${lang}:`, error);
+              totalErrors++;
+            }
+            done++;
+            updateProgress(Math.round((done/totalSteps)*100), `Tradotto ${done}/${totalSteps} elementi…`);
+          }
+        }
+
+        showAlert(`Traduzione batch completata: ${totalSuccess} successi, ${totalErrors} errori`, 'success');
+        hideProgress();
         
-        if (response.ok) {
-          showAlert(`Traduzione batch completata: ${result.summary.success} successi, ${result.summary.errors} errori`, 'success');
-          loadTranslationsData(); // Reload data
-        } else {
-          throw new Error(result.error);
+        // Reload data and maintain zone filter
+        await loadTranslationsData();
+        if (zoneId) {
+          renderTranslationsTable(zoneId);
+          updateStatistics(zoneId);
         }
 
       } catch (error) {
         console.error('Error batch translating:', error);
         showAlert('Errore nella traduzione batch', 'error');
+        hideProgress();
       }
     }
 
@@ -589,6 +744,34 @@
           bootstrap.Alert.getOrCreateInstance(alert).close();
         }
       }, 5000);
+    }
+
+    // Progress helpers
+    function showProgress(text, percent) {
+      const overlay = document.getElementById('translationProgress');
+      const bar = document.getElementById('translationProgressBar');
+      const txt = document.getElementById('translationProgressText');
+      const pct = document.getElementById('translationProgressPct');
+      if (!overlay || !bar || !txt || !pct) return;
+      overlay.style.display = 'block';
+      txt.textContent = text || 'In corso…';
+      bar.style.width = `${percent||0}%`;
+      bar.setAttribute('aria-valuenow', percent||0);
+      pct.textContent = `${percent||0}%`;
+    }
+    function updateProgress(percent, text) {
+      const bar = document.getElementById('translationProgressBar');
+      const txt = document.getElementById('translationProgressText');
+      const pct = document.getElementById('translationProgressPct');
+      if (!bar || !txt || !pct) return;
+      if (typeof text === 'string') txt.textContent = text;
+      bar.style.width = `${percent}%`;
+      bar.setAttribute('aria-valuenow', percent);
+      pct.textContent = `${percent}%`;
+    }
+    function hideProgress() {
+      const overlay = document.getElementById('translationProgress');
+      if (overlay) overlay.style.display = 'none';
     }
   </script>
 </body>

@@ -1,0 +1,63 @@
+{
+  "zoneId": "69031e360ad6b76cb2675b07",
+  "zoneName": "Arenzano nuova",
+  "zoneCoordinates": [
+    [
+      44.38865427337759,
+      8.618774414062502
+    ],
+    [
+      44.36313311380771,
+      8.683319091796877
+    ],
+    [
+      44.39356091349481,
+      8.730010986328127
+    ],
+    [
+      44.43181858864192,
+      8.740997314453127
+    ],
+    [
+      44.43181858864192,
+      8.680572509765627
+    ]
+  ],
+  "municipalities": [
+    {
+      "id": "node_66586589",
+      "name": "Arenzano",
+      "lat": 44.4025183,
+      "lng": 8.6831317,
+      "adminLevel": "8",
+      "country": "Unknown",
+      "population": "11519",
+      "wikipedia": null,
+      "wikidata": "Q265257",
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "town",
+      "zone": "Arenzano nuova",
+      "osmType": "node",
+      "osmId": 66586589
+    },
+    {
+      "id": "node_66586624",
+      "name": "Cogoleto",
+      "lat": 44.3893419,
+      "lng": 8.6428599,
+      "adminLevel": "8",
+      "country": "Unknown",
+      "population": "9172",
+      "wikipedia": null,
+      "wikidata": "Q265271",
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "village",
+      "zone": "Arenzano nuova",
+      "osmType": "node",
+      "osmId": 66586624
+    }
+  ],
+  "timestamp": "2025-10-30T08:13:47.268Z"
+}

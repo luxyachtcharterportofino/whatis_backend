@@ -1,0 +1,63 @@
+{
+  "zoneId": "690f0a116a4ed52b4533dec8",
+  "zoneName": "Prova",
+  "zoneCoordinates": [
+    [
+      44.3891449559002,
+      8.997802734375002
+    ],
+    [
+      44.36116948697885,
+      9.023208618164064
+    ],
+    [
+      44.36313311380771,
+      9.076080322265627
+    ],
+    [
+      44.401410682066405,
+      9.09873962402344
+    ],
+    [
+      44.41269287945535,
+      9.04380798339844
+    ]
+  ],
+  "municipalities": [
+    {
+      "id": "node_66586652",
+      "name": "Bogliasco",
+      "lat": 44.3790556,
+      "lng": 9.0679508,
+      "adminLevel": "8",
+      "country": "Unknown",
+      "population": "4613",
+      "wikipedia": null,
+      "wikidata": "Q266592",
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "village",
+      "zone": "Prova",
+      "osmType": "node",
+      "osmId": 66586652
+    },
+    {
+      "id": "node_66586463",
+      "name": "Pieve Ligure",
+      "lat": 44.3762485,
+      "lng": 9.0861613,
+      "adminLevel": "8",
+      "country": "Unknown",
+      "population": "2459",
+      "wikipedia": null,
+      "wikidata": "Q266620",
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "village",
+      "zone": "Prova",
+      "osmType": "node",
+      "osmId": 66586463
+    }
+  ],
+  "timestamp": "2025-11-08T09:15:05.770Z"
+}

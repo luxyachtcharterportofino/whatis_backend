@@ -32,6 +32,41 @@ router.get('/languages', (req, res) => {
 });
 
 /**
+ * GET /translations/provider
+ * Returns active translation provider (deepl/google)
+ */
+router.get('/provider', (req, res) => {
+  try {
+    const provider = POITranslationService.getActiveProvider();
+    res.json({ success: true, provider });
+  } catch (error) {
+    console.error('❌ Error getting provider:', error);
+    res.status(500).json({ success: false, error: 'Errore recupero provider' });
+  }
+});
+
+/**
+ * GET /translations/provider/:poiId
+ * Returns active provider and detected source language for a POI
+ */
+router.get('/provider/:poiId', async (req, res) => {
+  try {
+    const provider = POITranslationService.getActiveProvider();
+    const { poiId } = req.params;
+    let source = null;
+    try {
+      source = await POITranslationService.detectPOISourceLanguage(poiId);
+    } catch (e) {
+      source = { sourceLang: 'it', hasContent: false };
+    }
+    res.json({ success: true, provider, source });
+  } catch (error) {
+    console.error('❌ Error getting provider/source:', error);
+    res.status(500).json({ success: false, error: 'Errore provider/source' });
+  }
+});
+
+/**
  * GET /translations/status/:poiId
  * Get translation status for a specific POI
  */
@@ -154,15 +189,12 @@ router.put('/:poiId/batch', async (req, res) => {
       poi.multilingual = {};
     }
     
-    // Update each language translation
+    // Update each language translation - only name and description are translated
     Object.keys(translations).forEach(language => {
       const translation = translations[language];
       poi.multilingual[language] = {
         name: translation.name || '',
-        description: translation.description || '',
-        aiSummary: translation.aiSummary || '',
-        curiosities: translation.curiosities || '',
-        historicalFacts: translation.historicalFacts || ''
+        description: translation.description || ''
       };
     });
     
@@ -189,7 +221,7 @@ router.put('/:poiId/batch', async (req, res) => {
 router.put('/:poiId/:language', async (req, res) => {
   try {
     const { poiId, language } = req.params;
-    const { name, description, aiSummary, curiosities, historicalFacts } = req.body;
+    const { name, description } = req.body;
     
     const poi = await Poi.findById(poiId);
     if (!poi) {
@@ -204,13 +236,10 @@ router.put('/:poiId/:language', async (req, res) => {
       poi.multilingual = {};
     }
     
-    // Update translation
+    // Update translation - only name and description are translated
     poi.multilingual[language] = {
       name: name || poi.multilingual[language]?.name || '',
-      description: description || poi.multilingual[language]?.description || '',
-      aiSummary: aiSummary || poi.multilingual[language]?.aiSummary || '',
-      curiosities: curiosities || poi.multilingual[language]?.curiosities || '',
-      historicalFacts: historicalFacts || poi.multilingual[language]?.historicalFacts || ''
+      description: description || poi.multilingual[language]?.description || ''
     };
     
     await poi.save();

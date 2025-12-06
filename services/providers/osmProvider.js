@@ -62,34 +62,63 @@ class OSMProvider {
         node["natural"="beach"](${bbox});
         node["leisure"="marina"](${bbox});
         node["seamark:type"="lighthouse"](${bbox});
+        node["building"="palace"](${bbox});
+        node["building"="villa"](${bbox});
+        node["historic"="castle"](${bbox});
+        node["historic"="monastery"](${bbox});
+        node["historic"="abbey"](${bbox});
         way["tourism"="attraction"](${bbox});
         way["tourism"="museum"](${bbox});
         way["historic"](${bbox});
         way["amenity"="place_of_worship"](${bbox});
         way["natural"="beach"](${bbox});
         way["leisure"="marina"](${bbox});
+        way["building"="palace"](${bbox});
+        way["building"="villa"](${bbox});
+        way["historic"="castle"](${bbox});
+        way["historic"="monastery"](${bbox});
+        way["historic"="abbey"](${bbox});
       );
       out center meta;
     `.replace(/\s+/g, ' ').trim();
   }
 
   buildExtendedQuery(bbox) {
-    // Query estesa per trovare più POI turistici
+    // Query estesa per trovare più POI turistici + ricerca per nomi specifici
     return `
       [out:json][timeout:20];
       (
+        // Query originale estesa
         node["tourism"](${bbox});
         node["historic"](${bbox});
-        node["amenity"~"^(place_of_worship|arts_centre|theatre|cinema|restaurant|hotel|bar)$"](${bbox});
-        node["natural"~"^(beach|cliff|bay|cape)$"](${bbox});
-        node["leisure"~"^(marina|park|nature_reserve)$"](${bbox});
+        node["amenity"](${bbox});
+        node["natural"](${bbox});
+        node["leisure"](${bbox});
         node["seamark"](${bbox});
         way["tourism"](${bbox});
         way["historic"](${bbox});
-        way["amenity"~"^(place_of_worship|arts_centre|theatre|cinema|restaurant|hotel|bar)$"](${bbox});
-        way["natural"~"^(beach|cliff|bay|cape)$"](${bbox});
-        way["leisure"~"^(marina|park|nature_reserve)$"](${bbox});
+        way["amenity"](${bbox});
+        way["natural"](${bbox});
+        way["leisure"](${bbox});
         way["seamark"](${bbox});
+        
+        // Ricerca per nomi specifici famosi del Tigullio
+        node["name"~"Cervara",i](${bbox});
+        node["name"~"Durazzo",i](${bbox});
+        node["name"~"San Fruttuoso",i](${bbox});
+        node["name"~"Portofino",i](${bbox});
+        node["name"~"Rapallo",i](${bbox});
+        node["name"~"Santa Margherita",i](${bbox});
+        node["name"~"Chiavari",i](${bbox});
+        node["name"~"Sestri",i](${bbox});
+        way["name"~"Cervara",i](${bbox});
+        way["name"~"Durazzo",i](${bbox});
+        way["name"~"San Fruttuoso",i](${bbox});
+        way["name"~"Portofino",i](${bbox});
+        way["name"~"Rapallo",i](${bbox});
+        way["name"~"Santa Margherita",i](${bbox});
+        way["name"~"Chiavari",i](${bbox});
+        way["name"~"Sestri",i](${bbox});
       );
       out center meta;
     `.replace(/\s+/g, ' ').trim();

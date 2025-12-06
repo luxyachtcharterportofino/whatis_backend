@@ -1,2 +1,0 @@
-🟢 Server avviato su http://localhost:3000
-✅ Connessione a MongoDB riuscita

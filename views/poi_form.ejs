@@ -1,5 +1,22 @@
 <%- include('partials/head') %>
 
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-black shadow-sm px-4">
+  <a class="navbar-brand" href="/admin/dashboard" aria-label="Whatis dashboard">
+        <img
+          src="/images/whatis-logo-white.svg"
+          alt="Whatis Explorer"
+          style="height: 80px; width: auto; filter: drop-shadow(0 2px 6px rgba(255, 255, 255, 0.4));"
+        />
+  </a>
+  <div class="navbar-nav ms-auto">
+    <a class="nav-link text-light" href="/admin/dashboard">Dashboard</a>
+    <a class="nav-link text-light" href="/admin/zones">Zone</a>
+    <a class="nav-link text-light" href="/admin/pois">POI</a>
+    <a class="nav-link text-light" href="/admin/map">Cartina</a>
+  </div>
+</nav>
+
 <div class="container mt-4">
   <h3><%= poi ? "✏️ Modifica POI" : "📍 Nuovo POI" %></h3>
 

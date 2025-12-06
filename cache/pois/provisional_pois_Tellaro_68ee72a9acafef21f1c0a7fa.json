@@ -1,0 +1,39 @@
+{
+  "municipalityId": "Tellaro",
+  "zoneId": "68ee72a9acafef21f1c0a7fa",
+  "pois": [
+    {
+      "name": "Buuraha Dhadhihwaraabe",
+      "description": "",
+      "lat": 10.030056,
+      "lng": 44.108315,
+      "zone": "68ee72a9acafef21f1c0a7fa",
+      "municipality": "Tellaro",
+      "category": "other",
+      "semanticCategory": "Other",
+      "source": "osm",
+      "imageUrl": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop",
+      "customIcon": "📍",
+      "extraInfo": {
+        "aiGenerated": false,
+        "wikipedia": "",
+        "website": "",
+        "curiosities": "",
+        "historicalFacts": "",
+        "tags": {
+          "gns:modify_date": "2010-05-21",
+          "gns:type": "HLLS",
+          "gns:ufi": "-3219501",
+          "name": "Buuraha Dhadhihwaraabe",
+          "natural": "hills",
+          "source": "GNS"
+        },
+        "osmId": 1401883764,
+        "rating": 0,
+        "accessibility": "public",
+        "intelligentSearch": true
+      }
+    }
+  ],
+  "timestamp": "2025-10-27T15:21:43.969Z"
+}

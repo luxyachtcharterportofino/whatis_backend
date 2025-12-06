@@ -5,9 +5,9 @@
 .status-box {
   background: #111;
   padding: 8px;
-  margin-top: 10px;
+  margin-top: 4px;
   border-radius: 6px;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: #bbb;
   transition: background 0.3s, color 0.3s;
 }

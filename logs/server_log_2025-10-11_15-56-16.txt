@@ -1,2 +1,0 @@
-🟢 Server Andaly Whatis attivo su http://localhost:3000
-✅ Connessione a MongoDB riuscita

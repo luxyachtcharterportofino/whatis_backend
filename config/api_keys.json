@@ -1,0 +1,50 @@
+[
+  {
+    "id": "perplexity",
+    "name": "Perplexity AI API",
+    "env_var": "PERPLEXITY_API_KEY",
+    "description": "Usata per la ricerca intelligente di POI terrestri e marini tramite Perplexity AI. Se non configurata, il sistema funziona in modalità MOCK.",
+    "icon": "🔍",
+    "tooltip": "API Perplexity per ricerca avanzata di POI. Permette di trovare punti di interesse culturali, storici e marini utilizzando intelligenza artificiale. Senza questa chiave, il sistema usa dati mock per test."
+  },
+  {
+    "id": "deepl",
+    "name": "DeepL Translation API",
+    "env_var": "DEEPL_API_KEY",
+    "description": "Usata per traduzioni automatiche multilingua dei POI. Se non configurata, le traduzioni automatiche non sono disponibili.",
+    "icon": "🌐",
+    "tooltip": "API DeepL per traduzioni automatiche di alta qualità. Traduce automaticamente nomi e descrizioni dei POI in 6 lingue (IT, EN, FR, ES, DE, RU). Senza questa chiave, le traduzioni devono essere inserite manualmente."
+  },
+  {
+    "id": "openai",
+    "name": "OpenAI API",
+    "env_var": "OPENAI_API_KEY",
+    "description": "Usata per generazione automatica POI con GPT-4o e arricchimenti AI avanzati. OBBLIGATORIA per la generazione POI. Se non configurata, la generazione POI non funziona.",
+    "icon": "🤖",
+    "tooltip": "API OpenAI per generazione automatica POI con GPT-4o. Utilizzata per trovare e generare punti di interesse basandosi su Zona + Comune. Inoltre usata dal motore semantico Python per filtri GPT e arricchimenti. OBBLIGATORIA per la generazione POI."
+  },
+  {
+    "id": "google_api",
+    "name": "Google Cloud API Key",
+    "env_var": "GOOGLE_API_KEY",
+    "description": "Chiave API Google Cloud per Google Custom Search Engine. Usata per ricerche di diving center e relitti marini.",
+    "icon": "🔎",
+    "tooltip": "Chiave API Google Cloud per Google Custom Search Engine. Utilizzata per ricerche avanzate di diving center, relitti marini e siti di immersione. Necessaria insieme a GOOGLE_CX per funzionare correttamente."
+  },
+  {
+    "id": "google_cx",
+    "name": "Google Custom Search Engine ID",
+    "env_var": "GOOGLE_CX",
+    "description": "ID del Custom Search Engine di Google. Necessario insieme a GOOGLE_API_KEY per le ricerche Google CSE.",
+    "icon": "🔎",
+    "tooltip": "ID del Custom Search Engine di Google. Identifica il motore di ricerca personalizzato configurato per le ricerche specializzate. Deve essere configurato insieme a GOOGLE_API_KEY per abilitare le ricerche Google CSE."
+  },
+  {
+    "id": "opentripmap",
+    "name": "OpenTripMap API",
+    "env_var": "OPENTRIPMAP_API_KEY",
+    "description": "API key per OpenTripMap, usata per verificare l'esistenza reale dei POI generati. Opzionale: se non configurata, la verifica OpenTripMap viene saltata silenziosamente.",
+    "icon": "🗺️",
+    "tooltip": "OpenTripMap API key per verifica POI reali. Il servizio cerca POI esistenti nelle vicinanze per validare quelli generati da GPT. Se non configurata, la verifica OpenTripMap viene disattivata senza errori."
+  }
+]

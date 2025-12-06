@@ -1,14 +1,20 @@
 <%- include('partials/head') %>
 
 <body class="bg-dark text-light">
-  <nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom">
-    <div class="container">
-      <a class="navbar-brand fw-bold text-light fs-4" href="/admin">🌊 Andaly <span class="text-info">Whatis</span></a>
+  <nav class="navbar navbar-expand-lg bg-dark navbar-dark border-bottom px-4">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/admin/dashboard" aria-label="Whatis dashboard">
+        <img
+          src="/images/whatis-logo-white.svg"
+          alt="Whatis Explorer"
+          style="height: 80px; width: auto; filter: drop-shadow(0 2px 6px rgba(255, 255, 255, 0.4));"
+        />
+      </a>
       <div class="navbar-nav ms-auto">
-        <a class="nav-link" href="/admin/zones">Zone</a>
-        <a class="nav-link" href="/admin/pois">POI</a>
-        <a class="nav-link" href="/admin/translations">Traduzioni</a>
-        <a class="nav-link" href="/admin/map">Cartina</a>
+        <a class="nav-link text-light" href="/admin/zones">Zone</a>
+        <a class="nav-link text-light" href="/admin/pois">POI</a>
+        <a class="nav-link text-light" href="/admin/translations">Traduzioni</a>
+        <a class="nav-link text-light" href="/admin/map">Cartina</a>
       </div>
     </div>
   </nav>
@@ -68,8 +74,328 @@
         <a href="/admin/map" class="btn btn-primary w-100 mb-3 py-3 fs-5">🗺️ Cartina Interattiva</a>
       </div>
     </div>
+    <!-- Sezione Stato API del Sistema -->
+    <div class="row justify-content-center mt-4">
+      <div class="col-md-12">
+        <div class="card bg-dark border-secondary">
+          <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">🔑 Stato API del Sistema</h5>
+            <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#addApiKeyModal">
+              ➕ Aggiungi API Key
+            </button>
+          </div>
+          <div class="card-body">
+            <% if (typeof apiKeys !== 'undefined' && apiKeys.length > 0) { %>
+            <div class="table-responsive">
+              <table class="table table-dark table-striped table-hover">
+                <thead>
+                  <tr>
+                    <th>Nome API</th>
+                    <th>Variabile ENV</th>
+                    <th>Stato</th>
+                    <th>Descrizione</th>
+                    <th>Azioni</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% apiKeys.forEach(api => { %>
+                  <tr>
+                    <td>
+                      <strong 
+                        data-bs-toggle="tooltip" 
+                        data-bs-placement="top" 
+                        title="<%= (api.tooltip || api.description).replace(/"/g, '&quot;') %>"
+                        style="cursor: help;"
+                      >
+                        <%= api.icon || '🔑' %> <%= api.name %>
+                      </strong>
+                    </td>
+                    <td><code class="text-info"><%= api.env_var %></code></td>
+                    <td>
+                      <% if (api.isActive) { %>
+                        <span class="badge" style="background-color: #4ade80; color: #000; font-weight: 600;">Attiva</span>
+                      <% } else { %>
+                        <span class="badge" style="background-color: #f87171; color: #fff; font-weight: 600;">Non attiva</span>
+                      <% } %>
+                    </td>
+                    <td><small class="text-muted"><%= api.description %></small></td>
+                    <td>
+                      <button 
+                        type="button" 
+                        class="btn btn-sm btn-outline-info" 
+                        onclick='editApiKey("<%= api.env_var %>")'
+                        title="Modifica API Key"
+                      >
+                        ✏️
+                      </button>
+                    </td>
+                  </tr>
+                  <% }); %>
+                </tbody>
+              </table>
+            </div>
+            <% } else { %>
+            <p class="text-muted text-center">Nessuna API key configurata. Clicca su "Aggiungi API Key" per iniziare.</p>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Modale Aggiungi API Key -->
+    <div class="modal fade" id="addApiKeyModal" tabindex="-1" aria-labelledby="addApiKeyModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content bg-dark text-light">
+          <div class="modal-header border-secondary">
+            <h5 class="modal-title" id="addApiKeyModalLabel">➕ Aggiungi API Key</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <form id="addApiKeyForm">
+            <div class="modal-body">
+              <div class="mb-3">
+                <label for="addApiName" class="form-label">Nome API <span class="text-danger">*</span></label>
+                <input type="text" class="form-control bg-dark text-light border-secondary" id="addApiName" name="name" required>
+              </div>
+              
+              <div class="mb-3">
+                <label for="addApiEnvVar" class="form-label">Variabile ENV <span class="text-danger">*</span></label>
+                <input type="text" class="form-control bg-dark text-light border-secondary" id="addApiEnvVar" name="env_var" 
+                       pattern="^[A-Z_][A-Z0-9_]*$" 
+                       placeholder="ES: OPENAI_API_KEY"
+                       required>
+                <small class="text-muted">Solo lettere maiuscole, numeri e underscore</small>
+              </div>
+              
+              <div class="mb-3">
+                <label for="addApiDescription" class="form-label">Descrizione</label>
+                <textarea class="form-control bg-dark text-light border-secondary" id="addApiDescription" name="description" rows="2"></textarea>
+              </div>
+              
+              <div class="mb-3">
+                <label for="addApiIcon" class="form-label">Icona</label>
+                <input type="text" class="form-control bg-dark text-light border-secondary" id="addApiIcon" name="icon" 
+                       placeholder="🔑 o 🤖 o 🌐" 
+                       value="🔑">
+                <small class="text-muted">Emoji o icona da mostrare</small>
+              </div>
+              
+              <div class="mb-3">
+                <label for="addApiTooltip" class="form-label">Tooltip Descrittivo</label>
+                <textarea class="form-control bg-dark text-light border-secondary" id="addApiTooltip" name="tooltip" rows="2"></textarea>
+                <small class="text-muted">Descrizione estesa mostrata nel tooltip</small>
+              </div>
+              
+              <div class="mb-3">
+                <label for="addApiValue" class="form-label">Valore API Key</label>
+                <div class="input-group">
+                  <input type="password" class="form-control bg-dark text-light border-secondary" id="addApiValue" name="value" 
+                         placeholder="Inserisci il valore della chiave API">
+                  <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('addApiValue', this)">
+                    <span class="toggle-icon">👁️</span>
+                  </button>
+                </div>
+                <small class="text-muted">Il valore verrà salvato nel file .env</small>
+              </div>
+            </div>
+            <div class="modal-footer border-secondary">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+              <button type="submit" class="btn btn-primary">Salva API Key</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Modale Modifica API Key -->
+    <div class="modal fade" id="editApiKeyModal" tabindex="-1" aria-labelledby="editApiKeyModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content bg-dark text-light">
+          <div class="modal-header border-secondary">
+            <h5 class="modal-title" id="editApiKeyModalLabel">✏️ Modifica API Key</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <form id="editApiKeyForm">
+            <input type="hidden" id="editOldEnvVar" name="old_env_var">
+            <div class="modal-body">
+              <div class="mb-3">
+                <label for="editApiName" class="form-label">Nome API <span class="text-danger">*</span></label>
+                <input type="text" class="form-control bg-dark text-light border-secondary" id="editApiName" name="name" required>
+              </div>
+              
+              <div class="mb-3">
+                <label for="editApiEnvVar" class="form-label">Variabile ENV <span class="text-danger">*</span></label>
+                <input type="text" class="form-control bg-dark text-light border-secondary" id="editApiEnvVar" name="env_var" 
+                       pattern="^[A-Z_][A-Z0-9_]*$"
+                       required>
+                <small class="text-muted">Solo lettere maiuscole, numeri e underscore</small>
+              </div>
+              
+              <div class="mb-3">
+                <label for="editApiDescription" class="form-label">Descrizione</label>
+                <textarea class="form-control bg-dark text-light border-secondary" id="editApiDescription" name="description" rows="2"></textarea>
+              </div>
+              
+              <div class="mb-3">
+                <label for="editApiIcon" class="form-label">Icona</label>
+                <input type="text" class="form-control bg-dark text-light border-secondary" id="editApiIcon" name="icon" 
+                       placeholder="🔑 o 🤖 o 🌐">
+                <small class="text-muted">Emoji o icona da mostrare</small>
+              </div>
+              
+              <div class="mb-3">
+                <label for="editApiTooltip" class="form-label">Tooltip Descrittivo</label>
+                <textarea class="form-control bg-dark text-light border-secondary" id="editApiTooltip" name="tooltip" rows="2"></textarea>
+                <small class="text-muted">Descrizione estesa mostrata nel tooltip</small>
+              </div>
+              
+              <div class="mb-3">
+                <label for="editApiValue" class="form-label">Valore API Key</label>
+                <div class="input-group">
+                  <input type="password" class="form-control bg-dark text-light border-secondary" id="editApiValue" name="value" 
+                         placeholder="Lascia vuoto per non modificare">
+                  <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('editApiValue', this)">
+                    <span class="toggle-icon">👁️</span>
+                  </button>
+                </div>
+                <small class="text-muted">Lascia vuoto per mantenere il valore attuale, oppure inserisci un nuovo valore</small>
+              </div>
+            </div>
+            <div class="modal-footer border-secondary">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+              <button type="submit" class="btn btn-primary">Aggiorna API Key</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
   </main>
 
   <%- include('partials/footer') %>
+  
+  <!-- Script per inizializzare tooltip Bootstrap e gestione API Keys -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Inizializza tooltip Bootstrap (Bootstrap JS è già caricato nel footer)
+      var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+      var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+      });
+      
+      // Gestione form Aggiungi API Key
+      const addForm = document.getElementById('addApiKeyForm');
+      if (addForm) {
+        addForm.addEventListener('submit', async function(e) {
+          e.preventDefault();
+          
+          const formData = new FormData(addForm);
+          const data = Object.fromEntries(formData);
+          
+          try {
+            const response = await fetch('/admin/api/add-key', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(data)
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+              alert('✅ ' + result.message);
+              location.reload();
+            } else {
+              alert('❌ ' + result.message);
+            }
+          } catch (error) {
+            console.error('Errore:', error);
+            alert('❌ Errore durante il salvataggio');
+          }
+        });
+      }
+      
+      // Gestione form Modifica API Key
+      const editForm = document.getElementById('editApiKeyForm');
+      if (editForm) {
+        editForm.addEventListener('submit', async function(e) {
+          e.preventDefault();
+          
+          const formData = new FormData(editForm);
+          const data = Object.fromEntries(formData);
+          
+          // Se value è vuoto, non inviarlo (mantieni valore attuale)
+          if (data.value === '') {
+            delete data.value;
+          }
+          
+          try {
+            const response = await fetch('/admin/api/update-key', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(data)
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+              alert('✅ ' + result.message);
+              location.reload();
+            } else {
+              alert('❌ ' + result.message);
+            }
+          } catch (error) {
+            console.error('Errore:', error);
+            alert('❌ Errore durante l\'aggiornamento');
+          }
+        });
+      }
+    });
+    
+    // Funzione per modificare API Key
+    async function editApiKey(envVar) {
+      try {
+        const response = await fetch(`/admin/api/get-key/${encodeURIComponent(envVar)}`);
+        const result = await response.json();
+        
+        if (result.success) {
+          const api = result.api;
+          
+          // Compila il form
+          document.getElementById('editOldEnvVar').value = api.env_var;
+          document.getElementById('editApiName').value = api.name;
+          document.getElementById('editApiEnvVar').value = api.env_var;
+          document.getElementById('editApiDescription').value = api.description || '';
+          document.getElementById('editApiIcon').value = api.icon || '🔑';
+          document.getElementById('editApiTooltip').value = api.tooltip || api.description || '';
+          document.getElementById('editApiValue').value = ''; // Non mostrare il valore per sicurezza
+          
+          // Apri modale
+          const modal = new bootstrap.Modal(document.getElementById('editApiKeyModal'));
+          modal.show();
+        } else {
+          alert('❌ ' + result.message);
+        }
+      } catch (error) {
+        console.error('Errore:', error);
+        alert('❌ Errore durante il caricamento dei dati');
+      }
+    }
+    
+    // Funzione per toggle password
+    function togglePassword(inputId, button) {
+      const input = document.getElementById(inputId);
+      const icon = button.querySelector('.toggle-icon');
+      
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.textContent = '🙈';
+      } else {
+        input.type = 'password';
+        icon.textContent = '👁️';
+      }
+    }
+  </script>
 </body>
 </html>

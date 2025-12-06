@@ -1,0 +1,76 @@
+{
+  "zoneId": "6903292e0ad6b76cb2675bce",
+  "zoneName": "Arenzano 6",
+  "zoneCoordinates": [
+    [
+      44.4092593975669,
+      8.620147705078127
+    ],
+    [
+      44.37000528941461,
+      8.662719726562502
+    ],
+    [
+      44.405335171450915,
+      8.757476806640627
+    ],
+    [
+      44.457309801319305,
+      8.691558837890627
+    ]
+  ],
+  "municipalities": [
+    {
+      "id": "node_66586589",
+      "name": "Arenzano",
+      "lat": 44.4025183,
+      "lng": 8.6831317,
+      "adminLevel": "8",
+      "country": "Unknown",
+      "population": "11519",
+      "wikipedia": null,
+      "wikidata": "Q265257",
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "town",
+      "zone": "Arenzano 6",
+      "osmType": "node",
+      "osmId": 66586589
+    },
+    {
+      "id": "node_66586624",
+      "name": "Cogoleto",
+      "lat": 44.3893419,
+      "lng": 8.6428599,
+      "adminLevel": "8",
+      "country": "Unknown",
+      "population": "9172",
+      "wikipedia": null,
+      "wikidata": "Q265271",
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "village",
+      "zone": "Arenzano 6",
+      "osmType": "node",
+      "osmId": 66586624
+    },
+    {
+      "id": "node_66586635",
+      "name": "Mele",
+      "lat": 44.4475498,
+      "lng": 8.7477687,
+      "adminLevel": "8",
+      "country": "Unknown",
+      "population": "2634",
+      "wikipedia": null,
+      "wikidata": "Q265284",
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "village",
+      "zone": "Arenzano 6",
+      "osmType": "node",
+      "osmId": 66586635
+    }
+  ],
+  "timestamp": "2025-10-30T09:00:35.623Z"
+}

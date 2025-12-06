@@ -1,0 +1,132 @@
+{
+  "municipalityId": "node_66586652",
+  "zoneId": "690f0a116a4ed52b4533dec8",
+  "pois": [
+    {
+      "name": "Galleria d'Arte Moderna",
+      "description": "",
+      "lat": 44.3821984,
+      "lng": 9.0456947,
+      "zone": "690f0a116a4ed52b4533dec8",
+      "municipality": "Bogliasco",
+      "category": "other",
+      "semanticCategory": "Other",
+      "source": "osm",
+      "imageUrl": "",
+      "customIcon": "📍",
+      "extraInfo": {
+        "aiGenerated": false,
+        "wikipedia": "",
+        "website": "",
+        "curiosities": "",
+        "historicalFacts": "",
+        "tags": [],
+        "osmId": "",
+        "rating": 0,
+        "accessibility": "public",
+        "intelligentSearch": true
+      }
+    },
+    {
+      "name": "Museo Giannettino Luxoro",
+      "description": "",
+      "lat": 44.3801028,
+      "lng": 9.0545837,
+      "zone": "690f0a116a4ed52b4533dec8",
+      "municipality": "Bogliasco",
+      "category": "other",
+      "semanticCategory": "Other",
+      "source": "osm",
+      "imageUrl": "",
+      "customIcon": "📍",
+      "extraInfo": {
+        "aiGenerated": false,
+        "wikipedia": "",
+        "website": "",
+        "curiosities": "",
+        "historicalFacts": "",
+        "tags": [],
+        "osmId": "",
+        "rating": 0,
+        "accessibility": "public",
+        "intelligentSearch": true
+      }
+    },
+    {
+      "name": "Raccolte Frugone",
+      "description": "",
+      "lat": 44.3813514,
+      "lng": 9.0477439,
+      "zone": "690f0a116a4ed52b4533dec8",
+      "municipality": "Bogliasco",
+      "category": "other",
+      "semanticCategory": "Other",
+      "source": "osm",
+      "imageUrl": "",
+      "customIcon": "📍",
+      "extraInfo": {
+        "aiGenerated": false,
+        "wikipedia": "",
+        "website": "",
+        "curiosities": "",
+        "historicalFacts": "",
+        "tags": [],
+        "osmId": "",
+        "rating": 0,
+        "accessibility": "public",
+        "intelligentSearch": true
+      }
+    },
+    {
+      "name": "Torre Gropallo",
+      "description": "",
+      "lat": 44.3803629,
+      "lng": 9.0423777,
+      "zone": "690f0a116a4ed52b4533dec8",
+      "municipality": "Bogliasco",
+      "category": "other",
+      "semanticCategory": "Other",
+      "source": "osm",
+      "imageUrl": "",
+      "customIcon": "📍",
+      "extraInfo": {
+        "aiGenerated": false,
+        "wikipedia": "",
+        "website": "",
+        "curiosities": "",
+        "historicalFacts": "",
+        "tags": [],
+        "osmId": "",
+        "rating": 0,
+        "accessibility": "public",
+        "intelligentSearch": true
+      }
+    },
+    {
+      "name": "Collezione Wolfson",
+      "description": "",
+      "lat": 44.3823902,
+      "lng": 9.0445281,
+      "zone": "690f0a116a4ed52b4533dec8",
+      "municipality": "Bogliasco",
+      "category": "other",
+      "semanticCategory": "Other",
+      "source": "osm",
+      "imageUrl": "",
+      "customIcon": "📍",
+      "extraInfo": {
+        "aiGenerated": false,
+        "wikipedia": "",
+        "website": "",
+        "curiosities": "",
+        "historicalFacts": "",
+        "tags": [],
+        "osmId": "",
+        "rating": 0,
+        "accessibility": "public",
+        "intelligentSearch": true
+      }
+    }
+  ],
+  "timestamp": "2025-11-08T09:15:15.312Z"
+}

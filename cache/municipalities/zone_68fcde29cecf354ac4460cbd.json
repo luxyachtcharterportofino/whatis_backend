@@ -1,0 +1,181 @@
+{
+  "zoneId": "68fcde29cecf354ac4460cbd",
+  "zoneName": "Cannes",
+  "zoneCoordinates": [
+    [
+      43.47783692169239,
+      6.931686401367188
+    ],
+    [
+      43.492782808225,
+      7.003097534179688
+    ],
+    [
+      43.508223006137925,
+      7.082061767578125
+    ],
+    [
+      43.55103643145806,
+      7.148666381835938
+    ],
+    [
+      43.59928952130085,
+      7.132186889648438
+    ],
+    [
+      43.57093929750569,
+      7.072448730468751
+    ],
+    [
+      43.555515149559746,
+      7.013397216796876
+    ],
+    [
+      43.554022280508754,
+      6.961212158203126
+    ],
+    [
+      43.5326204268101,
+      6.930999755859376
+    ]
+  ],
+  "municipalities": [
+    {
+      "id": "node_26692299",
+      "name": "Antibes",
+      "lat": 43.5813878,
+      "lng": 7.1236966,
+      "adminLevel": "8",
+      "country": "Unknown",
+      "population": "75130",
+      "wikipedia": "fr:Antibes",
+      "wikidata": "Q126898",
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "town",
+      "zone": "Cannes",
+      "osmType": "node",
+      "osmId": 26692299
+    },
+    {
+      "id": "node_26692505",
+      "name": "Cannes",
+      "lat": 43.5515198,
+      "lng": 7.0134418,
+      "adminLevel": "8",
+      "country": "Unknown",
+      "population": "73255",
+      "wikipedia": "fr:Cannes",
+      "wikidata": "Q39984",
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "town",
+      "zone": "Cannes",
+      "osmType": "node",
+      "osmId": 26692505
+    },
+    {
+      "id": "node_1727106895",
+      "name": "Golfe-Juan",
+      "lat": 43.568826,
+      "lng": 7.0741016,
+      "adminLevel": "8",
+      "country": "Unknown",
+      "population": null,
+      "wikipedia": "fr:Golfe-Juan",
+      "wikidata": "Q2617965",
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "village",
+      "zone": "Cannes",
+      "osmType": "node",
+      "osmId": 1727106895
+    },
+    {
+      "id": "node_26694316",
+      "name": "La Roquette-sur-Siagne",
+      "lat": 43.5810901,
+      "lng": 6.9557118,
+      "adminLevel": "8",
+      "country": "Unknown",
+      "population": "5436",
+      "wikipedia": "fr:La Roquette-sur-Siagne",
+      "wikidata": "Q662120",
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "village",
+      "zone": "Cannes",
+      "osmType": "node",
+      "osmId": 26694316
+    },
+    {
+      "id": "node_26691947",
+      "name": "Le Cannet",
+      "lat": 43.5761076,
+      "lng": 7.0191865,
+      "adminLevel": "8",
+      "country": "Unknown",
+      "population": "41597",
+      "wikipedia": "fr:Le Cannet",
+      "wikidata": "Q207967",
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "town",
+      "zone": "Cannes",
+      "osmType": "node",
+      "osmId": 26691947
+    },
+    {
+      "id": "node_26691826",
+      "name": "Mandelieu-la-Napoule",
+      "lat": 43.5439153,
+      "lng": 6.9359135,
+      "adminLevel": "8",
+      "country": "Unknown",
+      "population": "21561",
+      "wikipedia": "fr:Mandelieu-la-Napoule",
+      "wikidata": "Q239317",
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "town",
+      "zone": "Cannes",
+      "osmType": "node",
+      "osmId": 26691826
+    },
+    {
+      "id": "node_30121443",
+      "name": "Théoule-sur-Mer",
+      "lat": 43.5060877,
+      "lng": 6.9399193,
+      "adminLevel": "8",
+      "country": "Unknown",
+      "population": "1362",
+      "wikipedia": "fr:Théoule-sur-Mer",
+      "wikidata": null,
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "village",
+      "zone": "Cannes",
+      "osmType": "node",
+      "osmId": 30121443
+    },
+    {
+      "id": "node_26692037",
+      "name": "Vallauris",
+      "lat": 43.5761001,
+      "lng": 7.05859,
+      "adminLevel": "8",
+      "country": "Unknown",
+      "population": "28025",
+      "wikipedia": "fr:Vallauris",
+      "wikidata": "Q234205",
+      "type": "municipality",
+      "source": "overpass",
+      "placeType": "town",
+      "zone": "Cannes",
+      "osmType": "node",
+      "osmId": 26692037
+    }
+  ],
+  "timestamp": "2025-11-04T06:38:43.377Z"
+}

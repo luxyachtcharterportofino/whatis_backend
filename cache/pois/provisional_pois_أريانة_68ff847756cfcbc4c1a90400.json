@@ -1,0 +1,92 @@
+{
+  "municipalityId": "أريانة",
+  "zoneId": "68ff847756cfcbc4c1a90400",
+  "pois": [
+    {
+      "name": "tree",
+      "description": "",
+      "lat": 10.1951715,
+      "lng": 36.9546631,
+      "zone": "68ff847756cfcbc4c1a90400",
+      "municipality": "أريانة",
+      "category": "other",
+      "semanticCategory": "Other",
+      "source": "osm",
+      "imageUrl": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop",
+      "customIcon": "📍",
+      "extraInfo": {
+        "aiGenerated": false,
+        "wikipedia": "",
+        "website": "",
+        "curiosities": "",
+        "historicalFacts": "",
+        "tags": {
+          "natural": "tree"
+        },
+        "osmId": 9597126628,
+        "rating": 0,
+        "accessibility": "public",
+        "intelligentSearch": true
+      }
+    },
+    {
+      "name": "tree_row",
+      "description": "",
+      "lat": 10.1380914,
+      "lng": 36.9460438,
+      "zone": "68ff847756cfcbc4c1a90400",
+      "municipality": "أريانة",
+      "category": "other",
+      "semanticCategory": "Other",
+      "source": "osm",
+      "imageUrl": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop",
+      "customIcon": "📍",
+      "extraInfo": {
+        "aiGenerated": false,
+        "wikipedia": "",
+        "website": "",
+        "curiosities": "",
+        "historicalFacts": "",
+        "tags": {
+          "landuse": "farmyard",
+          "natural": "tree_row"
+        },
+        "osmId": 1042661885,
+        "rating": 0,
+        "accessibility": "public",
+        "intelligentSearch": true
+      }
+    },
+    {
+      "name": "place_of_worship",
+      "description": "Religione: christian. Denominazione: ethiopian_orthodox",
+      "lat": 10.1415733,
+      "lng": 36.9427554,
+      "zone": "68ff847756cfcbc4c1a90400",
+      "municipality": "أريانة",
+      "category": "other",
+      "semanticCategory": "Other",
+      "source": "osm",
+      "imageUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop",
+      "customIcon": "📍",
+      "extraInfo": {
+        "aiGenerated": false,
+        "wikipedia": "",
+        "website": "",
+        "curiosities": "",
+        "historicalFacts": "",
+        "tags": {
+          "amenity": "place_of_worship",
+          "building": "church",
+          "denomination": "ethiopian_orthodox",
+          "religion": "christian"
+        },
+        "osmId": 1042661917,
+        "rating": 0,
+        "accessibility": "public",
+        "intelligentSearch": true
+      }
+    }
+  ],
+  "timestamp": "2025-10-27T14:41:30.146Z"
+}
