@@ -29,3 +29,7 @@ build/
 tmp/
 temp/
 
+backend/node_modules/
+backend/logs/
+*.log
+.env.for_render.txt
