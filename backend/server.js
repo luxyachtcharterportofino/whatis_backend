@@ -132,7 +132,7 @@ mongoose
                                  process.env.NODE_ENV !== "production";
     let pythonProc = null;
     
-    if (pythonEngineEnabled) {
+   if (false) {  // Python disabilitato su Railway
       try {
         const pyCwd = path.join(__dirname, "semantic_engine");
         // Avvia uvicorn direttamente per forzare la porta 5000
