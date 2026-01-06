@@ -129,11 +129,16 @@ mongoose
     // ===============================
     // ✅ RENDER/RAILWAY: Python engine è opzionale su cloud (può essere un servizio separato)
     // Disabilita Python se esplicitamente impostato a "false" o se siamo in produzione
-    const pythonEngineEnabled = process.env.PYTHON_SEMANTIC_ENGINE_ENABLED === "true" && 
-                                 process.env.NODE_ENV !== "production";
+    const pyEnv = process.env.PYTHON_SEMANTIC_ENGINE_ENABLED;
+    const nodeEnv = process.env.NODE_ENV;
+    console.log(`🔍 [DEBUG] PYTHON_SEMANTIC_ENGINE_ENABLED="${pyEnv}", NODE_ENV="${nodeEnv}"`);
+    const pythonEngineEnabled = pyEnv === "true" && nodeEnv !== "production";
+    console.log(`🔍 [DEBUG] PYTHON_SEMANTIC_ENGINE_ENABLED="${pyEnv}", NODE_ENV="${nodeEnv}"`);
+    console.log(`🔍 [DEBUG] pythonEngineEnabled=${pythonEngineEnabled}`);
     let pythonProc = null;
     
-    if (pythonEngineEnabled) {
+    // ✅ Python disabilitato su Railway - non necessario per API pubbliche
+    if (false) {  // pythonEngineEnabled - DISABILITATO per Railway
       try {
         const pyCwd = path.join(__dirname, "semantic_engine");
         // Avvia uvicorn direttamente per forzare la porta 5000
