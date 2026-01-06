@@ -128,7 +128,7 @@ mongoose
     // 🧠 Python Semantic Engine Autostart (FastAPI)
     // ===============================
     // ✅ RENDER: Python engine è opzionale su Render (può essere un servizio separato)
-    const pythonEngineEnabled = process.env.PYTHON_SEMANTIC_ENGINE_ENABLED !== "false" && 
+    /* const pythonEngineEnabled = process.env.PYTHON_SEMANTIC_ENGINE_ENABLED !== "false" && 
                                  process.env.NODE_ENV !== "production";
     let pythonProc = null;
     
@@ -162,7 +162,7 @@ mongoose
 
     // ===============================
     // 🔁 Express Proxy → Python (port 5000)
-    // ===============================
+    // =============================== */
     
     // Helper function per health check con retry
     async function waitForPythonHealth(maxRetries = 6, delayMs = 500) {
