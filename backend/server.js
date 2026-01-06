@@ -128,7 +128,7 @@ mongoose
     // 🧠 Python Semantic Engine Autostart (FastAPI)
     // ===============================
     // ✅ RENDER: Python engine è opzionale su Render (può essere un servizio separato)
-    const pythonEngineEnabled = process.env.PYTHON_SEMANTIC_ENGINE_ENABLED !== "false" && 
+       const pythonEngineEnabled = process.env.PYTHON_SEMANTIC_ENGINE_ENABLED === "true" && 
                                  process.env.NODE_ENV !== "production";
     let pythonProc = null;
     
