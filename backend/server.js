@@ -128,8 +128,13 @@ mongoose
     // 🧠 Python Semantic Engine Autostart (FastAPI)
     // ===============================
     // ✅ RENDER: Python engine è opzionale su Render (può essere un servizio separato)
-    const pythonEngineEnabled = process.env.PYTHON_SEMANTIC_ENGINE_ENABLED !== "false" && 
-                                 process.env.NODE_ENV !== "production";
+       // ✅ Python Semantic Engine DISABILITATO su Railway - non necessario per API pubbliche
+    /*
+    const pyEnv = process.env.PYTHON_SEMANTIC_ENGINE_ENABLED;
+    const nodeEnv = process.env.NODE_ENV;
+    console.log(`🔍 [DEBUG] PYTHON_SEMANTIC_ENGINE_ENABLED="${pyEnv}", NODE_ENV="${nodeEnv}"`);
+    const pythonEngineEnabled = pyEnv === "true" && nodeEnv !== "production";
+    console.log(`🔍 [DEBUG] pythonEngineEnabled=${pythonEngineEnabled}`);
     let pythonProc = null;
     
     if (pythonEngineEnabled) {
@@ -142,6 +147,11 @@ mongoose
           env: { ...process.env, PYTHONUNBUFFERED: "1" },
         });
         console.log("🧠 Avvio Semantic Engine Python su http://127.0.0.1:5000 ...");
+        pythonProc.on("error", (err) => {
+          console.warn("⚠️ Impossibile avviare il Semantic Engine Python:", err.message);
+          console.log("ℹ️ Il backend continuerà a funzionare senza il semantic engine Python");
+          pythonProc = null; // Reset per evitare errori successivi
+        });
         pythonProc.on("exit", (code, signal) => {
           console.log(`🧠 Semantic Engine Python terminato (code=${code}, signal=${signal})`);
         });
@@ -156,14 +166,8 @@ mongoose
         console.warn("⚠️ Impossibile avviare il Semantic Engine Python:", e.message);
         console.log("ℹ️ Il backend continuerà a funzionare senza il semantic engine Python");
       }
-    } else {
-      console.log("ℹ️ Python Semantic Engine disabilitato (configurato per produzione/Render)");
     }
-
-    // ===============================
-    // 🔁 Express Proxy → Python (port 5000)
-    // ===============================
-    
+    */
     // Helper function per health check con retry
     async function waitForPythonHealth(maxRetries = 6, delayMs = 500) {
       for (let attempt = 1; attempt <= maxRetries; attempt++) {
