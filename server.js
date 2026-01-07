@@ -93,28 +93,31 @@ mongoose
     // ===============================
     // 🧠 Python Semantic Engine Autostart (FastAPI)
     // ===============================
+    // ✅ Python disabilitato su Railway - non necessario per API pubbliche
     let pythonProc = null;
-    try {
-      const pyCwd = path.join(__dirname, "semantic_engine");
-      // Avvia uvicorn direttamente per forzare la porta 5000
-      pythonProc = spawn("python3", ["-m", "uvicorn", "app:app", "--host", "127.0.0.1", "--port", "5000"], {
-        cwd: pyCwd,
-        stdio: "inherit",
-        env: { ...process.env, PYTHONUNBUFFERED: "1" },
-      });
-      console.log("🧠 Avvio Semantic Engine Python su http://127.0.0.1:5000 ...");
-      pythonProc.on("exit", (code, signal) => {
-        console.log(`🧠 Semantic Engine Python terminato (code=${code}, signal=${signal})`);
-      });
-      process.on("exit", () => {
-        if (pythonProc && !pythonProc.killed) {
-          try { pythonProc.kill(); } catch (_) {}
-        }
-      });
-      process.on("SIGINT", () => process.exit(0));
-      process.on("SIGTERM", () => process.exit(0));
-    } catch (e) {
-      console.warn("⚠️ Impossibile avviare il Semantic Engine Python:", e.message);
+    if (false) {  // Python disabilitato su Railway
+      try {
+        const pyCwd = path.join(__dirname, "semantic_engine");
+        // Avvia uvicorn direttamente per forzare la porta 5000
+        pythonProc = spawn("python3", ["-m", "uvicorn", "app:app", "--host", "127.0.0.1", "--port", "5000"], {
+          cwd: pyCwd,
+          stdio: "inherit",
+          env: { ...process.env, PYTHONUNBUFFERED: "1" },
+        });
+        console.log("🧠 Avvio Semantic Engine Python su http://127.0.0.1:5000 ...");
+        pythonProc.on("exit", (code, signal) => {
+          console.log(`🧠 Semantic Engine Python terminato (code=${code}, signal=${signal})`);
+        });
+        process.on("exit", () => {
+          if (pythonProc && !pythonProc.killed) {
+            try { pythonProc.kill(); } catch (_) {}
+          }
+        });
+        process.on("SIGINT", () => process.exit(0));
+        process.on("SIGTERM", () => process.exit(0));
+      } catch (e) {
+        console.warn("⚠️ Impossibile avviare il Semantic Engine Python:", e.message);
+      }
     }
 
     // ===============================
