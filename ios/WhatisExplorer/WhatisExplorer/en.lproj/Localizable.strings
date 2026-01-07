@@ -1,0 +1,54 @@
+/* Welcome View */
+"welcome.discover_places" = "Discover places like you've never seen them before.";
+"welcome.smart_guide_title" = "Smart Guide";
+"welcome.smart_guide_desc" = "Whatis Explorer is an intelligent guide that accompanies you in the territory while you experience it. Thanks to artificial intelligence and geolocation, it shows you stories, places and curiosities around you, in real time.";
+"welcome.not_simple_map_title" = "It's not just a map";
+"welcome.not_simple_map_desc" = "It's a new way to understand what you're looking at.";
+"welcome.technology_guides_title" = "Technology guides you";
+"welcome.technology_guides_desc" = "Technology guides you, but the heart of the experience remains human: professional tour guides, with their passion and knowledge, make every journey unique.";
+"welcome.born_to_support_title" = "Whatis Explorer is born to support them";
+"welcome.born_to_support_desc" = "Whatis Explorer is born to support them, and to make every discovery deeper, truer, more memorable.";
+"welcome.local_guides_title" = "Local Tour Guides";
+"welcome.local_guides_desc" = "If you wish to experience the territory with the help of local professionals, you can also access a selection of the best authorized tourist guide organizations in the area.";
+"welcome.footer" = "Explore. Understand. Live.";
+"welcome.manage_permissions" = "Manage Permissions";
+"welcome.start_exploration" = "Start Exploration";
+"welcome.discover_tour_guides" = "Discover Tour Guides";
+
+/* Exploration Start View */
+"exploration.start_title" = "Start Exploration";
+"exploration.browse_zones_title" = "Browse Available Zones";
+"exploration.browse_zones_desc" = "View all available zones and choose the one you want to explore";
+"exploration.download_current_title" = "Download Current Zone";
+"exploration.download_current_desc" = "Download the zone where you are right now";
+"exploration.current_zone_title" = "Current Zone";
+"exploration.current_zone_desc" = "Enable geolocation to automatically download the zone where you are";
+"exploration.use_downloaded_title" = "Use Downloaded Zone";
+"exploration.use_downloaded_desc" = "Choose from zones you've already downloaded";
+"exploration.zone_detected" = "Zone Detected";
+"exploration.zone_detected_message" = "Do you want to download zone '%@'?";
+"exploration.cancel" = "Cancel";
+"exploration.download" = "Download";
+"exploration.no_downloaded_zones" = "No downloaded zones";
+"exploration.downloaded_zones_title" = "Downloaded Zones";
+"exploration.location_unavailable" = "Location unavailable";
+
+/* Zone Preview View */
+"zone_preview.preview_title" = "Zone Preview";
+"zone_preview.points_of_interest" = "Points of Interest";
+"zone_preview.poi_available" = "%d POIs available";
+"zone_preview.price" = "Price";
+"zone_preview.test_note_title" = "⚠️ Note";
+"zone_preview.test_note_desc" = "This is a test version. The purchase will be simulated and the zone will be downloaded automatically.";
+"zone_preview.purchase_download" = "Purchase and Download";
+"zone_preview.cancel" = "Cancel";
+"zone_preview.preparing" = "Preparing...";
+"zone_preview.downloading_zone" = "Downloading zone...";
+"zone_preview.downloading_pois" = "Downloading POIs...";
+"zone_preview.downloading_images" = "Downloading images...";
+"zone_preview.images_progress" = "Images: %d/%d";
+"zone_preview.saving" = "Saving...";
+"zone_preview.saving_permanent" = "Permanent saving...";
+"zone_preview.completed" = "Completed! ✓";
+"zone_preview.error" = "Error: %@";
+

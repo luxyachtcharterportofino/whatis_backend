@@ -1,0 +1,40 @@
+<resources>
+    <string name="app_name">Whatis Explorer</string>
+    
+    <!-- Navigation -->
+    <string name="tab_map">Mappa</string>
+    <string name="tab_list">Lista</string>
+    <string name="tab_settings">Impostazioni</string>
+    
+    <!-- Common -->
+    <string name="loading">Caricamento…</string>
+    <string name="error">Errore</string>
+    <string name="retry">Riprova</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Annulla</string>
+    <string name="close">Chiudi</string>
+    
+    <!-- Zone Selection -->
+    <string name="select_zone">Seleziona Zona</string>
+    <string name="no_zones_available">Nessuna zona disponibile</string>
+    
+    <!-- POI -->
+    <string name="poi_list">Elenco POI</string>
+    <string name="no_pois_available">Nessun POI disponibile</string>
+    <string name="distance">Distanza</string>
+    
+    <!-- Settings -->
+    <string name="settings">Impostazioni</string>
+    <string name="api_url">URL API Backend</string>
+    <string name="api_url_hint">Inserisci l\'URL del backend</string>
+    <string name="save">Salva</string>
+    <string name="offline_mode">Modalità Offline</string>
+    <string name="clear_cache">Svuota Cache</string>
+    
+    <!-- Errors -->
+    <string name="error_network">Errore di connessione</string>
+    <string name="error_invalid_url">URL non valido</string>
+    <string name="error_zone_not_found">Zona non trovata</string>
+    <string name="error_loading_data">Errore nel caricamento dei dati</string>
+</resources>
+

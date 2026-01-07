@@ -12,7 +12,10 @@ const Poi = require('../models/Poi');
 async function testPhotoLicenseChecker() {
   try {
     // Connessione al database
-    const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/whatis';
+    const mongoUri = process.env.MONGO_URI || process.env.MONGODB_URI;
+    if (!mongoUri) {
+      throw new Error('MONGO_URI o MONGODB_URI non trovato nel file .env');
+    }
     await mongoose.connect(mongoUri);
     console.log('✅ Connesso al database MongoDB');
 

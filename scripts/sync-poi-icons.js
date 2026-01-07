@@ -9,7 +9,12 @@ async function syncPOIIcons() {
   console.log('🔄 SINCRONIZZAZIONE ICONE POI ESISTENTI\n');
   
   try {
-    await mongoose.connect('mongodb://localhost:27017/whatis_backend');
+    require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') });
+    const mongoUri = process.env.MONGO_URI || process.env.MONGODB_URI;
+    if (!mongoUri) {
+      throw new Error('MONGO_URI o MONGODB_URI non trovato nel file .env');
+    }
+    await mongoose.connect(mongoUri);
     console.log('✅ Connesso a MongoDB\n');
 
     // Carica tutti i POI

@@ -1,0 +1,15 @@
+<nav class="navbar navbar-expand-lg bg-dark navbar-dark px-4">
+  <div class="container-fluid">
+    <a class="navbar-brand text-light" href="/admin/dashboard" aria-label="Whatis dashboard" style="font-size: 1.5rem; font-weight: bold;">
+      Whatis Explorer
+    </a>
+
+    <div class="navbar-nav">
+      <a class="nav-link <%= active === 'dashboard' ? 'text-info' : 'text-light' %>" href="/admin/dashboard">Dashboard</a>
+      <a class="nav-link <%= active === 'zones' ? 'text-info' : 'text-light' %>" href="/admin/zones">Zone</a>
+      <a class="nav-link <%= active === 'pois' ? 'text-info' : 'text-light' %>" href="/admin/pois">POI</a>
+      <a class="nav-link <%= active === 'tour-guides' ? 'text-info' : 'text-light' %>" href="/admin/tour-guides">Guide Turistiche</a>
+      <a class="nav-link <%= active === 'map' ? 'text-info' : 'text-light' %>" href="/admin/map">Cartina</a>
+    </div>
+  </div>
+</nav>

@@ -1,0 +1,48 @@
+/* Welcome View */
+"welcome.discover_places" = "Descubre lugares como nunca los has visto.";
+"welcome.smart_guide_title" = "Guía Inteligente";
+"welcome.smart_guide_desc" = "Whatis Explorer es una guía inteligente que te acompaña en el territorio mientras lo vives. Gracias a la inteligencia artificial y la geolocalización, te muestra historias, lugares y curiosidades a tu alrededor, en tiempo real.";
+"welcome.not_simple_map_title" = "No es un simple mapa";
+"welcome.not_simple_map_desc" = "Es una nueva forma de entender lo que estás mirando.";
+"welcome.technology_guides_title" = "La tecnología te guía";
+"welcome.technology_guides_desc" = "La tecnología te guía, pero el corazón de la experiencia sigue siendo humano: los guías turísticos profesionales, con su pasión y conocimiento, hacen que cada viaje sea único.";
+"welcome.born_to_support_title" = "Whatis Explorer nace para apoyarlos";
+"welcome.born_to_support_desc" = "Whatis Explorer nace para apoyarlos, y para hacer cada descubrimiento más profundo, más verdadero, más memorable.";
+"welcome.local_guides_title" = "Guías Turísticos Locales";
+"welcome.local_guides_desc" = "Si deseas vivir el territorio con la ayuda de profesionales locales, también puedes acceder a una selección de las mejores organizaciones de guías turísticos autorizados de la zona.";
+"welcome.footer" = "Explora. Comprende. Vive.";
+"welcome.manage_permissions" = "Gestionar Permisos";
+"welcome.start_exploration" = "Iniciar Exploración";
+"welcome.discover_tour_guides" = "Descubrir Guías Turísticos";
+
+/* Exploration Start View */
+"exploration.start_title" = "Iniciar Exploración";
+"exploration.browse_zones_title" = "Explorar Zonas Disponibles";
+"exploration.browse_zones_desc" = "Ver todas las zonas disponibles y elegir la que quieres explorar";
+"exploration.download_current_title" = "Descargar Zona Actual";
+"exploration.download_current_desc" = "Descarga la zona donde te encuentras en este momento";
+"exploration.current_zone_title" = "Zona Actual";
+"exploration.current_zone_desc" = "Habilita la geolocalización para descargar automáticamente la zona donde te encuentras";
+"exploration.use_downloaded_title" = "Usar Zona Descargada";
+"exploration.use_downloaded_desc" = "Elige entre las zonas que ya has descargado";
+"exploration.zone_detected" = "Zona Detectada";
+"exploration.zone_detected_message" = "¿Quieres descargar la zona '%@'?";
+"exploration.cancel" = "Cancelar";
+"exploration.download" = "Descargar";
+"exploration.no_downloaded_zones" = "No hay zonas descargadas";
+"exploration.location_unavailable" = "Ubicación no disponible";
+
+/* Zone Preview View */
+"zone_preview.preview_title" = "Vista Previa de la Zona";
+"zone_preview.points_of_interest" = "Puntos de Interés";
+"zone_preview.poi_available" = "%d POI disponibles";
+"zone_preview.price" = "Precio";
+"zone_preview.test_note_title" = "⚠️ Nota";
+"zone_preview.test_note_desc" = "Esta es una versión de prueba. La compra se simulará y la zona se descargará automáticamente.";
+"zone_preview.purchase_download" = "Comprar y Descargar";
+"zone_preview.cancel" = "Cancelar";
+"zone_preview.preparing" = "Preparando...";
+"zone_preview.downloading_pois" = "Descargando POI...";
+"zone_preview.downloading_images" = "Descargando imágenes...";
+"zone_preview.completed" = "Completado";
+

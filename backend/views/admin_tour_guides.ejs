@@ -1,0 +1,79 @@
+<%- include('partials/head') %>
+<body class="bg-dark text-light">
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-black shadow-sm px-4">
+    <a class="navbar-brand text-light" href="/admin/dashboard" aria-label="Whatis dashboard" style="font-size: 1.5rem; font-weight: bold;">
+        Whatis Explorer
+    </a>
+    <div class="navbar-nav ms-auto">
+      <a class="nav-link text-light" href="/admin/dashboard">Dashboard</a>
+      <a class="nav-link text-light" href="/admin/zones">Zone</a>
+      <a class="nav-link text-light" href="/admin/pois">POI</a>
+      <a class="nav-link text-info" href="/admin/tour-guides">Guide Turistiche</a>
+      <a class="nav-link text-light" href="/admin/map">Cartina</a>
+    </div>
+  </nav>
+  
+  <div class="container mt-4">
+    <h4 class="text-info mb-4">👥 Gestione Guide Turistiche Locali</h4>
+    
+    <div class="alert alert-info mb-4" role="alert">
+      <h6 class="alert-heading">ℹ️ Come funziona</h6>
+      <p class="mb-2">Seleziona una zona per gestire le agenzie di guide turistiche autorizzate. Le guide aggiunte qui saranno visibili nell'app mobile quando i turisti selezionano quella zona.</p>
+      <p class="mb-0"><strong>Nota:</strong> Ogni guida deve avere almeno un nome e un sito web. Email e telefono sono opzionali.</p>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-dark table-striped align-middle">
+        <thead>
+          <tr>
+            <th>Nome Zona</th>
+            <th>Descrizione</th>
+            <th>Guide Turistiche</th>
+            <th>Azioni</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% zones.forEach(zone => { %>
+            <tr>
+              <td><strong><%= zone.name %></strong></td>
+              <td><%= zone.description || "-" %></td>
+              <td>
+                <% if (zone.tourGuides && zone.tourGuides.length > 0) { %>
+                  <span class="badge bg-success"><%= zone.tourGuides.length %> guide</span>
+                  <ul class="list-unstyled mt-2 mb-0">
+                    <% zone.tourGuides.forEach(guide => { %>
+                      <li class="small">
+                        <strong><%= guide.name %></strong>
+                        <% if (guide.website) { %>
+                          <br><a href="<%= guide.website %>" target="_blank" class="text-info small"><%= guide.website %></a>
+                        <% } %>
+                      </li>
+                    <% }) %>
+                  </ul>
+                <% } else { %>
+                  <span class="badge bg-secondary">Nessuna guida</span>
+                <% } %>
+              </td>
+              <td>
+                <a href="/admin/tour-guides/<%= zone._id %>" class="btn btn-primary btn-sm">
+                  <%= zone.tourGuides && zone.tourGuides.length > 0 ? '✏️ Modifica' : '➕ Aggiungi Guide' %>
+                </a>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+
+    <% if (zones.length === 0) { %>
+      <div class="alert alert-warning mt-4" role="alert">
+        Nessuna zona disponibile. <a href="/admin/zones" class="alert-link">Crea una zona</a> prima di aggiungere guide turistiche.
+      </div>
+    <% } %>
+  </div>
+
+  <%- include('partials/footer') %>
+</body>
+</html>
+

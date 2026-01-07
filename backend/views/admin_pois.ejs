@@ -1,0 +1,706 @@
+<%- include('partials/head') %>
+<script src="/js/poi-display-utils.js"></script>
+
+<%
+// Helper functions for EJS template
+function getCategoryColor(category) {
+  const colors = {
+    'church': 'primary',
+    'museum': 'info', 
+    'monument': 'warning',
+    'beach': 'success',
+    'restaurant': 'danger',
+    'hotel': 'secondary',
+    'other': 'dark'
+  };
+  return colors[category] || 'dark';
+}
+
+function getCategoryIcon(category) {
+  const icons = {
+    'church': '⛪',
+    'museum': '🏛️',
+    'monument': '🏛️',
+    'beach': '🏖️',
+    'restaurant': '🍽️',
+    'hotel': '🏨',
+    'other': '📍'
+  };
+  return icons[category] || '📍';
+}
+
+function getCategoryText(category) {
+  const texts = {
+    'church': 'Chiesa',
+    'museum': 'Museo',
+    'monument': 'Monumento',
+    'beach': 'Spiaggia',
+    'restaurant': 'Ristorante',
+    'hotel': 'Hotel',
+    'other': 'Altro'
+  };
+  return texts[category] || 'Altro';
+}
+
+function getSourceColor(source) {
+  const colors = {
+    'manual': 'secondary',
+    'ai': 'success',
+    'osm': 'info',
+    'wikipedia': 'warning',
+    'internet': 'primary'
+  };
+  return colors[source] || 'secondary';
+}
+
+function getSourceIcon(source) {
+  const icons = {
+    'manual': '✋',
+    'ai': '🧠',
+    'osm': '🗺️',
+    'wikipedia': '📚',
+    'internet': '🌐'
+  };
+  return icons[source] || '❓';
+}
+
+function getSourceText(source) {
+  const texts = {
+    'manual': 'Manuale',
+    'ai': 'AI',
+    'osm': 'OSM',
+    'wikipedia': 'Wikipedia',
+    'internet': 'Internet'
+  };
+  return texts[source] || 'Sconosciuto';
+}
+
+function getLicenseStatusColor(licenseStatus) {
+  if (!licenseStatus || !licenseStatus.status) return 'secondary';
+  const status = licenseStatus.status;
+  const colors = {
+    'free': 'success',
+    'needs_attribution': 'warning',
+    'needs_replacement': 'danger',
+    'unknown': 'info',
+    'not_checked': 'secondary'
+  };
+  return colors[status] || 'secondary';
+}
+
+function getLicenseStatusIcon(licenseStatus) {
+  if (!licenseStatus || !licenseStatus.status) return '❓';
+  const status = licenseStatus.status;
+  const icons = {
+    'free': '✅',
+    'needs_attribution': '⚠️',
+    'needs_replacement': '🚫',
+    'unknown': '❓',
+    'not_checked': '⏳'
+  };
+  return icons[status] || '❓';
+}
+
+function getLicenseStatusText(licenseStatus) {
+  if (!licenseStatus || !licenseStatus.status) return 'Non verificata';
+  const status = licenseStatus.status;
+  const texts = {
+    'free': 'Libera',
+    'needs_attribution': 'Richiede attribuzione',
+    'needs_replacement': 'Da sostituire',
+    'unknown': 'Sconosciuta',
+    'not_checked': 'Non verificata'
+  };
+  return texts[status] || 'Non verificata';
+}
+
+function getLicenseStatusTooltip(licenseStatus) {
+  if (!licenseStatus || !licenseStatus.status) return 'Licenza non verificata';
+  
+  const status = licenseStatus.status;
+  let tooltip = getLicenseStatusText(licenseStatus);
+  
+  if (licenseStatus.source) {
+    tooltip += ` - Fonte: ${licenseStatus.source}`;
+  }
+  if (licenseStatus.author) {
+    tooltip += ` - Autore: ${licenseStatus.author}`;
+  }
+  if (licenseStatus.license) {
+    tooltip += ` - Licenza: ${licenseStatus.license}`;
+  }
+  if (licenseStatus.notes) {
+    tooltip += ` - ${licenseStatus.notes}`;
+  }
+  if (licenseStatus.checkedAt) {
+    const checkedDate = new Date(licenseStatus.checkedAt);
+    tooltip += ` (Verificata: ${checkedDate.toLocaleDateString('it-IT')})`;
+  }
+  
+  return tooltip;
+}
+
+function getBestDescriptionText(poi) {
+  if (poi.extraInfo && poi.extraInfo.aiSummary) {
+    return poi.extraInfo.aiSummary;
+  }
+  return poi.description || 'Nessuna descrizione disponibile';
+}
+
+function truncateText(text, maxLength) {
+  if (!text) return '';
+  if (text.length <= maxLength) return text;
+  return text.substring(0, maxLength) + '...';
+}
+%>
+
+<%
+// Protezione variabili per filtri
+let safeZoneId = null;
+if (typeof selectedZoneId !== 'undefined' && selectedZoneId != null) {
+  safeZoneId = String(selectedZoneId);
+}
+
+let safeMunicipalityId = null;
+if (typeof selectedMunicipality !== 'undefined' && selectedMunicipality != null) {
+  safeMunicipalityId = String(selectedMunicipality);
+}
+%>
+
+<body class="bg-dark text-light">
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-black shadow-sm px-4">
+    <a class="navbar-brand" href="/admin/dashboard" aria-label="Whatis dashboard">
+        <img
+          src="/images/whatis-logo-white.svg"
+          alt="Whatis Explorer"
+          style="height: 80px; width: auto; filter: drop-shadow(0 2px 6px rgba(255, 255, 255, 0.4));"
+        />
+    </a>
+    <div class="navbar-nav ms-auto">
+      <a class="nav-link text-light" href="/admin/dashboard">Dashboard</a>
+      <a class="nav-link text-light" href="/admin/zones">Zone</a>
+      <a class="nav-link text-light" href="/admin/pois">POI</a>
+      <a class="nav-link text-light" href="/admin/tour-guides">Guide Turistiche</a>
+      <a class="nav-link text-light" href="/admin/map">Cartina</a>
+    </div>
+    <div class="navbar-text text-light ms-3">
+      📊 Gestione POI - <%= zoneName || 'Tutte le Zone' %>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <div class="container-fluid mt-4">
+    <div class="row">
+      <div class="col-12">
+        <div class="card bg-dark border-secondary">
+          <div class="card-header bg-secondary text-white">
+            <div class="d-flex justify-content-between align-items-center">
+              <h4 class="mb-0">
+                📍 POI - <%= zoneName || 'Tutte le Zone' %>
+                <span class="badge bg-info ms-2"><%= pois.length %> POI</span>
+              </h4>
+              <div>
+                <button class="btn btn-success btn-sm me-2" onclick="checkAllPhotoLicenses()" title="Verifica licenze di tutte le foto dei POI definitivi">
+                  📸 Verifica Licenze Foto
+                </button>
+                <a href="/admin/pois/proposed" class="btn btn-warning btn-sm me-2">
+                  📋 POI Proposti
+                </a>
+                <% if (typeof showDiscoveryButton !== 'undefined' && showDiscoveryButton) { %>
+                <button class="btn btn-primary btn-sm me-2" onclick="showDiscoveryModal()">
+                  🔍 Scopri POI Automatici
+                </button>
+                <% } %>
+                <a href="/admin/map" class="btn btn-info btn-sm">
+                  🌍 Torna alla Mappa
+                </a>
+              </div>
+            </div>
+          </div>
+          
+          <div class="card-body">
+            <!-- Messaggio di successo -->
+            <% if (typeof req !== 'undefined' && req && req.query && req.query.message) { %>
+            <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
+              ✅ <%= req.query.message %>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <% } %>
+            <!-- Filtri -->
+            <div class="row mb-3">
+              <div class="col-md-4">
+                <label for="filterZone" class="form-label">🔽 Filtra per Zona:</label>
+                <select id="filterZone" class="form-select">
+                  <option value="">Tutte le zone</option>
+                  <% if (zones && zones.length > 0) { %>
+                    <% zones.forEach(zone => { %>
+                      <option value="<%= zone._id %>" <%= safeZoneId && safeZoneId === zone._id.toString() ? 'selected' : '' %>>
+                        <%= zone.name %>
+                      </option>
+                    <% }); %>
+                  <% } %>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label for="filterMunicipality" class="form-label">🔽 Filtra per Comune:</label>
+                <select id="filterMunicipality" class="form-select" disabled>
+                  <option value="">Tutti i comuni</option>
+                  <!-- Popolato dinamicamente via JS quando si seleziona una zona -->
+                </select>
+              </div>
+              <div class="col-md-4 d-flex align-items-end">
+                <button class="btn btn-secondary" onclick="clearFilters()">
+                  🔄 Reset Filtri
+                </button>
+              </div>
+            </div>
+            
+            <div class="table-responsive">
+              <table class="table table-dark table-striped table-hover">
+                <thead>
+                  <tr>
+                    <th>Nome</th>
+                    <th>Categoria</th>
+                    <th>Descrizione</th>
+                    <th>Fonte</th>
+                    <th>Zona</th>
+                    <th>Coordinate</th>
+                    <th>Stato Coordinate</th>
+                    <th>Stato</th>
+                    <th>Licenza Foto</th>
+                    <th>Azioni</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% if (pois && pois.length > 0) { %>
+                    <% pois.forEach(p => { %>
+                      <tr>
+                        <td class="poi-name">
+                          <strong><%= p.name %></strong>
+                        </td>
+                        <td>
+                          <span class="badge bg-<%= getCategoryColor(p.category || 'other') %>">
+                            <%= getCategoryIcon(p.category || 'other') %> <%= getCategoryText(p.category || 'other') %>
+                          </span>
+                        </td>
+                        <td class="poi-description">
+                          <span class="text-light" title="<%= getBestDescriptionText(p) %>">
+                            <%= truncateText(getBestDescriptionText(p), 100) %>
+                          </span>
+                        </td>
+                        <td>
+                          <div class="d-flex flex-wrap gap-1">
+                            <span class="badge bg-<%= getSourceColor(p.source || 'manual') %> text-white">
+                              <%= getSourceIcon(p.source || 'manual') %> <%= getSourceText(p.source || 'manual') %>
+                            </span>
+                            <% if (p.extraInfo && p.extraInfo.aiGenerated) { %>
+                              <span class="badge bg-success ai-badge" title="Generato con AI">🧠</span>
+                            <% } %>
+                          </div>
+                        </td>
+                        <td><%= p.zone ? p.zone.name : '-' %></td>
+                        <td class="poi-coordinates">
+                          <small class="text-muted">
+                            <%= p.lat ? p.lat.toFixed(6) : '-' %>, <%= p.lng ? p.lng.toFixed(6) : '-' %>
+                          </small>
+                        </td>
+                        <td>
+                          <% 
+                            const coordStatus = p.coordStatus || (p.lat && p.lng ? 'unconfirmed' : 'missing');
+                            let statusClass = 'bg-warning text-dark';
+                            let statusText = 'Da verificare';
+                            if (coordStatus === 'confirmed') {
+                              statusClass = 'bg-success';
+                              statusText = 'Confermate';
+                            } else if (coordStatus === 'missing') {
+                              statusClass = 'bg-danger';
+                              statusText = 'Mancanti';
+                            }
+                          %>
+                          <span class="badge <%= statusClass %>"><%= statusText %></span>
+                        </td>
+                        <td>
+                          <% 
+                            const isDefinitive = p.isDefinitive === true || p.isDefinitive === 'true';
+                          %>
+                          <% if (isDefinitive) { %>
+                            <span class="badge bg-success" title="POI definitivo - Scaricabile dai turisti">
+                              ✅ Definitivo
+                            </span>
+                          <% } else { %>
+                            <span class="badge bg-warning text-dark" title="POI da rendere definitivo">
+                              ⏳ Da rendere definitivo
+                            </span>
+                          <% } %>
+                        </td>
+                        <td>
+                          <% 
+                            const licenseStatus = p.imageLicenseStatus || {};
+                            const licenseColor = getLicenseStatusColor(licenseStatus);
+                            const licenseIcon = getLicenseStatusIcon(licenseStatus);
+                            const licenseText = getLicenseStatusText(licenseStatus);
+                            const licenseTooltip = getLicenseStatusTooltip(licenseStatus);
+                          %>
+                          <% if (p.imageUrl && p.imageUrl.trim()) { %>
+                            <span class="badge bg-<%= licenseColor %>" title="<%= licenseTooltip %>">
+                              <%= licenseIcon %> <%= licenseText %>
+                            </span>
+                            <% if (licenseStatus.status === 'not_checked' || !licenseStatus.status) { %>
+                              <button class="btn btn-sm btn-outline-info ms-1" onclick='checkSinglePhotoLicense("<%= p._id %>", "<%= p.name %>")' title="Verifica licenza foto">
+                                🔍
+                              </button>
+                            <% } %>
+                          <% } else { %>
+                            <span class="badge bg-secondary" title="Nessuna foto">
+                              📷 Nessuna foto
+                            </span>
+                          <% } %>
+                        </td>
+                        <td>
+                          <div class="d-flex gap-2">
+                            <button class="btn btn-info btn-sm" onclick='showPOIDetails("<%= p._id %>")' title="Mostra dettagli completi">
+                              🔍 Mostra Dettagli
+                            </button>
+                            <a href="/admin/poi/edit/<%= p._id %>" class="btn btn-warning btn-sm" title="Modifica POI">
+                              ✏️ Modifica
+                            </a>
+                            <button class="btn btn-danger btn-sm" onclick='deletePOI(event, "<%= p._id %>", "<%= p.name %>")' title="Elimina POI">
+                              🗑️ Elimina
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    <% }) %>
+                  <% } else { %>
+                    <tr>
+                      <td colspan="10" class="text-center text-muted">
+                        <div class="py-4">
+                          <h5>Nessun POI trovato</h5>
+                          <p>Non ci sono POI disponibili per questa zona.</p>
+                          <a href="/admin/map" class="btn btn-primary">
+                            🌍 Torna alla Mappa
+                          </a>
+                        </div>
+                      </td>
+                    </tr>
+                  <% } %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- 🧱 BOOTSTRAP JS -->
+  <!-- ============================= -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <style>
+    .badge-success { background: #28a745 !important; color: white !important; }
+    .badge-warning { background: #ffc107 !important; color: #333 !important; }
+    .badge-danger { background: #dc3545 !important; color: white !important; }
+  </style>
+
+  <script>
+    function showPOIDetails(poiId) {
+      // Redirect to POI edit page (same as edit button) to show full details
+      window.location.href = '/admin/poi/edit/' + poiId;
+    }
+
+    // Delete POI function with confirmation
+    function deletePOI(event, poiId, poiName) {
+      console.log('🗑️ Deleting POI:', poiId, poiName);
+      if (confirm('Sei sicuro di voler eliminare il POI "' + poiName + '"?\n\nQuesta azione non può essere annullata.')) {
+        // Show loading state
+        const deleteBtn = event.target;
+        const originalText = deleteBtn.innerHTML;
+        deleteBtn.innerHTML = '⏳ Eliminazione...';
+        deleteBtn.disabled = true;
+        
+        // Make delete request
+        console.log('🗑️ Sending delete request for POI ID:', poiId);
+        fetch('/admin/poi/delete/' + poiId, {
+          method: 'GET'
+        })
+        .then(response => {
+          console.log('🗑️ Delete response status:', response.status);
+          if (response.ok) {
+            // Show success message
+            showStatusMessage('✅ POI "' + poiName + '" eliminato con successo', 'success');
+            // Reload page after a short delay
+            setTimeout(() => {
+              window.location.reload();
+            }, 1500);
+          } else {
+            throw new Error('Errore durante l\'eliminazione');
+          }
+        })
+        .catch(error => {
+          console.error('❌ Error deleting POI:', error);
+          showStatusMessage('❌ Errore durante l\'eliminazione del POI: ' + error.message, 'error');
+          // Restore button state
+          deleteBtn.innerHTML = originalText;
+          deleteBtn.disabled = false;
+        });
+      }
+    }
+
+    // Show status message function
+    function showStatusMessage(message, type) {
+      const statusDiv = document.createElement('div');
+      statusDiv.className = 'alert alert-' + (type === 'success' ? 'success' : 'danger') + ' alert-dismissible fade show position-fixed';
+      statusDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+      statusDiv.innerHTML = message + '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
+      document.body.appendChild(statusDiv);
+      
+      // Auto-remove after 5 seconds
+      setTimeout(() => {
+        if (statusDiv.parentNode) {
+          statusDiv.parentNode.removeChild(statusDiv);
+        }
+      }, 5000);
+    }
+    
+    // Make POIs available globally
+    window.currentPOIs = <%- JSON.stringify(pois) %>;
+    
+    // Gestione filtri
+    document.addEventListener('DOMContentLoaded', function() {
+      const filterZone = document.getElementById('filterZone');
+      const filterMunicipality = document.getElementById('filterMunicipality');
+      
+      if (filterZone) {
+        filterZone.addEventListener('change', function() {
+          applyFilters();
+        });
+      }
+      
+      if (filterMunicipality) {
+        filterMunicipality.addEventListener('change', function() {
+          applyFilters();
+        });
+      }
+    });
+    
+    function applyFilters() {
+      const zoneId = document.getElementById('filterZone')?.value || '';
+      const municipality = document.getElementById('filterMunicipality')?.value || '';
+      
+      const params = new URLSearchParams();
+      if (zoneId) {
+        params.append('zone_id', zoneId);
+      }
+      if (municipality) {
+        params.append('municipality', municipality);
+      }
+      
+      const queryString = params.toString();
+      window.location.href = '/admin/pois' + (queryString ? '?' + queryString : '');
+    }
+    
+    function clearFilters() {
+      window.location.href = '/admin/pois';
+    }
+  </script>
+  <!-- Modale Scoperta POI -->
+  <div class="modal fade" id="discoveryModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content bg-dark text-light">
+        <div class="modal-header border-secondary">
+          <h5 class="modal-title">🔍 Scopri POI Automatici</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Zona</label>
+            <select id="discovery-zone" class="form-select bg-dark text-light border-secondary">
+              <option value="">-- Seleziona Zona --</option>
+              <% zones.forEach(z => { %>
+              <option value="<%= z._id %>" <%= (typeof selectedZoneId !== 'undefined' && selectedZoneId && selectedZoneId.toString() === z._id.toString()) ? 'selected' : '' %>><%= z.name %></option>
+              <% }); %>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Comune (opzionale)</label>
+            <input type="text" id="discovery-municipality" class="form-control bg-dark text-light border-secondary" 
+                   placeholder="Es: Santa Margherita Ligure">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Tipo POI</label>
+            <select id="discovery-type" class="form-select bg-dark text-light border-secondary">
+              <option value="both">Terrestri e Marini</option>
+              <option value="terrestrial">Solo Terrestri</option>
+              <option value="marine">Solo Marini (Relitti)</option>
+            </select>
+          </div>
+          <div class="alert alert-info">
+            <small>I POI scoperti verranno salvati nel database provvisorio e richiederanno revisione manuale prima dell'inserimento definitivo.</small>
+          </div>
+        </div>
+        <div class="modal-footer border-secondary">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+          <button type="button" class="btn btn-primary" onclick="startDiscovery()">Avvia Scoperta</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showDiscoveryModal() {
+      const modal = new bootstrap.Modal(document.getElementById('discoveryModal'));
+      modal.show();
+    }
+
+    async function startDiscovery() {
+      const zoneId = document.getElementById('discovery-zone').value;
+      const municipality = document.getElementById('discovery-municipality').value || null;
+      const type = document.getElementById('discovery-type').value;
+
+      if (!zoneId) {
+        alert('Seleziona una zona');
+        return;
+      }
+
+      const modal = bootstrap.Modal.getInstance(document.getElementById('discoveryModal'));
+      modal.hide();
+
+      // Mostra loading
+      const loadingAlert = document.createElement('div');
+      loadingAlert.className = 'alert alert-info';
+      loadingAlert.innerHTML = '🔍 Scoperta POI in corso... Attendere...';
+      document.querySelector('.container').prepend(loadingAlert);
+
+      try {
+        const response = await fetch('/admin/pois/discover', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ zone_id: zoneId, municipality, type })
+        });
+
+        const result = await response.json();
+        loadingAlert.remove();
+
+        if (result.success) {
+          alert(`✅ Scoperta completata!\n\n` +
+                `Terrestri: ${result.results.saved.terrestrial} salvati, ${result.results.duplicates.terrestrial} duplicati\n` +
+                `Marini: ${result.results.saved.marine} salvati, ${result.results.duplicates.marine} duplicati\n\n` +
+                `Vai alla pagina "POI Proposti" per revisionarli.`);
+          window.location.href = `/admin/pois/proposed?zone_id=${zoneId}`;
+        } else {
+          alert('❌ Errore: ' + result.error);
+        }
+      } catch (error) {
+        loadingAlert.remove();
+        alert('❌ Errore: ' + error.message);
+      }
+    }
+
+    // Carica conteggio POI proposti
+    async function loadProposedCount() {
+      try {
+        const response = await fetch('/admin/pois/proposed?status=pending');
+        const data = await response.json();
+        if (data.success) {
+          const countEl = document.getElementById('proposed-count');
+          if (countEl) {
+            countEl.textContent = data.count || 0;
+          }
+        }
+      } catch (error) {
+        console.error('Errore caricamento conteggio POI proposti:', error);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadProposedCount);
+
+    // Verifica licenze di tutte le foto
+    async function checkAllPhotoLicenses() {
+      if (!confirm('Vuoi verificare le licenze di tutte le foto dei POI definitivi?\n\nQuesta operazione potrebbe richiedere alcuni minuti.')) {
+        return;
+      }
+
+      const btn = event.target;
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '⏳ Verifica in corso...';
+      btn.disabled = true;
+
+      try {
+        const response = await fetch('/admin/pois/check-photo-licenses', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          const stats = result.results;
+          alert(`✅ Verifica completata!\n\n` +
+                `Totale: ${stats.total} POI\n` +
+                `Verificati: ${stats.checked}\n` +
+                `✅ Libere: ${stats.free}\n` +
+                `⚠️ Richiedono attribuzione: ${stats.needsAttribution}\n` +
+                `🚫 Da sostituire: ${stats.needsReplacement}\n` +
+                `❓ Sconosciute: ${stats.unknown}\n` +
+                `❌ Errori: ${stats.errors}\n\n` +
+                `La pagina verrà ricaricata per mostrare i risultati.`);
+          window.location.reload();
+        } else {
+          throw new Error(result.error || 'Errore durante la verifica');
+        }
+      } catch (error) {
+        console.error('❌ Errore verifica licenze:', error);
+        alert('❌ Errore durante la verifica delle licenze: ' + error.message);
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
+    }
+
+    // Verifica licenza di una singola foto
+    async function checkSinglePhotoLicense(poiId, poiName) {
+      const btn = event.target;
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '⏳';
+      btn.disabled = true;
+
+      try {
+        const response = await fetch(`/admin/pois/${poiId}/check-photo-license`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          const status = result.licenseInfo.status;
+          const statusText = {
+            'free': '✅ Libera',
+            'needs_attribution': '⚠️ Richiede attribuzione',
+            'needs_replacement': '🚫 Da sostituire',
+            'unknown': '❓ Sconosciuta',
+            'not_checked': '⏳ Non verificata'
+          }[status] || '❓ Sconosciuta';
+
+          showStatusMessage(`✅ Licenza verificata per "${poiName}": ${statusText}`, 'success');
+          
+          // Ricarica la pagina dopo un breve delay
+          setTimeout(() => {
+            window.location.reload();
+          }, 1500);
+        } else {
+          throw new Error(result.error || 'Errore durante la verifica');
+        }
+      } catch (error) {
+        console.error('❌ Errore verifica licenza:', error);
+        showStatusMessage('❌ Errore durante la verifica della licenza: ' + error.message, 'error');
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
+    }
+  </script>
+</body>
+</html>

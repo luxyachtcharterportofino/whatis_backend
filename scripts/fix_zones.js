@@ -6,6 +6,9 @@ dotenv.config();
 
 const run = async () => {
   const uri = process.env.MONGO_URI || process.env.MONGODB_URI;
+  if (!uri) {
+    throw new Error('MONGO_URI o MONGODB_URI non trovato nel file .env');
+  }
   await mongoose.connect(uri);
 
   const zones = await Zone.find();

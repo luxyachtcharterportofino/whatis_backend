@@ -7,10 +7,13 @@ import Poi from "./models/Poi.js";
 
 dotenv.config();
 
-const MONGO_URI = process.env.MONGODB_URI;
+const MONGO_URI = process.env.MONGO_URI || process.env.MONGODB_URI;
 
 async function resetDatabase() {
   try {
+    if (!MONGO_URI) {
+      throw new Error('MONGO_URI o MONGODB_URI non trovato nel file .env');
+    }
     await mongoose.connect(MONGO_URI);
     console.log("✅ Connesso a MongoDB");
 

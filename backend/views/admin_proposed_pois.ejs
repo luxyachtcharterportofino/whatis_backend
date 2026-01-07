@@ -1,0 +1,892 @@
+<%- include('partials/head') %>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+<style>
+  .poi-card {
+    border: 1px solid #444;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    background: #2a2a2a;
+  }
+  .poi-status-complete { border-left: 4px solid #4ade80; }
+  .poi-status-incomplete { border-left: 4px solid #fb923c; }
+  .poi-status-no-coords { border-left: 4px solid #f87171; }
+  .coordinate-input {
+    width: 120px;
+    display: inline-block;
+    margin-right: 10px;
+  }
+</style>
+
+<body class="bg-dark text-light">
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-black shadow-sm px-4">
+    <a class="navbar-brand" href="/admin/dashboard" aria-label="Whatis dashboard">
+        <img
+          src="/images/whatis-logo-white.svg"
+          alt="Whatis Explorer"
+          style="height: 80px; width: auto; filter: drop-shadow(0 2px 6px rgba(255, 255, 255, 0.4));"
+        />
+    </a>
+    <div class="navbar-nav ms-auto">
+      <a class="nav-link text-light" href="/admin/dashboard">Dashboard</a>
+      <a class="nav-link text-light" href="/admin/zones">Zone</a>
+      <a class="nav-link text-light" href="/admin/pois">POI</a>
+      <a class="nav-link text-light" href="/admin/tour-guides">Guide Turistiche</a>
+      <a class="nav-link text-light" href="/admin/map">Cartina</a>
+    </div>
+  </nav>
+  
+  <div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h4 class="text-info mb-0">📋 POI Proposti (da validare)</h4>
+      <div>
+        <button class="btn btn-secondary btn-sm" onclick="window.location.href='/admin/pois'">
+          ← Torna ai POI
+        </button>
+      </div>
+    </div>
+
+    <!-- Barra di Progresso -->
+    <div id="discoveryProgressContainer" style="display: none; margin-bottom: 20px;">
+      <div class="card bg-dark border-info">
+        <div class="card-body">
+          <h5 class="card-title text-info mb-3">🔍 Scoperta POI in corso...</h5>
+          <div class="progress mb-2" style="height: 30px;">
+            <div id="discoveryProgressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-info" 
+                 role="progressbar" style="width: 0%; font-size: 14px; font-weight: bold; line-height: 30px;" 
+                 aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+              <span id="discoveryProgressText">0%</span>
+            </div>
+          </div>
+          <div id="discoveryProgressMessage" class="text-light small mt-2">
+            Inizializzazione...
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <% if (zone_id) { %>
+    <div class="alert alert-info">
+      <strong>Zona:</strong> <%= zone_name || zone_id %>
+    </div>
+    <% } else if (typeof showZoneSelector !== 'undefined' && showZoneSelector && zones && zones.length > 0) { %>
+    <div class="alert alert-primary">
+      <h5>🔍 Scoperta Automatica POI</h5>
+      <p class="mb-2">Seleziona una zona per avviare la scoperta automatica di POI:</p>
+      <div class="d-flex gap-2 align-items-center">
+        <select id="zoneSelector" class="form-select" style="max-width: 300px;">
+          <option value="">-- Seleziona una zona --</option>
+          <% zones.forEach(zone => { %>
+            <option value="<%= zone._id %>"><%= zone.name %></option>
+          <% }); %>
+        </select>
+        <button class="btn btn-primary" onclick="startDiscovery()">
+          🔍 Avvia Scoperta
+        </button>
+        <button class="btn btn-secondary" onclick="viewProposedPOIs()">
+          📋 Visualizza POI Proposti
+        </button>
+      </div>
+    </div>
+    <% } %>
+
+    <!-- Filtri Zona e Comune -->
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <label for="filterZone" class="form-label">🔽 Filtra per Zona:</label>
+        <select id="filterZone" class="form-select">
+          <option value="">Tutte le zone</option>
+          <% if (zones && zones.length > 0) { %>
+            <% zones.forEach(zone => { %>
+              <option value="<%= zone._id %>" <%= (typeof selectedZoneId !== 'undefined' && selectedZoneId && selectedZoneId.toString() === zone._id.toString()) ? 'selected' : '' %>>
+                <%= zone.name %>
+              </option>
+            <% }); %>
+          <% } %>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label for="filterMunicipality" class="form-label">🔽 Filtra per Comune:</label>
+        <select id="filterMunicipality" class="form-select" <%= (typeof selectedZoneId === 'undefined' || !selectedZoneId) ? 'disabled' : '' %>>
+          <option value="">Tutti i comuni</option>
+          <% if (municipalities && municipalities.length > 0) { %>
+            <% municipalities.forEach(municipality => { %>
+              <option value="<%= municipality %>" <%= (typeof selectedMunicipality !== 'undefined' && selectedMunicipality && selectedMunicipality === municipality) ? 'selected' : '' %>>
+                <%= municipality %>
+              </option>
+            <% }); %>
+          <% } %>
+        </select>
+      </div>
+      <div class="col-md-4 d-flex align-items-end">
+        <button class="btn btn-secondary" onclick="clearFilters()">
+          🔄 Reset Filtri
+        </button>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-12">
+        <div class="btn-group" role="group">
+          <button type="button" class="btn btn-sm btn-outline-secondary" onclick="filterStatus('all')">
+            Tutti (<span id="count-all"><%= pois.length %></span>)
+          </button>
+          <button type="button" class="btn btn-sm btn-outline-success" onclick="filterStatus('complete')">
+            🟢 Completi (<span id="count-complete">0</span>)
+          </button>
+          <button type="button" class="btn btn-sm btn-outline-warning" onclick="filterStatus('incomplete')">
+            🟧 Incompleti (<span id="count-incomplete">0</span>)
+          </button>
+          <button type="button" class="btn btn-sm btn-outline-danger" onclick="filterStatus('no-coords')">
+            🔴 Senza Coordinate (<span id="count-no-coords">0</span>)
+          </button>
+        </div>
+        <button class="btn btn-sm btn-success float-end" onclick="batchApprove()">
+          ✅ Approva Selezionati
+        </button>
+      </div>
+    </div>
+
+    <div id="poi-list">
+      <% if (pois.length > 0) { %>
+      <% pois.forEach((poi, index) => { %>
+      <div class="poi-card poi-item <%= poi.missing_coords ? 'poi-status-no-coords' : (poi.needs_review ? 'poi-status-incomplete' : 'poi-status-complete') %>" 
+           data-status="<%= poi.missing_coords ? 'no-coords' : (poi.needs_review ? 'incomplete' : 'complete') %>"
+           data-id="<%= poi._id %>">
+        <div class="d-flex justify-content-between align-items-start">
+          <div class="flex-grow-1">
+            <h5 class="mb-2">
+              <%= poi.name %>
+              <% if (poi.marine_type) { %>
+                <span class="badge bg-info">🌊 Relitto</span>
+              <% } %>
+              <% if (poi.duplicate_of) { %>
+                <span class="badge bg-warning">⚠️ Quasi Duplicato</span>
+              <% } %>
+            </h5>
+            
+            <div class="mb-2">
+              <span class="badge bg-secondary"><%= poi.category || 'other' %></span>
+              <span class="badge bg-primary"><%= poi.municipality || 'N/A' %></span>
+              <% 
+                const coordStatus = poi.coordStatus || (poi.lat && poi.lon ? 'unconfirmed' : 'missing');
+                let statusClass = 'bg-warning text-dark';
+                let statusText = 'Da verificare';
+                if (coordStatus === 'confirmed') {
+                  statusClass = 'bg-success';
+                  statusText = 'Confermate';
+                } else if (coordStatus === 'missing') {
+                  statusClass = 'bg-danger';
+                  statusText = 'Mancanti';
+                }
+              %>
+              <span class="badge <%= statusClass %>">📍 <%= statusText %></span>
+              <% if (poi.quality_score >= 70) { %>
+                <span class="badge bg-success">Score: <%= poi.quality_score %></span>
+              <% } else if (poi.quality_score >= 50) { %>
+                <span class="badge bg-warning">Score: <%= poi.quality_score %></span>
+              <% } else { %>
+                <span class="badge bg-danger">Score: <%= poi.quality_score %></span>
+              <% } %>
+            </div>
+
+            <% if (poi.description) { %>
+            <p class="text-muted small mb-2"><%= poi.description %></p>
+            <% } %>
+
+            <% if (poi.depth) { %>
+            <p class="small mb-2"><strong>Profondità:</strong> <%= poi.depth %>m</p>
+            <% } %>
+
+            <div class="mb-2">
+              <label class="small">Coordinate:</label>
+              <input type="number" class="form-control form-control-sm coordinate-input bg-dark text-light border-secondary" 
+                     id="lat-<%= index %>" value="<%= poi.lat || '' %>" step="0.000001" placeholder="Lat">
+              <input type="number" class="form-control form-control-sm coordinate-input bg-dark text-light border-secondary" 
+                     id="lon-<%= index %>" value="<%= poi.lon || '' %>" step="0.000001" placeholder="Lon">
+              <button class="btn btn-sm btn-outline-info" onclick="updateCoordinates(<%= index %>, '<%= poi._id %>')">
+                💾 Salva Coordinate
+              </button>
+              <% if (poi.lat && poi.lon) { %>
+              <button class="btn btn-sm btn-outline-success" onclick="openMapEditor(<%= index %>, <%= poi.lat %>, <%= poi.lon %>, '<%= poi._id %>')">
+                🗺️ Modifica su Mappa
+              </button>
+              <% } else { %>
+              <button class="btn btn-sm btn-outline-warning" onclick="openMapEditor(<%= index %>, null, null, '<%= poi._id %>')">
+                🗺️ Aggiungi Coordinate
+              </button>
+              <% } %>
+            </div>
+
+            <div class="mt-2">
+              <input type="checkbox" class="form-check-input" id="select-<%= poi._id %>" onchange="updateSelection()">
+              <label class="form-check-label small" for="select-<%= poi._id %>">Seleziona per approvazione</label>
+            </div>
+          </div>
+
+          <div class="ms-3 d-flex flex-column gap-2">
+            <button class="btn btn-sm btn-primary" onclick="editAndMakeDefinitive('<%= poi._id %>')" 
+                    title="Apri la pagina di modifica per modificare e rendere definitivo questo POI">
+              ✏️ Modifica e Rendi Definitivo
+            </button>
+            <button class="btn btn-sm btn-success" onclick="approvePOI('<%= poi._id %>')" 
+                    <%= !poi.lat || !poi.lon ? 'disabled title="Aggiungi coordinate prima di approvare"' : '' %>>
+              ✅ Approva
+            </button>
+            <button class="btn btn-sm btn-danger" onclick="rejectPOI('<%= poi._id %>')">
+              ❌ Rifiuta
+            </button>
+          </div>
+        </div>
+      </div>
+      <% }); %>
+      <% } %>
+    </div>
+    
+    <% if (pois.length === 0) { %>
+      <div class="alert alert-info text-center">
+        <h5>📋 Nessun POI Proposto Trovato</h5>
+        <% if (zone_id) { %>
+          <p class="mb-3">
+            <strong>Zona selezionata:</strong> <%= zone_name || zone_id %><br>
+            Non ci sono POI proposti (in attesa di revisione) per questa zona.
+          </p>
+          <p class="mb-3 text-muted">
+            I POI proposti sono quelli scoperti automaticamente ma non ancora approvati e spostati nel database definitivo.
+          </p>
+          <div class="d-flex gap-2 justify-content-center">
+            <button class="btn btn-primary" onclick="discoverPOIs('<%= zone_id %>')">
+              🔍 Scopri POI per questa zona
+            </button>
+            <a href="/admin/pois?zone_id=<%= zone_id %>" class="btn btn-success">
+              📍 Vedi POI approvati
+            </a>
+          </div>
+        <% } else { %>
+          <p class="mb-3">
+            Seleziona una zona dal filtro sopra per vedere i POI proposti per quella zona.
+          </p>
+          <p class="mb-3 text-muted">
+            I POI proposti sono quelli scoperti automaticamente ma non ancora approvati e spostati nel database definitivo.
+          </p>
+          <a href="/admin/pois" class="btn btn-success">
+            📍 Vedi POI approvati
+          </a>
+        <% } %>
+      </div>
+    <% } else { %>
+      <div class="alert alert-warning mb-3">
+        <strong>ℹ️ Informazione:</strong> Questi sono POI <strong>proposti</strong> (non ancora approvati). 
+        Una volta approvati, verranno spostati nel database definitivo e saranno visibili nell'APP mobile.
+        <% if (zone_id) { %>
+          <br><strong>Zona:</strong> <%= zone_name || zone_id %>
+        <% } %>
+      </div>
+    <% } %>
+  </div>
+
+  <!-- Modale Mappa Editor -->
+  <div class="modal fade" id="mapEditorModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content bg-dark text-light">
+        <div class="modal-header border-secondary">
+          <h5 class="modal-title">🗺️ Modifica Coordinate</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-info mb-3">
+            <strong>💡 Istruzioni:</strong> Trascina il pin rosso sulla mappa per spostarlo nella posizione corretta, oppure clicca sulla mappa per posizionarlo.
+          </div>
+          <div id="map-editor" style="height: 500px; width: 100%; border-radius: 8px; border: 2px solid #00bfff;"></div>
+          <div class="mt-3">
+            <label class="form-label"><strong>Latitudine:</strong></label>
+            <input type="number" id="editor-lat" class="form-control bg-dark text-light border-secondary" step="0.000001" placeholder="Es: 44.305000">
+            <label class="mt-2 form-label"><strong>Longitudine:</strong></label>
+            <input type="number" id="editor-lon" class="form-control bg-dark text-light border-secondary" step="0.000001" placeholder="Es: 9.210000">
+            <small class="text-muted">Le coordinate si aggiornano automaticamente quando sposti il pin</small>
+          </div>
+        </div>
+        <div class="modal-footer border-secondary">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+          <button type="button" class="btn btn-primary" onclick="saveMapCoordinates()">💾 Salva Coordinate</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentEditingIndex = null;
+    let currentEditingId = null;
+    let mapEditor = null;
+    let marker = null;
+    let selectedPOIs = new Set();
+
+    // Inizializza
+    document.addEventListener('DOMContentLoaded', function() {
+      updateCounts();
+    });
+
+    function updateCounts() {
+      const all = document.querySelectorAll('.poi-item').length;
+      const complete = document.querySelectorAll('.poi-item[data-status="complete"]').length;
+      const incomplete = document.querySelectorAll('.poi-item[data-status="incomplete"]').length;
+      const noCoords = document.querySelectorAll('.poi-item[data-status="no-coords"]').length;
+
+      document.getElementById('count-all').textContent = all;
+      document.getElementById('count-complete').textContent = complete;
+      document.getElementById('count-incomplete').textContent = incomplete;
+      document.getElementById('count-no-coords').textContent = noCoords;
+    }
+
+    function filterStatus(status) {
+      const items = document.querySelectorAll('.poi-item');
+      items.forEach(item => {
+        if (status === 'all' || item.dataset.status === status) {
+          item.style.display = 'block';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    }
+
+    // Funzione per modificare e rendere definitivo un POI proposto
+    async function editAndMakeDefinitive(proposedPoiId) {
+      try {
+        // Prima verifica se esiste già un POI definitivo corrispondente
+        // Se non esiste, crealo dal POI proposto
+        const response = await fetch(`/admin/pois/proposed/${proposedPoiId}/create-or-get-definitive`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          // Reindirizza alla pagina di modifica del POI definitivo
+          window.location.href = `/admin/poi/edit/${result.poiId}`;
+        } else {
+          alert('❌ Errore: ' + (result.error || result.message || 'Errore durante la creazione del POI'));
+        }
+      } catch (error) {
+        console.error('❌ Errore:', error);
+        alert('❌ Errore: ' + error.message);
+      }
+    }
+
+    function openMapEditor(index, lat, lon, poiId) {
+      currentEditingIndex = index;
+      currentEditingId = poiId;
+
+      const modalElement = document.getElementById('mapEditorModal');
+      const modal = new bootstrap.Modal(modalElement);
+      
+      // Reset marker quando il modal viene chiuso
+      modalElement.addEventListener('hidden.bs.modal', function() {
+        if (marker && mapEditor) {
+          mapEditor.removeLayer(marker);
+          marker = null;
+        }
+      });
+      
+      modal.show();
+
+      // Funzione helper per aggiornare i campi input quando il marker viene spostato
+      function updateInputFields(lat, lng) {
+        const latInput = document.getElementById('editor-lat');
+        const lonInput = document.getElementById('editor-lon');
+        if (latInput) latInput.value = lat ? lat.toFixed(6) : '';
+        if (lonInput) lonInput.value = lng ? lng.toFixed(6) : '';
+      }
+
+      // Funzione helper per creare/aggiornare il marker
+      function setupMarker(lat, lng) {
+        // Rimuovi marker esistente se presente
+        if (marker) {
+          mapEditor.removeLayer(marker);
+          marker = null;
+        }
+
+        if (lat && lng) {
+          // Crea nuovo marker draggable
+          marker = L.marker([lat, lng], { 
+            draggable: true,
+            icon: L.icon({
+              iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+              shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+              iconSize: [25, 41],
+              iconAnchor: [12, 41],
+              popupAnchor: [1, -34],
+              shadowSize: [41, 41]
+            })
+          }).addTo(mapEditor);
+
+          // Listener per quando il marker viene trascinato
+          marker.on('dragend', function(e) {
+            const pos = e.target.getLatLng();
+            updateInputFields(pos.lat, pos.lng);
+          });
+
+          // Popup informativo
+          marker.bindPopup('<strong>Trascina il pin per spostarlo</strong><br>Oppure clicca sulla mappa').openPopup();
+        }
+      }
+
+      setTimeout(() => {
+        // Inizializza mappa se non esiste
+        if (!mapEditor) {
+          const centerLat = lat || 44.3;
+          const centerLon = lon || 9.2;
+          
+          mapEditor = L.map('map-editor').setView([centerLat, centerLon], lat && lon ? 15 : 13);
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+          }).addTo(mapEditor);
+
+          // Listener per click sulla mappa
+          mapEditor.on('click', function(e) {
+            const clickLat = e.latlng.lat;
+            const clickLng = e.latlng.lng;
+            
+            if (!marker) {
+              setupMarker(clickLat, clickLng);
+            } else {
+              // Sposta il marker esistente
+              marker.setLatLng([clickLat, clickLng]);
+              updateInputFields(clickLat, clickLng);
+            }
+          });
+        } else {
+          // Mappa già esiste, aggiorna vista e marker
+          if (lat && lon) {
+            mapEditor.setView([lat, lon], 15);
+          }
+        }
+
+        // Setup marker con coordinate corrette
+        setupMarker(lat, lon);
+        
+        // Aggiorna campi input
+        updateInputFields(lat, lon);
+
+        // Listener per aggiornare il marker quando si modificano manualmente le coordinate
+        const latInput = document.getElementById('editor-lat');
+        const lonInput = document.getElementById('editor-lon');
+        
+        function syncMarkerFromInputs() {
+          const inputLat = parseFloat(latInput.value);
+          const inputLon = parseFloat(lonInput.value);
+          
+          if (!isNaN(inputLat) && !isNaN(inputLon) && marker && mapEditor) {
+            marker.setLatLng([inputLat, inputLon]);
+            mapEditor.setView([inputLat, inputLon], mapEditor.getZoom());
+          }
+        }
+        
+        // Aggiorna marker quando si modificano i campi input
+        if (latInput) {
+          latInput.addEventListener('change', syncMarkerFromInputs);
+          latInput.addEventListener('input', syncMarkerFromInputs);
+        }
+        if (lonInput) {
+          lonInput.addEventListener('change', syncMarkerFromInputs);
+          lonInput.addEventListener('input', syncMarkerFromInputs);
+        }
+      }, 300);
+    }
+
+    function saveMapCoordinates() {
+      const lat = parseFloat(document.getElementById('editor-lat').value);
+      const lon = parseFloat(document.getElementById('editor-lon').value);
+
+      if (!lat || !lon) {
+        alert('Inserisci coordinate valide');
+        return;
+      }
+
+      updateCoordinates(currentEditingIndex, currentEditingId, lat, lon);
+      bootstrap.Modal.getInstance(document.getElementById('mapEditorModal')).hide();
+    }
+
+    async function updateCoordinates(index, poiId, lat = null, lon = null) {
+      const latValue = lat || parseFloat(document.getElementById(`lat-${index}`).value);
+      const lonValue = lon || parseFloat(document.getElementById(`lon-${index}`).value);
+
+      if (!latValue || !lonValue) {
+        alert('Coordinate mancanti');
+        return;
+      }
+
+      try {
+        const response = await fetch(`/admin/pois/proposed/${poiId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ lat: latValue, lon: lonValue })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          alert('✅ Coordinate aggiornate');
+          location.reload();
+        } else {
+          alert('❌ Errore: ' + result.error);
+        }
+      } catch (error) {
+        alert('❌ Errore: ' + error.message);
+      }
+    }
+
+    async function approvePOI(poiId) {
+      if (!confirm('Confermi l\'approvazione di questo POI?')) return;
+
+      try {
+        const response = await fetch(`/admin/pois/proposed/${poiId}/approve`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          alert('✅ POI approvato e salvato nel DB definitivo');
+          location.reload();
+        } else {
+          alert('❌ Errore: ' + result.error);
+        }
+      } catch (error) {
+        alert('❌ Errore: ' + error.message);
+      }
+    }
+
+    async function rejectPOI(poiId) {
+      if (!confirm('Confermi il rifiuto di questo POI?')) return;
+
+      try {
+        const response = await fetch(`/admin/pois/proposed/${poiId}/reject`, {
+          method: 'POST'
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          alert('❌ POI rifiutato');
+          location.reload();
+        } else {
+          alert('❌ Errore: ' + result.error);
+        }
+      } catch (error) {
+        alert('❌ Errore: ' + error.message);
+      }
+    }
+
+    function updateSelection() {
+      selectedPOIs.clear();
+      document.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
+        const poiId = cb.id.replace('select-', '');
+        selectedPOIs.add(poiId);
+      });
+    }
+
+    async function batchApprove() {
+      if (selectedPOIs.size === 0) {
+        alert('Seleziona almeno un POI');
+        return;
+      }
+
+      if (!confirm(`Confermi l'approvazione di ${selectedPOIs.size} POI?`)) return;
+
+      try {
+        const response = await fetch('/admin/pois/proposed/batch-approve', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ids: Array.from(selectedPOIs) })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          alert(`✅ ${result.approved} POI approvati, ${result.errors} errori`);
+          location.reload();
+        } else {
+          alert('❌ Errore: ' + result.error);
+        }
+      } catch (error) {
+        alert('❌ Errore: ' + error.message);
+      }
+    }
+
+    async function discoverPOIs(zoneId) {
+      // Converti a stringa e valida input
+      const zoneIdStr = String(zoneId || '').trim();
+      if (!zoneIdStr || zoneIdStr === '' || zoneIdStr === 'undefined' || zoneIdStr === 'null') {
+        console.error('❌ ID zona non valido:', zoneId);
+        alert('⚠️ ID zona non valido');
+        return;
+      }
+
+      if (!confirm('Avviare la scoperta automatica di POI per questa zona?')) return;
+
+      const municipality = prompt('Inserisci il comune (opzionale):') || null;
+      const type = prompt('Tipo POI (terrestrial/marine/both):', 'both') || 'both';
+
+      // Validazione tipo
+      const validTypes = ['terrestrial', 'marine', 'both'];
+      if (!validTypes.includes(type)) {
+        alert('⚠️ Tipo non valido. Usa: terrestrial, marine o both');
+        return;
+      }
+
+      // Mostra barra di progresso
+      const progressContainer = document.getElementById('discoveryProgressContainer');
+      const progressBar = document.getElementById('discoveryProgressBar');
+      const progressText = document.getElementById('discoveryProgressText');
+      const progressMessage = document.getElementById('discoveryProgressMessage');
+      
+      if (progressContainer) {
+        progressContainer.style.display = 'block';
+        progressBar.style.width = '0%';
+        progressBar.setAttribute('aria-valuenow', '0');
+        progressText.textContent = '0%';
+        progressMessage.textContent = 'Inizializzazione...';
+      }
+
+      // Prepara il body della richiesta
+      const requestBody = {
+        zone_id: zoneIdStr,
+        type: type
+      };
+      
+      if (municipality && municipality.trim() !== '') {
+        requestBody.municipality = municipality.trim();
+      }
+
+      console.log('🔍 Avvio discovery POI con parametri:', requestBody);
+
+      try {
+        // Usa fetch per inviare la richiesta con progresso
+        const response = await fetch('/admin/pois/discover?progress=true', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Accept': 'text/event-stream'
+          },
+          body: JSON.stringify(requestBody)
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        // Leggi lo stream SSE
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          
+          if (done) break;
+          
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || ''; // Mantieni l'ultima linea incompleta
+          
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              try {
+                const data = JSON.parse(line.substring(6));
+                
+                // Aggiorna progresso
+                if (data.percent !== undefined) {
+                  const percent = Math.min(100, Math.max(0, data.percent));
+                  if (progressBar) {
+                    progressBar.style.width = percent + '%';
+                    progressBar.setAttribute('aria-valuenow', percent);
+                    progressText.textContent = Math.round(percent) + '%';
+                  }
+                }
+                
+                if (data.message) {
+                  if (progressMessage) {
+                    progressMessage.textContent = data.message;
+                  }
+                }
+                
+                // Se completato
+                if (data.complete) {
+                  if (data.success) {
+                    const totalSaved = (data.results?.saved?.terrestrial || 0) + (data.results?.saved?.marine || 0);
+                    const totalDuplicates = (data.results?.duplicates?.terrestrial || 0) + (data.results?.duplicates?.marine || 0);
+                    
+                    setTimeout(() => {
+                      alert(`✅ Scoperti ${totalSaved} POI\n` +
+                            `Terrestri: ${data.results?.saved?.terrestrial || 0}\n` +
+                            `Marini: ${data.results?.saved?.marine || 0}\n` +
+                            `Duplicati: ${totalDuplicates}`);
+                      
+                      // Reindirizza alla pagina dei POI proposti per questa zona
+                      window.location.href = `/admin/pois/proposed?zone_id=${zoneIdStr}`;
+                    }, 500);
+                  } else {
+                    alert('❌ Errore: ' + (data.error || data.message || 'Errore sconosciuto'));
+                    if (progressContainer) progressContainer.style.display = 'none';
+                  }
+                  return;
+                }
+              } catch (parseError) {
+                console.error('❌ Errore parsing SSE:', parseError, line);
+              }
+            }
+          }
+        }
+      } catch (error) {
+        console.error('❌ Errore discovery:', error);
+        alert('❌ Errore: ' + error.message);
+        if (progressContainer) progressContainer.style.display = 'none';
+      }
+    }
+
+    function startDiscovery() {
+      const zoneSelector = document.getElementById('zoneSelector');
+      if (!zoneSelector) {
+        console.error('❌ Selettore zona non trovato');
+        alert('⚠️ Errore: Selettore zona non trovato. Ricarica la pagina.');
+        return;
+      }
+      
+      const zoneId = zoneSelector.value;
+      if (!zoneId || zoneId.trim() === '') {
+        alert('⚠️ Seleziona una zona prima di avviare la scoperta');
+        return;
+      }
+      
+      console.log('🚀 Avvio discovery per zona:', zoneId);
+      discoverPOIs(zoneId);
+    }
+
+    function viewProposedPOIs() {
+      const zoneSelector = document.getElementById('zoneSelector');
+      if (!zoneSelector || !zoneSelector.value) {
+        // Mostra tutti i POI proposti
+        window.location.href = '/admin/pois/proposed';
+      } else {
+        // Mostra POI proposti per la zona selezionata
+        window.location.href = `/admin/pois/proposed?zone_id=${zoneSelector.value}`;
+      }
+    }
+    
+    // Gestione filtri Zona e Comune
+    document.addEventListener('DOMContentLoaded', function() {
+      const filterZone = document.getElementById('filterZone');
+      const filterMunicipality = document.getElementById('filterMunicipality');
+      
+      if (filterZone) {
+        filterZone.addEventListener('change', async function() {
+          const zoneId = this.value;
+          if (zoneId) {
+            // Mostra loading
+            filterMunicipality.disabled = true;
+            filterMunicipality.innerHTML = '<option value="">Caricamento municipi...</option>';
+            
+            await loadMunicipalitiesForZone(zoneId);
+            // Applica filtri dopo aver caricato i municipi
+            applyFilters();
+          } else {
+            // Nessuna zona selezionata
+            filterMunicipality.innerHTML = '<option value="">Tutti i comuni</option>';
+            filterMunicipality.disabled = true;
+            applyFilters();
+          }
+        });
+      }
+      
+      if (filterMunicipality) {
+        filterMunicipality.addEventListener('change', function() {
+          applyFilters();
+        });
+      }
+      
+      // Carica comuni se una zona è già selezionata al caricamento
+      if (filterZone && filterZone.value) {
+        loadMunicipalitiesForZone(filterZone.value);
+      }
+    });
+    
+    async function loadMunicipalitiesForZone(zoneId) {
+      const filterMunicipality = document.getElementById('filterMunicipality');
+      if (!filterMunicipality) return;
+      
+      if (!zoneId) {
+        filterMunicipality.innerHTML = '<option value="">Tutti i comuni</option>';
+        filterMunicipality.disabled = true;
+        return;
+      }
+      
+      try {
+        // Carica i POI proposti per questa zona per ottenere i comuni
+        const response = await fetch(`/admin/pois/proposed?zone_id=${zoneId}&format=json`);
+        const data = await response.json();
+        
+        if (data.success && data.pois && data.pois.length > 0) {
+          // Estrai comuni unici dai POI proposti
+          const municipalities = [...new Set(data.pois.map(poi => poi.municipality).filter(m => m && m.trim() !== ''))].sort();
+          
+          filterMunicipality.innerHTML = '<option value="">Tutti i comuni</option>';
+          
+          if (municipalities.length > 0) {
+            municipalities.forEach(municipality => {
+              const option = document.createElement('option');
+              option.value = municipality;
+              option.textContent = municipality;
+              filterMunicipality.appendChild(option);
+            });
+            filterMunicipality.disabled = false;
+          } else {
+            // Nessun comune trovato nei POI proposti
+            filterMunicipality.innerHTML = '<option value="">Nessun comune disponibile</option>';
+            filterMunicipality.disabled = true;
+          }
+        } else {
+          // Nessun POI proposto per questa zona
+          filterMunicipality.innerHTML = '<option value="">Nessun POI proposto per questa zona</option>';
+          filterMunicipality.disabled = true;
+        }
+      } catch (error) {
+        console.error('Errore caricamento comuni:', error);
+        filterMunicipality.innerHTML = '<option value="">Errore caricamento</option>';
+        filterMunicipality.disabled = true;
+      }
+    }
+    
+    function applyFilters() {
+      const zoneId = document.getElementById('filterZone')?.value || '';
+      const municipality = document.getElementById('filterMunicipality')?.value || '';
+      
+      const params = new URLSearchParams();
+      if (zoneId) {
+        params.append('zone_id', zoneId);
+      }
+      if (municipality) {
+        params.append('municipality', municipality);
+      }
+      
+      const queryString = params.toString();
+      window.location.href = '/admin/pois/proposed' + (queryString ? '?' + queryString : '');
+    }
+    
+    function clearFilters() {
+      window.location.href = '/admin/pois/proposed';
+    }
+  </script>
+  
+  <style>
+    .badge-success { background: #28a745 !important; color: white !important; }
+    .badge-warning { background: #ffc107 !important; color: #333 !important; }
+    .badge-danger { background: #dc3545 !important; color: white !important; }
+  </style>
+</body>
+</html>
+

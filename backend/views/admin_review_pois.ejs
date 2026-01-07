@@ -1,0 +1,354 @@
+<%- include('partials/head') %>
+
+<style>
+  .poi-card {
+    border: 1px solid #444;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    background: #1a1a1a;
+  }
+  .poi-card.valid {
+    border-left: 4px solid #4ade80;
+  }
+  .poi-card.invalid {
+    border-left: 4px solid #f87171;
+  }
+  .poi-card.warning {
+    border-left: 4px solid #fbbf24;
+  }
+  .poi-map {
+    height: 200px;
+    width: 100%;
+    border-radius: 8px;
+    margin-top: 10px;
+  }
+  .coordinate-input {
+    width: 120px;
+    display: inline-block;
+    margin-right: 10px;
+  }
+</style>
+
+<body class="bg-dark text-light">
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-black shadow-sm px-4">
+    <a class="navbar-brand" href="/admin/dashboard" aria-label="Whatis dashboard">
+        <img
+          src="/images/whatis-logo-white.svg"
+          alt="Whatis Explorer"
+          style="height: 80px; width: auto; filter: drop-shadow(0 2px 6px rgba(255, 255, 255, 0.4));"
+        />
+    </a>
+    <div class="navbar-nav ms-auto">
+      <a class="nav-link text-light" href="/admin/dashboard">Dashboard</a>
+      <a class="nav-link text-light" href="/admin/zones">Zone</a>
+      <a class="nav-link text-light" href="/admin/pois">POI</a>
+      <a class="nav-link text-light" href="/admin/tour-guides">Guide Turistiche</a>
+      <a class="nav-link text-light" href="/admin/map">Cartina</a>
+    </div>
+  </nav>
+  
+  <div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h4 class="text-info mb-0">🔍 Revisione POI - <%= zone.name %></h4>
+      <a href="/admin/zones" class="btn btn-secondary">← Torna alle Zone</a>
+    </div>
+
+    <div id="loadingMessage" class="alert alert-info">
+      <p>Caricamento POI generati...</p>
+    </div>
+
+    <div id="poiContainer" style="display: none;">
+      <div class="mb-3">
+        <button class="btn btn-success" onclick="selectAllValid()">✅ Seleziona Tutti i Validi</button>
+        <button class="btn btn-warning" onclick="deselectAll()">❌ Deseleziona Tutti</button>
+        <button class="btn btn-primary" onclick="saveSelectedPOIs()">💾 Salva POI Selezionati</button>
+        <span id="selectedCount" class="badge bg-info ms-2">0 selezionati</span>
+      </div>
+
+      <div id="poiList"></div>
+    </div>
+
+    <div id="noPOIs" style="display: none;" class="alert alert-warning">
+      <p>Nessun POI generato. Torna indietro e riprova.</p>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    let pois = [];
+    let selectedPOIs = new Set();
+    const zoneId = '<%= zoneId %>';
+    const zoneCoordinates = <%- JSON.stringify(zone.coordinates) %>;
+
+    // Carica POI da sessionStorage
+    document.addEventListener('DOMContentLoaded', function() {
+      const stored = sessionStorage.getItem('poiGenerationResults');
+      if (stored) {
+        const data = JSON.parse(stored);
+        if (data.zoneId === zoneId && data.results) {
+          pois = data.results.validated || [];
+          renderPOIs();
+        } else {
+          showNoPOIs();
+        }
+      } else {
+        showNoPOIs();
+      }
+    });
+
+    function renderPOIs() {
+      if (pois.length === 0) {
+        showNoPOIs();
+        return;
+      }
+
+      document.getElementById('loadingMessage').style.display = 'none';
+      document.getElementById('poiContainer').style.display = 'block';
+
+      const container = document.getElementById('poiList');
+      container.innerHTML = '';
+
+      pois.forEach((poi, index) => {
+        const isValid = poi.validation?.valid || false;
+        const hasWarning = poi.validation?.warning || false;
+        const cardClass = isValid ? (hasWarning ? 'warning' : 'valid') : 'invalid';
+
+        const card = document.createElement('div');
+        card.className = `poi-card ${cardClass}`;
+        card.id = `poi-${index}`;
+        
+        card.innerHTML = `
+          <div class="d-flex justify-content-between align-items-start">
+            <div class="flex-grow-1">
+              <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="checkbox-${index}" 
+                  ${isValid ? '' : 'disabled'} 
+                  onchange="togglePOI(${index})">
+                <label class="form-check-label" for="checkbox-${index}">
+                  <strong>${poi.name}</strong>
+                  ${!isValid ? '<span class="badge bg-danger ms-2">Non valido</span>' : ''}
+                  ${hasWarning ? '<span class="badge bg-warning ms-2">Attenzione</span>' : ''}
+                </label>
+              </div>
+              
+              <p class="text-muted small mb-2">${poi.description || 'Nessuna descrizione'}</p>
+              
+              <div class="mb-2">
+                <span class="badge bg-secondary">${poi.category || 'other'}</span>
+                ${poi.semanticCategory ? `<span class="badge bg-info">${poi.semanticCategory}</span>` : ''}
+                ${poi.geocodingSource ? `<span class="badge bg-success">Geocoding: ${poi.geocodingSource}</span>` : ''}
+                ${poi.verification?.openTripMap ? `<span class="badge bg-primary">✓ Verified by OpenTripMap</span>` : ''}
+                ${poi.verification?.wikidata ? `<span class="badge bg-info">✓ Verified by Wikidata</span>` : ''}
+                ${poi.score !== undefined ? `
+                  <span class="badge ${poi.score >= 70 ? 'bg-success' : poi.score >= 50 ? 'bg-warning' : 'bg-danger'}" 
+                        title="Score totale: ${poi.score}/100">
+                    Score: ${poi.score}
+                  </span>
+                ` : ''}
+              </div>
+
+              <div class="mb-2">
+                <label class="form-label small">Coordinate:</label>
+                <input type="number" class="form-control form-control-sm coordinate-input bg-dark text-light border-secondary" 
+                  id="lat-${index}" value="${poi.lat || ''}" step="0.000001" placeholder="Lat">
+                <input type="number" class="form-control form-control-sm coordinate-input bg-dark text-light border-secondary" 
+                  id="lng-${index}" value="${poi.lng || ''}" step="0.000001" placeholder="Lng">
+                <button class="btn btn-sm btn-outline-info" onclick="regeocodePOI(${index})">🔍 Trova Coordinate</button>
+              </div>
+
+              ${poi.validation ? `
+                <div class="small text-muted">
+                  <strong>Validazione:</strong> ${poi.validation.reason}
+                  ${poi.validation.distance !== null ? ` (${poi.validation.distance.toFixed(2)} km dalla zona)` : ''}
+                </div>
+              ` : ''}
+              
+              ${poi.scoreBreakdown ? `
+                <div class="small text-muted mt-2">
+                  <strong>Score Breakdown:</strong><br>
+                  GPT Confidence: ${Math.round(poi.scoreBreakdown.gptConfidence || 0)}% | 
+                  OpenTripMap: ${Math.round(poi.scoreBreakdown.openTripMapMatch || 0)}% | 
+                  Wikidata: ${Math.round(poi.scoreBreakdown.wikidataMatch || 0)}% | 
+                  Geocoding: ${Math.round(poi.scoreBreakdown.geocodingPrecision || 0)}% | 
+                  Distanza: ${Math.round(poi.scoreBreakdown.distanceFromCenter || 0)}%
+                </div>
+              ` : ''}
+
+              <div id="map-${index}" class="poi-map"></div>
+            </div>
+          </div>
+        `;
+
+        container.appendChild(card);
+
+        // Inizializza mappa per questo POI
+        if (poi.lat && poi.lng) {
+          setTimeout(() => initMap(index, poi.lat, poi.lng), 100);
+        }
+      });
+
+      updateSelectedCount();
+    }
+
+    function initMap(index, lat, lng) {
+      const mapDiv = document.getElementById(`map-${index}`);
+      if (!mapDiv) return;
+
+      const map = L.map(mapDiv).setView([lat, lng], 15);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+      }).addTo(map);
+
+      // Marker POI
+      L.marker([lat, lng]).addTo(map)
+        .bindPopup(`<strong>${pois[index].name}</strong>`);
+
+      // Disegna zona (se coordinate disponibili)
+      if (zoneCoordinates && zoneCoordinates.length > 0) {
+        const zonePolygon = L.polygon(zoneCoordinates.map(coord => [coord[0] || coord[1], coord[1] || coord[0]]), {
+          color: '#3388ff',
+          fillColor: '#3388ff',
+          fillOpacity: 0.2
+        }).addTo(map);
+        map.fitBounds(zonePolygon.getBounds());
+      }
+    }
+
+    function togglePOI(index) {
+      const checkbox = document.getElementById(`checkbox-${index}`);
+      if (checkbox.checked) {
+        selectedPOIs.add(index);
+      } else {
+        selectedPOIs.delete(index);
+      }
+      updateSelectedCount();
+    }
+
+    function selectAllValid() {
+      pois.forEach((poi, index) => {
+        if (poi.validation?.valid) {
+          selectedPOIs.add(index);
+          const checkbox = document.getElementById(`checkbox-${index}`);
+          if (checkbox) checkbox.checked = true;
+        }
+      });
+      updateSelectedCount();
+    }
+
+    function deselectAll() {
+      selectedPOIs.clear();
+      pois.forEach((poi, index) => {
+        const checkbox = document.getElementById(`checkbox-${index}`);
+        if (checkbox) checkbox.checked = false;
+      });
+      updateSelectedCount();
+    }
+
+    function updateSelectedCount() {
+      document.getElementById('selectedCount').textContent = `${selectedPOIs.size} selezionati`;
+    }
+
+    async function regeocodePOI(index) {
+      const poi = pois[index];
+      const button = event.target;
+      button.disabled = true;
+      button.textContent = '⏳ Cercando...';
+
+      try {
+        const response = await fetch(`/admin/zones/${zoneId}/geocode-poi`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ poiName: poi.name })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          // Aggiorna coordinate
+          document.getElementById(`lat-${index}`).value = result.lat;
+          document.getElementById(`lng-${index}`).value = result.lng;
+          pois[index].lat = result.lat;
+          pois[index].lng = result.lng;
+          pois[index].geocodingSource = result.source;
+
+          // Ricarica mappa
+          const mapDiv = document.getElementById(`map-${index}`);
+          if (mapDiv) {
+            mapDiv.innerHTML = '';
+            initMap(index, result.lat, result.lng);
+          }
+
+          alert(`✅ Coordinate aggiornate: ${result.lat}, ${result.lng} (${result.source})`);
+        } else {
+          alert('❌ Geocoding fallito');
+        }
+      } catch (error) {
+        console.error('Errore:', error);
+        alert('❌ Errore durante il geocoding');
+      } finally {
+        button.disabled = false;
+        button.textContent = '🔍 Trova Coordinate';
+      }
+    }
+
+    async function saveSelectedPOIs() {
+      if (selectedPOIs.size === 0) {
+        alert('Seleziona almeno un POI da salvare');
+        return;
+      }
+
+      const poisToSave = Array.from(selectedPOIs).map(index => {
+        const poi = pois[index];
+        return {
+          name: poi.name,
+          description: poi.description || '',
+          lat: parseFloat(document.getElementById(`lat-${index}`).value),
+          lng: parseFloat(document.getElementById(`lng-${index}`).value),
+          category: poi.category || 'other',
+          semanticCategory: poi.semanticCategory || '',
+          extraInfo: poi.extraInfo || {}
+        };
+      });
+
+      try {
+        const response = await fetch(`/admin/zones/${zoneId}/save-pois`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ pois: poisToSave })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          alert(`✅ Salvati ${result.saved} POI!`);
+          // Pulisci sessionStorage
+          sessionStorage.removeItem('poiGenerationResults');
+          // Redirect alle zone
+          window.location.href = '/admin/zones';
+        } else {
+          alert('❌ Errore: ' + result.message);
+        }
+      } catch (error) {
+        console.error('Errore:', error);
+        alert('❌ Errore durante il salvataggio');
+      }
+    }
+
+    function showNoPOIs() {
+      document.getElementById('loadingMessage').style.display = 'none';
+      document.getElementById('poiContainer').style.display = 'none';
+      document.getElementById('noPOIs').style.display = 'block';
+    }
+  </script>
+</body>
+</html>
+
