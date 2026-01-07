@@ -8,16 +8,19 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const path = require("path");
+const fs = require("fs");
 const bodyParser = require("body-parser");
 const methodOverride = require("method-override");
+const cors = require("cors");
 const { spawn } = require("child_process");
 
-// Rotte
-const adminRoutes = require("./routes/admin/main");  // Modular admin routes
-const zonesRoutes = require("./routes/zones");
-const poisRoutes = require("./routes/pois");
-const translationsRoutes = require("./routes/translations");
-const mobileRoutes = require("./routes/mobile");  // Mobile app routes
+// Rotte - usa percorsi relativi a backend/ se esiste, altrimenti root
+const routesPath = path.join(__dirname, "backend", "routes");
+const adminRoutes = require(path.join(routesPath, "admin", "main"));  // Modular admin routes
+const zonesRoutes = require(path.join(routesPath, "zones"));
+const poisRoutes = require(path.join(routesPath, "pois"));
+const translationsRoutes = require(path.join(routesPath, "translations"));
+const mobileRoutes = require(path.join(routesPath, "mobile"));  // Mobile app routes
 
 // Inizializza Express
 const app = express();
@@ -40,10 +43,23 @@ mongoose
     
     // Imposta EJS
     app.set("view engine", "ejs");
-    app.set("views", path.join(__dirname, "views"));
+    const viewsPath = fs.existsSync(path.join(__dirname, "backend", "views")) 
+      ? path.join(__dirname, "backend", "views")
+      : path.join(__dirname, "views");
+    app.set("views", viewsPath);
 
     // Middleware
-    app.use(express.static(path.join(__dirname, "public")));
+    // ✅ CORS per app mobile iOS
+    app.use(cors({
+      origin: '*', // Permetti tutte le origini per l'app mobile
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+      credentials: false
+    }));
+    const publicPath = fs.existsSync(path.join(__dirname, "backend", "public"))
+      ? path.join(__dirname, "backend", "public")
+      : path.join(__dirname, "public");
+    app.use(express.static(publicPath));
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(bodyParser.json());
     app.use(methodOverride("_method"));
